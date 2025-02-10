@@ -1,0 +1,17 @@
+{
+  "name": "ssafquid-game",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "gonudayo",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "env": "^0.0.2",
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9"
+  }
+}
