@@ -11,10 +11,10 @@ const userSchema = mongoose.Schema({
     type: Boolean,
   },
   number: {
-    type: String,
+    type: Number,
   },
   local: {
-    type: String,
+    type: Number,
   },
   startCnt: {
     type: Number,
