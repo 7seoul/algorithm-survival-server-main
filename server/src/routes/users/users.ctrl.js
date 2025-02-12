@@ -5,13 +5,15 @@ const get = {
   stats: async (req, res) => {
     try {
       // solved.ac 파싱
+      console.time("scraping");
       const solvedacData = await api.scrapSolvedac(req.query.handle);
+      console.timeEnd("scraping");
 
       // solved.ac api
+      console.time("solvedac-api");
       const apiCnt = await api.getSolvedacProblem(req.query.handle);
       const apiTier = await api.getSolvedacProfile(req.query.handle);
-
-      console.log(apiCnt, apiTier);
+      console.timeEnd("solvedac-api");
 
       await User.updateOne(
         { tier: solvedacData.tier },
@@ -29,14 +31,27 @@ const get = {
         .json({ success: false, error: "Failed to update" });
     }
   },
-  updateAll: (req, res) => {},
+  all: async (req, res) => {
+    try {
+      const users = await User.find({}, "-_id -__v");
+      return res.status(200).json({
+        success: true,
+        users,
+      });
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({ success: false, error: "Failed to update all" });
+    }
+  },
 };
 
 const post = {
   register: async (req, res) => {
     try {
       // 테스트용 컬렉션 초기화
-      await User.deleteMany({});
+      // await User.deleteMany({});
       const existingUser = await User.findOne({ handle: req.body.handle });
 
       if (existingUser) {
@@ -48,6 +63,8 @@ const post = {
 
       // solved.ac 파싱
       const solvedacData = await api.scrapSolvedac(req.body.handle);
+
+      console.log(solvedacData);
 
       // 등록된 유저 수
       const number = await User.countDocuments({});
