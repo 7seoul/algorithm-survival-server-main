@@ -1,18 +1,18 @@
 const { User } = require("../../models/User/User");
-const api = require("./api");
+const solvedac = require("../../apis/solvedac/solvedac");
 
 const get = {
   stats: async (req, res) => {
     try {
       // solved.ac 파싱
       console.time("scraping");
-      const solvedacData = await api.scrapSolvedac(req.query.handle);
+      const solvedacData = await solvedac.scrapSolvedac(req.query.handle);
       console.timeEnd("scraping");
 
       // solved.ac api
       console.time("solvedac-api");
-      const apiCnt = await api.getSolvedacProblem(req.query.handle);
-      const apiTier = await api.getSolvedacProfile(req.query.handle);
+      const apiCnt = await solvedac.getSolvedacProblem(req.query.handle);
+      const apiTier = await solvedac.getSolvedacProfile(req.query.handle);
       console.timeEnd("solvedac-api");
 
       await User.updateOne(

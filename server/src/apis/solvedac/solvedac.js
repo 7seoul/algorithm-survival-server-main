@@ -1,15 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const utils = require("./utils");
-
-const scrapBoj = async (handle) => {
-  try {
-    return await axios.get(encodeURI(`https://www.acmicpc.net/user/${handle}`));
-  } catch (error) {
-    console.error("Failed to Boj data:", error);
-    throw new Error("Invalid data");
-  }
-};
+const utils = require("../../utils/utils");
 
 const scrapSolvedac = async (handle) => {
   try {
@@ -19,8 +10,8 @@ const scrapSolvedac = async (handle) => {
     const $ = cheerio.load(response.data);
     const tier = $("img.css-19222jw").first().attr("alt");
     const targetLevels = ["Silver", "Gold", "Platinum", "Diamond", "Ruby"]; // 합산할 레벨
-    let totalProblems = 0;
 
+    let totalProblems = 0;
     $("table tbody tr").each((i, row) => {
       const level = $(row).find("td:first-child b").text().trim(); // 레벨 이름 가져오기
       if (targetLevels.includes(level)) {
@@ -95,7 +86,6 @@ const getSolvedacProblem = async (handle) => {
 };
 
 module.exports = {
-  scrapBoj,
   scrapSolvedac,
   scrapSolvedacAll,
   getSolvedacProfile,
