@@ -1,8 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const axios = require("axios");
-const cheerio = require("cheerio");
 
 const app = express();
 dotenv.config();
@@ -14,6 +12,10 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((e) => console.log("MongoDB error: ", e));
+
+// 유저 정보 자동 업데이트
+const update = require("./src/services/update");
+update.init();
 
 const users = require("./src/routes/users");
 app.use("/api/v1/users", users);

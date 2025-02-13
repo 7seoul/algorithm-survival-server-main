@@ -1,6 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const utils = require("../../utils/utils");
+const utils = require("../utils/utils");
 
 const scrapSolvedac = async (handle) => {
   try {
@@ -24,7 +24,6 @@ const scrapSolvedac = async (handle) => {
       }
     });
 
-    console.log(totalProblems);
     const userProfile = {
       tier: utils.tierList[tier],
       cnt: totalProblems,
@@ -32,15 +31,6 @@ const scrapSolvedac = async (handle) => {
     return userProfile;
   } catch (error) {
     console.error("Failed to scrapSolvedac:", error);
-    throw new Error("Invalid data");
-  }
-};
-
-const scrapSolvedacAll = async () => {
-  const baseUrl = "https://solved.ac/profile/";
-  try {
-  } catch (error) {
-    console.error("Failed to scrapSolvedacAll:", error);
     throw new Error("Invalid data");
   }
 };
@@ -87,7 +77,6 @@ const getSolvedacProblem = async (handle) => {
 
 module.exports = {
   scrapSolvedac,
-  scrapSolvedacAll,
   getSolvedacProfile,
   getSolvedacProblem,
 };

@@ -1,5 +1,6 @@
 const { User } = require("../../models/User/User");
-const solvedac = require("../../apis/solvedac/solvedac");
+const solvedac = require("../../apis/solvedac");
+const update = require("../../services/update");
 
 const get = {
   stats: async (req, res) => {
@@ -10,10 +11,10 @@ const get = {
       console.timeEnd("scraping");
 
       // solved.ac api
-      console.time("solvedac-api");
-      const apiCnt = await solvedac.getSolvedacProblem(req.query.handle);
-      const apiTier = await solvedac.getSolvedacProfile(req.query.handle);
-      console.timeEnd("solvedac-api");
+      // console.time("solvedac-api");
+      // const apiCnt = await solvedac.getSolvedacProblem(req.query.handle);
+      // const apiTier = await solvedac.getSolvedacProfile(req.query.handle);
+      // console.timeEnd("solvedac-api");
 
       await User.updateOne(
         { tier: solvedacData.tier },
@@ -62,9 +63,16 @@ const post = {
       }
 
       // solved.ac 파싱
-      const solvedacData = await api.scrapSolvedac(req.body.handle);
+      const solvedacData = await solvedac.scrapSolvedac(req.body.handle);
 
       console.log(solvedacData);
+
+      if (solvedacData.tier === undefined || solvedacData.cnt === undefined) {
+        return res.status(200).json({
+          success: flase,
+          message: "정보를 불러오는데 실패했습니다.",
+        });
+      }
 
       // 등록된 유저 수
       const number = await User.countDocuments({});
@@ -83,6 +91,9 @@ const post = {
       const user = await new User(userData);
 
       await user.save().then((user) => {
+        // 업데이트 큐에 신규 유저 추가
+        update.addUserInQueue(user.handle);
+
         return res.status(200).json({
           success: true,
           user: user,
