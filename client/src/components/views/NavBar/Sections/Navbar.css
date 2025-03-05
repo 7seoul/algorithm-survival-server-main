@@ -1,0 +1,82 @@
+.menu {
+  padding: 0 20px;
+  border-bottom: solid 1px #e8e8e8;
+  box-shadow: 0 0 30px #f3f1f1;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  height: 80px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 5;
+}
+
+.menu__logo {
+  width: 200px;
+}
+
+.menu__logo a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-size: 20px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.menu__container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.menu__container .ant-menu-item {
+  padding: 0 2px;
+  min-width: 70px;
+  text-align: center;
+}
+
+.menu__container .ant-menu-submenu-title {
+  padding: 10px 20px;
+}
+
+.menu__container .ant-menu-item a,
+.menu__container .ant-menu-submenu-title a {
+  padding: 10px 12px;
+  display: block;
+}
+
+.menu__container .ant-menu-horizontal {
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  /* overflow-x: auto 제거 (이전 요청 반영) */
+}
+
+.menu__container .menu_left {
+  float: none;
+}
+
+.menu__container .menu_right {
+  float: none;
+}
+
+@media (max-width: 767px) {
+  .menu__container .ant-menu-item,
+  .menu__container .ant-menu-submenu-title {
+    padding: 1px 8px;
+    min-width: 60px;
+  }
+
+  .menu__logo a {
+    margin-left: -20px;
+  }
+}
+
+body {
+  margin-top: 60px;
+}
