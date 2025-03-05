@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import LeftMenu from './Sections/LeftMenu';
 import { CodeFilled } from '@ant-design/icons';
 import { Button, Modal, Form, Input, Select, message } from 'antd';
+import axios from 'axios';
 import 'antd/dist/reset.css';
 import './Sections/Navbar.css';
 
 const { Option } = Select;
 
 function NavBar() {
+  const [messageApi, contextHolder] = message.useMessage();
   const [modalVisible, setModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -18,28 +20,36 @@ function NavBar() {
     form.resetFields();
   };
 
-  const onFinish = async (values) => {
+  const onFinish = async (userData) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/v1/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) {
+      const response = await axios.post('http://localhost:5000/api/v1/users/register', userData);
+      if (response.status !== 200) {
         throw new Error('Registration failed');
       }
 
-      const data = await response.json();
-      message.success('Registration successful!');
+      
+
+      const data = await response.data;
+      if (data.success) {
+        messageApi.open({
+          type: 'success',
+          content: '등록이 완료되었습니다.',
+        });
+      } else {
+        messageApi.open({
+          type: 'error',
+          content: '이미 등록된 정보입니다.',
+        });
+      }
       console.log('Server response:', data);
       form.resetFields();
       setModalVisible(false);
     } catch (error) {
-      message.error(error.message || 'Something went wrong');
+      messageApi.open({
+        type: 'warning',
+        content: '아이디가 존재하지 않습니다.',
+      });
       console.error('Error:', error);
     } finally {
       setLoading(false);
@@ -48,6 +58,7 @@ function NavBar() {
 
   return (
     <>
+      {contextHolder}
       <nav className="menu">
         <div className="menu__logo">
           <a href="/">
@@ -101,10 +112,10 @@ function NavBar() {
           >
             <Select placeholder="Select your local">
               <Option value={1}>서울</Option>
-              <Option value={2}>대전</Option>
-              <Option value={3}>구미</Option>
-              <Option value={4}>광주</Option>
-              <Option value={5}>부울경</Option>
+              <Option value={2}>데전</Option>
+              <Option value={3}>교미</Option>
+              <Option value={4}>굉주</Option>
+              <Option value={5}>부울겅</Option>
             </Select>
           </Form.Item>
 
