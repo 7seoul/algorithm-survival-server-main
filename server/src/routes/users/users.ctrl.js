@@ -69,7 +69,7 @@ const post = {
 
       if (solvedacData.tier === undefined || solvedacData.cnt === undefined) {
         return res.status(200).json({
-          success: flase,
+          success: false,
           message: "정보를 불러오는데 실패했습니다.",
         });
       }

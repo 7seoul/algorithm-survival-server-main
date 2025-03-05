@@ -28,27 +28,25 @@ function NavBar() {
         throw new Error('Registration failed');
       }
 
-      
-
       const data = await response.data;
       if (data.success) {
         messageApi.open({
           type: 'success',
           content: '등록이 완료되었습니다.',
         });
+        form.resetFields();
+        setModalVisible(false);
       } else {
         messageApi.open({
-          type: 'error',
-          content: '이미 등록된 정보입니다.',
+          type: 'warning',
+          content: data.message,
         });
       }
-      console.log('Server response:', data);
-      form.resetFields();
-      setModalVisible(false);
+      // console.log('Server response:', data);
     } catch (error) {
       messageApi.open({
-        type: 'warning',
-        content: '아이디가 존재하지 않습니다.',
+        type: 'error',
+        content: error,
       });
       console.error('Error:', error);
     } finally {
@@ -90,30 +88,30 @@ function NavBar() {
           initialValues={{ local: 1 }}
         >
           <Form.Item
-            label="Name"
+            label="이름"
             name="name"
             rules={[{ required: true, message: 'Please input your name!' }]}
           >
-            <Input placeholder="Enter your name" />
+            <Input placeholder="이름을 입력해 주세요." />
           </Form.Item>
 
           <Form.Item
-            label="Handle"
+            label="백준 ID"
             name="handle"
             rules={[{ required: true, message: 'Please input your handle!' }]}
           >
-            <Input placeholder="Enter your handle" />
+            <Input placeholder="백준 아이디를 입력해 주세요." />
           </Form.Item>
 
           <Form.Item
-            label="Local"
+            label="지역"
             name="local"
-            rules={[{ required: true, message: 'Please select your local!' }]}
+            rules={[{ required: true, message: '지역을 등록해주세요.' }]}
           >
             <Select placeholder="Select your local">
               <Option value={1}>서울</Option>
               <Option value={2}>데전</Option>
-              <Option value={3}>교미</Option>
+              <Option value={3}>구밍</Option>
               <Option value={4}>굉주</Option>
               <Option value={5}>부울겅</Option>
             </Select>

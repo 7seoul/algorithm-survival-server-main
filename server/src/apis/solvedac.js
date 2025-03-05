@@ -23,11 +23,12 @@ const scrapSolvedac = async (handle) => {
         totalProblems += parseInt(problems, 10); // 숫자로 변환 후 합산
       }
     });
-
+    
     const userProfile = {
       tier: utils.tierList[tier],
       cnt: totalProblems,
     };
+
     return userProfile;
   } catch (error) {
     console.error("Failed to scrapSolvedac:", error);
