@@ -8,7 +8,7 @@ let interval = 0;
 async function loadUsersFromDB() {
   try {
     const users = await User.find({}).select("-_id handle");
-    console.log(users);
+    // console.log(users);
     return users;
   } catch (error) {
     console.error(`Error loading user:`, error.message);
@@ -39,7 +39,7 @@ function startUpdating() {
   if (interval) return; // 이미 실행 중이면 중복 실행 방지
 
   // interval = setInterval(updateUser, 7100); // 서비스 용
-  interval = setInterval(updateUser, 10000); // 개발 용
+  interval = setInterval(updateUser, 100000); // 개발 용
   console.log("User update process started!");
 }
 
