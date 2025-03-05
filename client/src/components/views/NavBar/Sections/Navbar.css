@@ -37,6 +37,9 @@
   padding: 0 2px;
   min-width: 70px;
   text-align: center;
+  height: 100%; /* 부모 높이에 맞춤 */
+  line-height: 80px;
+  position: relative; /* 하이라이트 위치 제어를 위해 */
 }
 
 .menu__container .ant-menu-submenu-title {
@@ -45,8 +48,10 @@
 
 .menu__container .ant-menu-item a,
 .menu__container .ant-menu-submenu-title a {
-  padding: 10px 12px;
+  padding: 0 12px;
   display: block;
+  height: 100%;
+  line-height: 80px;
 }
 
 .menu__container .ant-menu-horizontal {
@@ -54,14 +59,25 @@
   display: flex;
   align-items: center;
   white-space: nowrap;
-  /* overflow-x: auto 제거 (이전 요청 반영) */
+  height: 100%; /* 부모 높이에 맞춤 */
+  position: relative; /* 하이라이트 위치 제어를 위해 */
+}
+
+/* 하이라이트 스타일 근본적 재정의 */
+.menu__container .ant-menu-item-selected::after,
+.menu__container .ant-menu-item-active::after {
+  content: '';
+  position: absolute;
+  bottom: 5px; /* 하단에서 5px 위로 (너무 밑으로 가지 않게) */
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #1890ff;
+  transform: none;
+  border-bottom: none;
 }
 
 .menu__container .menu_left {
-  float: none;
-}
-
-.menu__container .menu_right {
   float: none;
 }
 
@@ -70,6 +86,8 @@
   .menu__container .ant-menu-submenu-title {
     padding: 1px 8px;
     min-width: 60px;
+    height: 100%;
+    line-height: 80px;
   }
 
   .menu__logo a {
@@ -78,5 +96,5 @@
 }
 
 body {
-  margin-top: 60px;
+  margin-top: 80px;
 }
