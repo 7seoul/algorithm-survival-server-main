@@ -10,6 +10,8 @@ const scrapSolvedac = async (handle) => {
     const $ = cheerio.load(response.data);
     const tier = $("img.css-19222jw").first().attr("alt");
     const targetLevels = ["Silver", "Gold", "Platinum", "Diamond", "Ruby"]; // 합산할 레벨
+    const imgTag = $("img.css-1q631t7").first();
+    const imgSrc = imgTag.attr("src");
 
     let totalProblems = 0;
     $("table tbody tr").each((i, row) => {
@@ -23,10 +25,11 @@ const scrapSolvedac = async (handle) => {
         totalProblems += parseInt(problems, 10); // 숫자로 변환 후 합산
       }
     });
-    
+
     const userProfile = {
       tier: utils.tierList[tier],
       cnt: totalProblems,
+      imgSrc: imgSrc,
     };
 
     return userProfile;

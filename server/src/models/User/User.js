@@ -25,6 +25,9 @@ const userSchema = mongoose.Schema({
   tier: {
     type: Number,
   },
+  imgSrc: {
+    type: String,
+  },
 });
 
 const User = mongoose.model("User", userSchema);

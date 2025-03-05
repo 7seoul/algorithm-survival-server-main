@@ -86,6 +86,7 @@ const post = {
         tier: solvedacData.tier,
         startCnt: solvedacData.cnt,
         curCnt: solvedacData.cnt,
+        imgSrc: solvedacData.imgSrc,
       };
 
       const user = await new User(userData);
