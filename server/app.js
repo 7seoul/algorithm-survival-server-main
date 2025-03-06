@@ -1,8 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const cors = require('cors');
-const cron = require('node-cron');
+const cors = require("cors");
+const cron = require("node-cron");
 
 const app = express();
 dotenv.config();
@@ -15,7 +15,7 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((e) => console.log("MongoDB error: ", e));
 
-  app.use(cors())
+app.use(cors());
 
 // 유저 정보 자동 업데이트
 const update = require("./src/services/update");
@@ -23,7 +23,7 @@ update.init();
 
 // 06시 부터 유저 생존 여부 업데이트
 const survival = require("./src/services/survival");
-cron.schedule('0 6 * * *', survival.start);
+cron.schedule("0 6 * * *", survival.start);
 
 const users = require("./src/routes/users");
 app.use("/api/v1/users", users);

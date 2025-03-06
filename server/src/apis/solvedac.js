@@ -10,8 +10,13 @@ const scrapSolvedac = async (handle) => {
     const $ = cheerio.load(response.data);
     const tier = $("img.css-19222jw").first().attr("alt");
     const targetLevels = ["Silver", "Gold", "Platinum", "Diamond", "Ruby"]; // 합산할 레벨
+
+    // 프로필 사진
     const imgTag = $("img.css-1q631t7").first();
     const imgSrc = imgTag.attr("src");
+
+    // bio
+    const bio = $("p").text().trim() || "";
 
     let totalProblems = 0;
     $("table tbody tr").each((i, row) => {
@@ -30,6 +35,7 @@ const scrapSolvedac = async (handle) => {
       tier: utils.tierList[tier],
       cnt: totalProblems,
       imgSrc: imgSrc,
+      bio: bio,
     };
 
     return userProfile;
@@ -49,7 +55,7 @@ const getSolvedacProfile = async (handle) => {
 
     const profile = response.data;
 
-    return profile.tier;
+    return profile;
   } catch (error) {
     console.error("Failed to getSolvedacProfile:", error);
     throw new Error("Invalid data");
@@ -68,6 +74,7 @@ const getSolvedacProblem = async (handle) => {
     );
     const problems = response.data;
     let cnt = 0;
+    // 난이도 6부터 반영
     for (let i = 6; i < problems.length; i++) {
       cnt += problems[i].solved;
     }

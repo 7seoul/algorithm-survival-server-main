@@ -16,7 +16,9 @@ async function loadUsersFromDB() {
 }
 
 async function updateUser() {
-  console.log(`UPDATE USER : Current User Queue : ${currentIndex + 1}/${userQueue.length}`);
+  console.log(
+    `UPDATE USER : Current User Queue : ${currentIndex + 1}/${userQueue.length}`
+  );
   if (userQueue.length === 0) {
     console.log("UPDATE USER : No users to update.");
     return;
@@ -25,12 +27,18 @@ async function updateUser() {
   const user = userQueue[currentIndex];
 
   try {
-    const apiCnt = await solvedac.getSolvedacProblem(user.handle);
-    const apiTier = await solvedac.getSolvedacProfile(user.handle);
+    const problemApiData = await solvedac.getSolvedacProblem(user.handle);
+    const profileApiData = await solvedac.getSolvedacProfile(user.handle);
 
     User.findOneAndUpdate(
       { _id: user._id },
-      { $set: { curCnt: apiCnt, tier: apiTier } }
+      {
+        $set: {
+          curCnt: problemApiData,
+          tier: profileApiData.tier,
+          bio: profileApiData.bio,
+        },
+      }
     )
       .then(() => {
         console.log(`UPDATE USER : User "${user.handle}" updated`);
@@ -39,7 +47,10 @@ async function updateUser() {
         console.error(`UPDATE USER : Error updating user ${user.handle}:`, err);
       });
   } catch (error) {
-    console.error(`UPDATE USER : Error updating user ${user.handle}:`, error.message);
+    console.error(
+      `UPDATE USER : Error updating user ${user.handle}:`,
+      error.message
+    );
   }
 
   currentIndex = (currentIndex + 1) % userQueue.length;
@@ -49,7 +60,7 @@ function startUpdating() {
   if (interval) return; // 이미 실행 중이면 중복 실행 방지
 
   // interval = setInterval(updateUser, 7100); // 서비스 용
-  interval = setInterval(updateUser, 100000); // 개발 용
+  interval = setInterval(updateUser, 1000000); // 개발 용
   console.log("UPDATE USER : User update process started!");
 }
 

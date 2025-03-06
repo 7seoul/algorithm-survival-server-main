@@ -88,6 +88,7 @@ const post = {
         saveCnt: solvedacData.cnt,
         curCnt: solvedacData.cnt,
         imgSrc: solvedacData.imgSrc,
+        bio: solvedacData.bio,
       };
 
       const user = await new User(userData);

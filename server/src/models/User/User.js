@@ -31,6 +31,9 @@ const userSchema = mongoose.Schema({
   imgSrc: {
     type: String,
   },
+  bio: {
+    type: String,
+  },
 });
 
 const User = mongoose.model("User", userSchema);
