@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Table, Pagination } from 'antd';
-import './RankingPage.css';
+import React, { useState } from "react";
+import { Table, Pagination } from "antd";
+import "./RankingPage.css";
 
 const RankingPage = ({ users, loading }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -11,32 +11,32 @@ const RankingPage = ({ users, loading }) => {
     2: "대전",
     3: "구미",
     4: "광주",
-    5: "부울경"
+    5: "부울경",
   };
 
   const columns = [
     {
-      title: '순위',
-      dataIndex: 'rank',
-      key: 'rank',
+      title: "순위",
+      dataIndex: "rank",
+      key: "rank",
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
-      width: '10%',
+      width: "10%",
     },
     {
-      title: '티어 & 이름',
-      key: 'tierName',
+      title: "티어 & 이름",
+      key: "tierName",
       render: (_, record) => (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <a 
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <a
             href={`https://solved.ac/profile/${record.handle}`}
             target="_blank"
             rel="noopener noreferrer"
             className="tier-link"
           >
-            <img 
+            <img
               src={`https://static.solved.ac/tier_small/${record.tier}.svg`}
               alt={`Tier ${record.tier}`}
-              style={{ width: "20px", height: "20px", marginRight: "8px" }}
+              style={{ width: "20px", height: "20px", marginRight: "2px" }}
             />
           </a>
           <a
@@ -45,24 +45,24 @@ const RankingPage = ({ users, loading }) => {
             rel="noopener noreferrer"
             className="name-link"
           >
-            <span style={{ fontWeight: 'bold' }}>{record.name}</span>
+            <span style={{ fontWeight: "bold" }}>{record.name}</span>
           </a>
         </div>
       ),
-      width: '35%',
+      width: "35%",
     },
     {
-      title: '지역',
-      dataIndex: 'local',
-      key: 'local',
+      title: "지역",
+      dataIndex: "local",
+      key: "local",
       render: (local) => localMap[local] || local,
-      width: '20%',
+      width: "20%",
     },
     {
-      title: '점수',
-      key: 'score',
+      title: "점수",
+      key: "score",
       render: (_, record) => record.curCnt - record.startCnt,
-      width: '15%',
+      width: "15%",
     },
   ];
 
@@ -70,7 +70,9 @@ const RankingPage = ({ users, loading }) => {
     setCurrentPage(page);
   };
 
-  const sortedUsers = [...users].sort((a, b) => (b.curCnt - b.startCnt) - (a.curCnt - a.startCnt));
+  const sortedUsers = [...users].sort(
+    (a, b) => b.curCnt - b.startCnt - (a.curCnt - a.startCnt)
+  );
   const paginatedData = sortedUsers.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
@@ -94,7 +96,7 @@ const RankingPage = ({ users, loading }) => {
             total={users.length}
             pageSize={pageSize}
             onChange={handlePageChange}
-            style={{ marginTop: 16, textAlign: 'center' }}
+            style={{ marginTop: 16, textAlign: "center" }}
             showSizeChanger={false}
           />
         )}
