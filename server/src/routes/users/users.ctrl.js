@@ -67,7 +67,12 @@ const post = {
 
       console.log(solvedacData);
 
-      if (solvedacData.tier === undefined || solvedacData.cnt === undefined) {
+      if (
+        solvedacData.tier === undefined ||
+        solvedacData.cnt === undefined ||
+        solvedacData.imgSrc === undefined ||
+        solvedacData.bio === undefined
+      ) {
         return res.status(200).json({
           success: false,
           message: "정보를 불러오는데 실패했습니다.",

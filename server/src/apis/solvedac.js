@@ -27,7 +27,7 @@ const scrapSolvedac = async (handle) => {
     });
 
     const html = await page.content();
-    const $ = require("cheerio").load(html);
+    const $ = cheerio.load(html);
 
     // 티어
     const tier = $("img.css-19222jw").first().attr("alt") || "";
@@ -60,7 +60,7 @@ const scrapSolvedac = async (handle) => {
     });
 
     const userProfile = {
-      tier: utils.tierList[tier] || tier,
+      tier: utils.tierList[tier],
       cnt: totalProblems,
       imgSrc: imgSrc,
       bio: bio,
