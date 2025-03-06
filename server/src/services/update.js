@@ -7,7 +7,7 @@ let interval = 0;
 
 async function loadUsersFromDB() {
   try {
-    const users = await User.find({}).select("-_id handle");
+    const users = await User.find({}, "handle");
     // console.log(users);
     return users;
   } catch (error) {
@@ -27,7 +27,17 @@ async function updateUser() {
   try {
     const apiCnt = await solvedac.getSolvedacProblem(user.handle);
     const apiTier = await solvedac.getSolvedacProfile(user.handle);
-    console.log(`User "${user.handle}" updated`);
+
+    User.findOneAndUpdate(
+      { _id: user._id },
+      { $set: { curCnt: apiCnt, tier: apiTier } }
+    )
+      .then(() => {
+        console.log(`User "${user.handle}" updated`);
+      })
+      .catch((err) => {
+        console.error(`Error updating user ${user.handle}:`, err);
+      });
   } catch (error) {
     console.error(`Error updating user ${user.handle}:`, error.message);
   }
