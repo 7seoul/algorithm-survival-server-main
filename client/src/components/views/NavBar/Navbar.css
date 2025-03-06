@@ -1,0 +1,68 @@
+/* Sections/Navbar.css */
+.menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #f0f2f5;
+}
+
+.menu__logo a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #000;
+  font-size: 18px;
+  font-weight: bold;
+  white-space: nowrap; /* 텍스트가 두 줄로 나뉘지 않도록 */
+}
+
+.logo-text {
+  white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
+  margin-right: 30px;
+}
+
+.menu__container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.menu_left {
+  margin-right: auto;
+}
+
+/* 탭 스타일 조정 */
+.menu_left .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.menu_left .ant-tabs-tab {
+  padding: 8px 40px;
+}
+
+.menu_left .ant-tabs-tab:hover,
+.menu_left .ant-tabs-tab-active {
+  color: #1890ff;
+}
+
+/* 작은 화면에서도 가로 유지 */
+@media (max-width: 768px) {
+  .menu {
+    flex-wrap: nowrap;
+  }
+  
+  .menu__container {
+    flex-shrink: 0;
+  }
+  
+  .menu_left .ant-tabs-nav {
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* 작은 화면에서 로고 텍스트 크기 조정 */
+  .menu__logo a {
+    font-size: 16px;
+  }
+}

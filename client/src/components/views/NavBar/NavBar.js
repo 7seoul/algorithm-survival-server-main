@@ -1,18 +1,24 @@
 import React, { useState } from 'react';
-import LeftMenu from './Sections/LeftMenu';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { CodeFilled } from '@ant-design/icons';
-import { Button, Modal, Form, Input, Select, message } from 'antd';
+import { Button, Modal, Form, Input, Select, message, Tabs } from 'antd';
 import axios from 'axios';
 import 'antd/dist/reset.css';
-import './Sections/Navbar.css';
+import './Navbar.css';
 
 const { Option } = Select;
+const { TabPane } = Tabs;
 
 function NavBar() {
   const [messageApi, contextHolder] = message.useMessage();
   const [modalVisible, setModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation(); // 현재 URL 가져오기
+
+  // 현재 경로에 따라 활성 탭 결정
+  const activeKey = location.pathname === '/ranking' ? 'ranking' : 'home';
 
   const showModal = () => setModalVisible(true);
   const handleCancel = () => {
@@ -42,7 +48,6 @@ function NavBar() {
           content: data.message,
         });
       }
-      // console.log('Server response:', data);
     } catch (error) {
       messageApi.open({
         type: 'error',
@@ -54,21 +59,30 @@ function NavBar() {
     }
   };
 
+  const handleTabChange = (key) => {
+    if (key === 'home') {
+      navigate('/');
+    } else if (key === 'ranking') {
+      navigate('/ranking');
+    }
+  };
+
   return (
     <>
       {contextHolder}
       <nav className="menu">
         <div className="menu__logo">
-          <a href="/">
+          <Link to="/">
             <CodeFilled style={{ fontSize: '24px', marginRight: '8px' }} />
-            Algorithm Survival
-          </a>
+            <span className="logo-text">Algorithm Survival</span>
+          </Link>
         </div>
         <div className="menu__container">
-          <div className="menu_left">
-            <LeftMenu mode="horizontal" />
-          </div>
-          <Button type="primary" onClick={showModal} style={{ marginLeft: '10px' }}>
+          <Tabs activeKey={activeKey} onChange={handleTabChange} className="menu_left">
+            <TabPane tab="Home" key="home" />
+            <TabPane tab="Ranking" key="ranking" />
+          </Tabs>
+          <Button type="primary" onClick={showModal} style={{ marginLeft: 'auto' }}>
             Register
           </Button>
         </div>
@@ -110,10 +124,10 @@ function NavBar() {
           >
             <Select placeholder="Select your local">
               <Option value={1}>서울</Option>
-              <Option value={2}>데전</Option>
-              <Option value={3}>구밍</Option>
-              <Option value={4}>굉주</Option>
-              <Option value={5}>부울겅</Option>
+              <Option value={2}>대전</Option>
+              <Option value={3}>구미</Option>
+              <Option value={4}>광주</Option>
+              <Option value={5}>부울경</Option>
             </Select>
           </Form.Item>
 
