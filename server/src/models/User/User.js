@@ -19,6 +19,9 @@ const userSchema = mongoose.Schema({
   startCnt: {
     type: Number,
   },
+  saveCnt: {
+    type: Number,
+  },
   curCnt: {
     type: Number,
   },

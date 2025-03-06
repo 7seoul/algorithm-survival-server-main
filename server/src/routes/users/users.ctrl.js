@@ -85,6 +85,7 @@ const post = {
         survival: true,
         tier: solvedacData.tier,
         startCnt: solvedacData.cnt,
+        saveCnt: solvedacData.cnt,
         curCnt: solvedacData.cnt,
         imgSrc: solvedacData.imgSrc,
       };

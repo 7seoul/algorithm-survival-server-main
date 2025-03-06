@@ -11,14 +11,14 @@ async function loadUsersFromDB() {
     // console.log(users);
     return users;
   } catch (error) {
-    console.error(`Error loading user:`, error.message);
+    console.error(`UPDATE USER : Error loading user:`, error.message);
   }
 }
 
 async function updateUser() {
-  console.log(`Current User Queue : ${currentIndex + 1}/${userQueue.length}`);
+  console.log(`UPDATE USER : Current User Queue : ${currentIndex + 1}/${userQueue.length}`);
   if (userQueue.length === 0) {
-    console.log("No users to update.");
+    console.log("UPDATE USER : No users to update.");
     return;
   }
 
@@ -33,13 +33,13 @@ async function updateUser() {
       { $set: { curCnt: apiCnt, tier: apiTier } }
     )
       .then(() => {
-        console.log(`User "${user.handle}" updated`);
+        console.log(`UPDATE USER : User "${user.handle}" updated`);
       })
       .catch((err) => {
-        console.error(`Error updating user ${user.handle}:`, err);
+        console.error(`UPDATE USER : Error updating user ${user.handle}:`, err);
       });
   } catch (error) {
-    console.error(`Error updating user ${user.handle}:`, error.message);
+    console.error(`UPDATE USER : Error updating user ${user.handle}:`, error.message);
   }
 
   currentIndex = (currentIndex + 1) % userQueue.length;
@@ -50,17 +50,17 @@ function startUpdating() {
 
   // interval = setInterval(updateUser, 7100); // 서비스 용
   interval = setInterval(updateUser, 100000); // 개발 용
-  console.log("User update process started!");
+  console.log("UPDATE USER : User update process started!");
 }
 
 function addUserInQueue(handle) {
   userQueue.push({ handle: handle });
-  console.log(`New user "${handle}" added!`);
+  console.log(`UPDATE USER : New user "${handle}" added!`);
 }
 
 async function init() {
   userQueue = await loadUsersFromDB();
-  console.log(`Loaded ${userQueue.length} users from DB.`);
+  console.log(`UPDATE USER : Loaded ${userQueue.length} users from DB.`);
   startUpdating();
 }
 
