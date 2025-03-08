@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { CodeFilled } from '@ant-design/icons';
-import { Button, Modal, Form, Input, Select, message, Tabs } from 'antd';
-import axios from 'axios';
-import 'antd/dist/reset.css';
-import './Navbar.css';
+import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { CodeFilled } from "@ant-design/icons";
+import { Button, Modal, Form, Input, Select, message, Tabs } from "antd";
+import axios from "axios";
+import "antd/dist/reset.css";
+import "./Navbar.css";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -15,10 +15,9 @@ function NavBar() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); // 현재 URL 가져오기
+  const location = useLocation();
 
-  // 현재 경로에 따라 활성 탭 결정
-  const activeKey = location.pathname === '/ranking' ? 'ranking' : 'home';
+  const activeKey = location.pathname === "/ranking" ? "ranking" : "home";
 
   const showModal = () => setModalVisible(true);
   const handleCancel = () => {
@@ -29,41 +28,44 @@ function NavBar() {
   const onFinish = async (userData) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/v1/users/register', userData);
+      const response = await axios.post(
+        "http://localhost:5000/api/v1/users/register",
+        userData
+      );
       if (response.status !== 200) {
-        throw new Error('Registration failed');
+        throw new Error("Registration failed");
       }
 
       const data = await response.data;
       if (data.success) {
         messageApi.open({
-          type: 'success',
-          content: '등록이 완료되었습니다.',
+          type: "success",
+          content: "등록이 완료되었습니다.",
         });
         form.resetFields();
         setModalVisible(false);
       } else {
         messageApi.open({
-          type: 'warning',
+          type: "warning",
           content: data.message,
         });
       }
     } catch (error) {
       messageApi.open({
-        type: 'error',
+        type: "error",
         content: error,
       });
-      console.error('Error:', error);
+      console.error("Error:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleTabChange = (key) => {
-    if (key === 'home') {
-      navigate('/');
-    } else if (key === 'ranking') {
-      navigate('/ranking');
+    if (key === "home") {
+      navigate("/");
+    } else if (key === "ranking") {
+      navigate("/ranking");
     }
   };
 
@@ -73,18 +75,24 @@ function NavBar() {
       <nav className="menu">
         <div className="menu__logo">
           <Link to="/">
-            <CodeFilled style={{ fontSize: '24px', marginRight: '8px' }} />
+            <CodeFilled style={{ fontSize: "24px", marginRight: "8px" }} />
             <span className="logo-text">Algorithm Survival</span>
           </Link>
         </div>
         <div className="menu__container">
-          <Tabs activeKey={activeKey} onChange={handleTabChange} className="menu_left">
+          <Tabs
+            activeKey={activeKey}
+            onChange={handleTabChange}
+            className="menu_left"
+          >
             <TabPane tab="Home" key="home" />
             <TabPane tab="Ranking" key="ranking" />
           </Tabs>
-          <Button type="primary" onClick={showModal} style={{ marginLeft: 'auto' }}>
-            Register
-          </Button>
+          <div className="menu_right">
+            <Button type="primary" onClick={showModal}>
+              Register
+            </Button>
+          </div>
         </div>
       </nav>
 
@@ -104,7 +112,7 @@ function NavBar() {
           <Form.Item
             label="이름"
             name="name"
-            rules={[{ required: true, message: 'Please input your name!' }]}
+            rules={[{ required: true, message: "Please input your name!" }]}
           >
             <Input placeholder="이름을 입력해 주세요." />
           </Form.Item>
@@ -112,7 +120,7 @@ function NavBar() {
           <Form.Item
             label="백준 ID"
             name="handle"
-            rules={[{ required: true, message: 'Please input your handle!' }]}
+            rules={[{ required: true, message: "Please input your handle!" }]}
           >
             <Input placeholder="백준 아이디를 입력해 주세요." />
           </Form.Item>
@@ -120,7 +128,7 @@ function NavBar() {
           <Form.Item
             label="지역"
             name="local"
-            rules={[{ required: true, message: '지역을 등록해주세요.' }]}
+            rules={[{ required: true, message: "지역을 등록해주세요." }]}
           >
             <Select placeholder="Select your local">
               <Option value={1}>서울</Option>
