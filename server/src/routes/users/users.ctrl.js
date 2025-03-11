@@ -64,8 +64,6 @@ const get = {
 const post = {
   register: async (req, res) => {
     try {
-      // 테스트용 컬렉션 초기화
-      // await User.deleteMany({});
       const existingUser = await User.findOne({ handle: req.body.handle });
 
       if (existingUser) {
