@@ -4,25 +4,25 @@ import { SyncOutlined } from "@ant-design/icons";
 
 function UserModal({ visible, user, onClose, syncUserData }) {
   const [syncLoading, setSyncLoading] = useState(false);
-  const [messageApi, contextHolder] = message.useMessage(); // messageApi 생성
+  const [messageApi, contextHolder] = message.useMessage();
 
   const handleSync = async () => {
     if (!user) return;
 
     setSyncLoading(true);
     try {
-      await syncUserData(user.handle); // App.jsx에서 제공된 syncUserData 호출
+      await syncUserData(user.handle);
       messageApi.open({
         type: "success",
         content: "동기화가 완료되었습니다.",
-      }); // 성공 메시지
+      });
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "데이터 동기화 실패"; // 서버 메시지
+        error.response?.data?.message || "데이터 동기화 실패";
       messageApi.open({
         type: "warning",
         content: errorMessage,
-      }); // 실패 메시지
+      });
     } finally {
       setSyncLoading(false);
     }

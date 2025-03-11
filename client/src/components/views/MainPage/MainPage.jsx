@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Spin, Grid } from "antd";
 import CardList from "./CardList";
 import UserModal from "./UserModal";
@@ -8,10 +8,25 @@ import { localMap } from "./localMap";
 const { useBreakpoint } = Grid;
 
 function MainPage({ users, loading, syncUserData }) {
-  // syncUserData props 추가
   const screens = useBreakpoint();
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (selectedUser) {
+      const updatedUser = users.find(user => user.handle === selectedUser.handle);
+      if (updatedUser && (
+        updatedUser.curCnt !== selectedUser.curCnt || 
+        updatedUser.startCnt !== selectedUser.startCnt || 
+        updatedUser.local !== selectedUser.local
+      )) {
+        setSelectedUser({
+          ...updatedUser,
+          localName: localMap[updatedUser.local] || "미정"
+        });
+      }
+    }
+  }, [users, selectedUser]);
 
   const survivals = users
     .map((user) => ({ ...user, localName: localMap[user.local] || "미정" }))
@@ -21,7 +36,10 @@ function MainPage({ users, loading, syncUserData }) {
     .filter((user) => !user.survival);
 
   const handleCardClick = (user) => {
-    setSelectedUser(user);
+    setSelectedUser({
+      ...user,
+      localName: localMap[user.local] || "미정"
+    });
     setModalVisible(true);
   };
 
@@ -42,7 +60,7 @@ function MainPage({ users, loading, syncUserData }) {
             onCardClick={handleCardClick}
             cardWidth={getCardWidth(screens)}
           />
-          <h2>Game Over</h2>
+          <h2 style={{ marginTop: "40px" }}>Game Over</h2>
           {overs.length === 0 ? (
             <span>Nothing yet...</span>
           ) : (
@@ -59,7 +77,7 @@ function MainPage({ users, loading, syncUserData }) {
         visible={modalVisible}
         user={selectedUser}
         onClose={handleModalClose}
-        syncUserData={syncUserData} // syncUserData 전달
+        syncUserData={syncUserData}
       />
     </div>
   );
