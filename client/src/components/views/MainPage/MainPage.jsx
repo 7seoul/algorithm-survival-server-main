@@ -16,8 +16,8 @@ function MainPage({ users, loading, syncUserData }) {
     if (selectedUser) {
       const updatedUser = users.find(user => user.handle === selectedUser.handle);
       if (updatedUser && (
-        updatedUser.curCnt !== selectedUser.curCnt || 
-        updatedUser.startCnt !== selectedUser.startCnt || 
+        updatedUser.currentProblemCount !== selectedUser.currentProblemCount || 
+        updatedUser.initialProblemCount !== selectedUser.initialProblemCount || 
         updatedUser.local !== selectedUser.local
       )) {
         setSelectedUser({

@@ -61,7 +61,7 @@ const RankingPage = ({ users, loading }) => {
     {
       title: "점수",
       key: "score",
-      render: (_, record) => record.curCnt - record.startCnt,
+      render: (_, record) => record.currentProblemCount - record.initialProblemCount,
       width: "15%",
     },
   ];
@@ -71,7 +71,7 @@ const RankingPage = ({ users, loading }) => {
   };
 
   const sortedUsers = [...users].sort(
-    (a, b) => b.curCnt - b.startCnt - (a.curCnt - a.startCnt)
+    (a, b) => b.currentProblemCount - b.initialProblemCount - (a.currentProblemCount - a.initialProblemCount)
   );
   const paginatedData = sortedUsers.slice(
     (currentPage - 1) * pageSize,

@@ -80,7 +80,7 @@ function UserModal({ visible, user, onClose, syncUserData }) {
               {user.localName}
             </p>
             <p style={{ margin: "10px 0", fontSize: "16px" }}>
-              점수: {user.curCnt - user.startCnt}
+              점수: {user.currentProblemCount - user.initialProblemCount}
             </p>
             <p style={{ margin: "10px 0", fontSize: "14px", color: "#888" }}>
               {user.bio || "자기소개가 없습니다."}

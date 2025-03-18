@@ -42,7 +42,7 @@ function UserCard({ user, onCardClick, cardWidth }) {
           {user.localName}
         </p>
         <p style={{ margin: "5px 0", fontSize: "14px" }}>
-          점수: {user.curCnt - user.startCnt}
+          점수: {user.currentProblemCount - user.initialProblemCount}
         </p>
       </Card>
     </div>
