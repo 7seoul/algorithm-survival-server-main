@@ -1,6 +1,6 @@
-const { User } = require("../../models/User/User");
-const solvedac = require("../../apis/solvedac");
-const update = require("../../services/update");
+const { User } = require("../../../models/User/User");
+const solvedac = require("../../../apis/solvedac");
+const update = require("../../../services/update");
 
 const get = {
   stats: async (req, res) => {

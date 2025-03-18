@@ -25,7 +25,7 @@ update.init();
 const survival = require("./src/services/survival");
 cron.schedule("0 6 * * *", survival.start);
 
-const users = require("./src/routes/users");
+const users = require("./src/v1/routes/users");
 app.use("/api/v1/users", users);
 
 app.listen(port, () => {
