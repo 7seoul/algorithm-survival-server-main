@@ -34,7 +34,7 @@ async function updateUser() {
       { _id: user._id },
       {
         $set: {
-          curCnt: problemApiData,
+          currentProblemCount: problemApiData,
           tier: profileApiData.tier,
           bio: profileApiData.bio,
         },

@@ -20,7 +20,7 @@ const get = {
         { handle: req.query.handle },
         {
           tier: solvedacData.tier,
-          curCnt: solvedacData.cnt,
+          currentProblemCount: solvedacData.cnt,
           imgSrc: solvedacData.imgSrc,
           bio: solvedacData.bio,
         },
@@ -33,7 +33,7 @@ const get = {
           .json({ success: false, message: "User not found" });
       }
 
-      // startCnt를 포함한 전체 데이터를 반환
+      // initialProblemCount를 포함한 전체 데이터를 반환
       return res.status(200).json({
         success: true,
         user: updatedUser, // 업데이트된 사용자 정보
@@ -100,9 +100,9 @@ const post = {
         number: number + 1,
         survival: true,
         tier: solvedacData.tier,
-        startCnt: solvedacData.cnt,
-        saveCnt: solvedacData.cnt,
-        curCnt: solvedacData.cnt,
+        initialProblemCount: solvedacData.cnt,
+        dailyCheckpointCount: solvedacData.cnt,
+        currentProblemCount: solvedacData.cnt,
         imgSrc: solvedacData.imgSrc,
         bio: solvedacData.bio,
       };

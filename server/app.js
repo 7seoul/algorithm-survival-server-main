@@ -21,7 +21,7 @@ app.use(cors());
 const update = require("./src/services/update");
 update.init();
 
-// 06시 부터 유저 생존 여부 업데이트
+// 06시 마다 생존 업데이트
 const survival = require("./src/services/survival");
 cron.schedule("0 6 * * *", survival.start);
 

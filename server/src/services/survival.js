@@ -3,17 +3,17 @@ const { User } = require("../models/User/User");
 
 async function start() {
   try {
-    const users = await User.find({}, "handle saveCnt");
+    const users = await User.find({}, "handle dailyCheckpointCount");
     // console.log(users);
 
     for (let i = 0; i < users.length; ++i) {
       const user = users[i];
       const curData = solvedac.scrapSolvedac(user.handle);
-      const survival = (curData.cnt > user.saveCnt && user.survival);
+      const survival = (curData.cnt > user.dailyCheckpointCount && user.survival);
 
       User.findOneAndUpdate(
         { _id: user._id },
-        { $set: { curCnt: curData.cnt, tier: curData.tier, saveCnt: curData.cnt, survival: survival} }
+        { $set: { currentProblemCount: curData.cnt, tier: curData.tier, dailyCheckpointCount: curData.cnt, survival: survival} }
       )
       .then(() => {
         console.log(`CHECK SURVIVAL : User "${user.handle}" checked`);
