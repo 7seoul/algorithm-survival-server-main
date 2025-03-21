@@ -29,7 +29,7 @@ function NavBar() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/v1/users/register",
+        "http://localhost:8000/api/v1/users/register",
         userData
       );
       if (response.status !== 200) {

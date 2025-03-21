@@ -13,7 +13,7 @@ const App = () => {
     console.log("API 호출 됨");
     console.log(Date());
     axios
-      .get("http://localhost:5000/api/v1/users/all")
+      .get("http://localhost:8000/api/v1/users/all")
       .then((response) => {
         if (response.data.success) {
           setUsers(response.data.users);
@@ -27,7 +27,7 @@ const App = () => {
   const syncUserData = async (handle) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/v1/users/stats?handle=${handle}`
+        `http://localhost:8000/api/v1/users/stats?handle=${handle}`
       );
       if (response.data.success) {
         setUsers((prevUsers) =>
