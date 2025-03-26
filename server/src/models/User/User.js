@@ -24,10 +24,6 @@ const userSchema = mongoose.Schema({
       ref: 'Group',
     },
   ],
-  local: {
-    type: Number,
-    default: 0,
-  },
   initialProblemCount: {
     type: Number,
     default: 0,
