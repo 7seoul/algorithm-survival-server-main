@@ -8,7 +8,7 @@
     "nodemon": "^3.1.9"
   },
   "scripts": {
-    "backend": "nodemon server/app.js",
+    "backend": "nodemon server/server.js",
     "frontend": "npm run start --prefix client",
     "dev": "concurrently \"npm run backend\" \"npm run start --prefix client\"",
     "install-all": "npm install && npm install --prefix client && npm install --prefix server"

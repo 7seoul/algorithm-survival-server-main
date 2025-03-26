@@ -4,18 +4,18 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const cron = require("node-cron");
 
-const app = express();
 dotenv.config();
+const app = express();
 app.use(express.json());
+app.use(cors());
 
 const port = process.env.PORT;
 
+// MongoDB 연결
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((e) => console.log("MongoDB error: ", e));
-
-app.use(cors());
 
 // 유저 정보 자동 업데이트
 const update = require("./src/services/update");
@@ -23,11 +23,12 @@ update.init();
 
 // 06시 마다 생존 업데이트
 const survival = require("./src/services/survival");
-cron.schedule("0 6 * * *", survival.start);
+if (process.env.NODE_ENV !== "test") {
+  cron.schedule("0 6 * * *", survival.start);
+}
 
+// API 라우트 설정
 const users = require("./src/v1/routes/users");
 app.use("/api/v1/users", users);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+module.exports = app;
