@@ -33,10 +33,10 @@ describe("Users API", () => {
   it("PATCH /api/v2/users/:handle - 사용자 정보 수정", async () => {
     const res = await request(app)
       .patch(`/api/v2/users/${testHandle}`)
-      .send({ handle: testHandle });
+      .send({ name: "테스트 유저123" });
 
     expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("handle", testHandle);
+    expect(res.body.user).toHaveProperty("name", "테스트 유저123");
   });
 });
 

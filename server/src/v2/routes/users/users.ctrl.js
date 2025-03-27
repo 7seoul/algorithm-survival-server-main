@@ -14,7 +14,7 @@ const get = {
       console.log(error);
       return res
         .status(500)
-        .json({ success: false, error: "" });
+        .json({ success: false, error: "서버 오류 발생" });
     }
   },
   all: async (req, res) => {
@@ -28,7 +28,7 @@ const get = {
       console.log(error);
       return res
         .status(500)
-        .json({ success: false, error: "" });
+        .json({ success: false, error: "서버 오류 발생" });
     }
   },
 };
@@ -43,9 +43,29 @@ const post = {
 
 const patch = {
   edit: async (req, res) => {
-    return res.status(200).json({
-      success: true,
-    });
+    try {
+      const user = await User.findOneAndUpdate(
+        { handle: req.params.handle },
+        {
+          name: req.body.name,
+        },
+        { new: true }
+      );
+
+      if (!user) {
+        return res.status(404).json({ success: false, error: "사용자를 찾을 수 없습니다." });
+      }
+
+      return res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch {
+      console.log(error);
+      return res
+        .status(500)
+        .json({ success: false, error: "서버 오류 발생" });
+    }
   },
 };
 
