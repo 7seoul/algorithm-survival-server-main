@@ -1,9 +1,19 @@
 const request = require("supertest");
 const app = require("../app");
 const mongoose = require('mongoose');
+const { User } = require("../src/models/User/User");
+
 const testHandle = "gonudayo";
 
 describe("Users API", () => {
+
+  beforeAll(async () => {
+    try {
+      await User.deleteOne({ handle: testHandle });
+    } catch (error) {
+      console.log("삭제 실패")
+    }
+  });
 
   it("POST /api/v2/users - 새 사용자 생성", async () => {
     const res = await request(app).post("/api/v2/users").send({
@@ -13,7 +23,7 @@ describe("Users API", () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("handle", testHandle);
+    expect(res.body.user).toHaveProperty("handle", testHandle);
   });
 
   it("GET /api/v2/users - 모든 사용자 조회", async () => {
