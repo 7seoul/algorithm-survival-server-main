@@ -1,12 +1,10 @@
 const mongoose = require('mongoose');
 
 const groupSchema = mongoose.Schema({
+  _id: Number,
   groupName: {
     type: String,
     require: true,
-  },
-  groupId: {
-    type: String,
   },
   admin: {
     type: mongoose.Schema.Types.ObjectId,
