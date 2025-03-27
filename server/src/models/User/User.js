@@ -52,7 +52,7 @@ const userSchema = mongoose.Schema({
   tokenExp: {
     type: String,
   },
-  created: {
+  createdAt: {
     type: Date,
   },
 });

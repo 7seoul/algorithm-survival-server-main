@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const groupSchema = mongoose.Schema({
   groupName: {
     type: String,
-    unique: true,
     require: true,
+  },
+  groupId: {
+    type: String,
   },
   admin: {
     type: mongoose.Schema.Types.ObjectId,
@@ -32,7 +34,13 @@ const groupSchema = mongoose.Schema({
     type: Number,
     default: 0
   },
-  created: {
+  survivalStartDate: {
+    type: Date,
+  },
+  survivalEndDate: {
+    type: Date,
+  },
+  createdAt: {
     type: Date,
   },
 });

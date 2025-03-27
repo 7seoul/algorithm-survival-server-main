@@ -15,12 +15,12 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((e) => console.log("MongoDB error: ", e));
 
-// // API 라우트 설정 v1
-// const users = require("./src/v1/routes/users");
-// app.use("/api/v1/users", users);
+// API 라우트 설정 v1
+const usersV1 = require("./src/v1/routes/users");
+app.use("/api/v1/users", usersV1);
 
 // API 라우트 설정 v2
-const users = require("./src/v2/routes/users");
-app.use("/api/v2/users", users);
+const usersV2 = require("./src/v2/routes/users");
+app.use("/api/v2/users", usersV2);
 
 module.exports = app;

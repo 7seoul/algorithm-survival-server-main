@@ -62,7 +62,7 @@ const post = {
           });
         }
         
-        const created =  new Date().setHours(new Date().getHours() + 9);
+        const createdAt =  new Date().setHours(new Date().getHours() + 9);
         
         const userData = {
           name: req.body.name,
@@ -75,7 +75,7 @@ const post = {
           tier: solvedacData.tier,
           imgSrc: solvedacData.imgSrc,
           bio: solvedacData.bio,
-          created: created,
+          createdAt: createdAt,
         };
   
         const user = await new User(userData);
