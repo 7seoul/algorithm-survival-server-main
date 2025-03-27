@@ -27,7 +27,7 @@ describe("Users API", () => {
     const res = await request(app).get(`/api/v2/users/${testHandle}`);
 
     expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("handle", testHandle);
+    expect(res.body.user).toHaveProperty("handle", testHandle);
   });
 
   it("PATCH /api/v2/users/:handle - 사용자 정보 수정", async () => {

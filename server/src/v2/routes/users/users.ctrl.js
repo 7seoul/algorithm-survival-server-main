@@ -4,9 +4,18 @@ const update = require("../../../services/update");
 
 const get = {
   info: async (req, res) => {
-    return res.status(200).json({
-      success: true,
-    });
+    try {
+      const user = await User.findOne({ handle: req.params.handle }, "-_id -__v");
+      return res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({ success: false, error: "" });
+    }
   },
   all: async (req, res) => {
     try {
@@ -19,7 +28,7 @@ const get = {
       console.log(error);
       return res
         .status(500)
-        .json({ success: false, error: "Failed to update all" });
+        .json({ success: false, error: "" });
     }
   },
 };
