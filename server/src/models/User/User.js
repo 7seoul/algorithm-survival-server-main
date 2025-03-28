@@ -24,10 +24,6 @@ const userSchema = mongoose.Schema({
       ref: 'Group',
     },
   ],
-  local: {
-    type: Number,
-    default: 0,
-  },
   initialProblemCount: {
     type: Number,
     default: 0,
@@ -56,7 +52,7 @@ const userSchema = mongoose.Schema({
   tokenExp: {
     type: String,
   },
-  created: {
+  createdAt: {
     type: Date,
   },
 });

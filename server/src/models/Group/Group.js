@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const groupSchema = mongoose.Schema({
+  _id: Number,
   groupName: {
     type: String,
-    unique: true,
     require: true,
   },
   admin: {
@@ -32,7 +32,13 @@ const groupSchema = mongoose.Schema({
     type: Number,
     default: 0
   },
-  created: {
+  survivalStartDate: {
+    type: Date,
+  },
+  survivalEndDate: {
+    type: Date,
+  },
+  createdAt: {
     type: Date,
   },
 });
