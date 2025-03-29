@@ -3,12 +3,13 @@ const mongoose = require("mongoose");
 const userSchema = mongoose.Schema({
   name: {
     type: String,
-    require: true,
+    required: true,
   },
   handle: {
     type: String,
+    required: true,
     unique: true,
-    require: true,
+    index: true,
   },
   password: {
     type: String,
@@ -16,12 +17,12 @@ const userSchema = mongoose.Schema({
   },
   survival: {
     type: Boolean,
-    default: 1,
+    default: true,
   },
   joinedGroupList: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Group',
+      ref: "Group",
     },
   ],
   initialProblemCount: {
@@ -52,8 +53,19 @@ const userSchema = mongoose.Schema({
   tokenExp: {
     type: String,
   },
+  verificationCode: {
+    type: String,
+  },
+  verificationCodeExp: {
+    type: Date,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
+    default: Date.now,
   },
 });
 
