@@ -1,5 +1,4 @@
 const request = require("supertest");
-const mongoose = require("mongoose");
 const app = require("../app"); // 서버 파일
 const { User } = require("../src/models/User/User");
 const { Group } = require("../src/models/Group/Group");
@@ -43,9 +42,9 @@ describe("Groups API", () => {
         description: "Test group description",
         createdAt: new Date(),
       });
-      
+
       console.log("생성 완료");
-    } catch(error) {
+    } catch (error) {
       console.error("생성 중 오류 발생:", error);
     }
   });
@@ -78,7 +77,9 @@ describe("Groups API", () => {
   });
 
   test("GET /api/v2/groups/:groupId - 특정 그룹 정보 조회", async () => {
-    const res = await request(app).get(`/api/v2/groups/${group._id}`).expect(200);
+    const res = await request(app)
+      .get(`/api/v2/groups/${group._id}`)
+      .expect(200);
     expect(res.body.groupName).toBe("Test Group");
   });
 
