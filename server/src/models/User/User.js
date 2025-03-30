@@ -49,7 +49,7 @@ const userSchema = mongoose.Schema({
     type: String,
   },
   token: {
-    type: Number,
+    type: String,
   },
   verificationCode: {
     type: String,
@@ -76,12 +76,12 @@ userSchema.pre("save", async function (next) {
 });
 
 // 비밀번호 비교
-userSchema.methods.comparePassword = async function (plainPassword, cb) {
+userSchema.methods.comparePassword = async function (plainPassword) {
   return bcrypt.compare(plainPassword, this.password);
 };
 
 // 토큰 생성
-userSchema.methods.generateToken = async function (cb) {
+userSchema.methods.generateToken = async function () {
   this.token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
     expiresIn: "14d",
   });

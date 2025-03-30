@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const get = {
   me: async (req, res) => {
     try {
-      const handle = req.body.handle;
+      const handle = req.user.handle;
       const user = await User.findOne({ handle });
 
       if (!user) {
@@ -28,27 +28,42 @@ const post = {
     try {
       const user = await User.findOne({ handle: req.body.handle });
       if (!user) {
-        return res
-          .status(200)
-          .json({ success: false, message: "존재하지 않는 id 입니다." });
-      }
-      user.comparePassword(req.body.password, (err, isMatch) => {
-        if (!isMatch) {
-          return res.status(200).json({
-            success: false,
-            message: "비밀번호가 틀렸습니다.",
-          });
-        }
         return res.status(200).json({
-          success: true,
-          user,
+          success: false,
+          message: "존재하지 않는 id 입니다.",
         });
+      }
+
+      // 비밀번호 비교
+      const isMatch = await user.comparePassword(req.body.password);
+      if (!isMatch) {
+        return res.status(200).json({
+          success: false,
+          message: "비밀번호가 틀렸습니다.",
+        });
+      }
+
+      // 토큰 생성
+      await user.generateToken();
+
+      // 쿠키에 토큰 저장
+      res.cookie("token", user.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 14 * 24 * 60 * 60 * 1000,
+        sameSite: "Strict",
+      });
+
+      return res.status(200).json({
+        success: true,
+        user,
       });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ success: false, error: "서버 오류 발생" });
     }
   },
+
   register: async (req, res) => {
     try {
       const existingUser = await User.findOne({ handle: req.body.handle });
@@ -176,9 +191,23 @@ const post = {
   },
   logout: async (req, res) => {
     try {
+      const user = req.user;
+      user.token = null;
+      await user.save();
+
+      // 쿠키 삭제
+      res.clearCookie("token");
+
+      return res.status(200).json({
+        success: true,
+        message: "로그아웃 성공",
+      });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res.status(500).json({
+        success: false,
+        error: "서버 오류 발생",
+      });
     }
   },
 };
