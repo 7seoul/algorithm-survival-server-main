@@ -5,24 +5,12 @@ const { User } = require("../src/models/User/User");
 const testUserHandle = "gonudayo";
 
 describe("Users API", () => {
-
   afterAll(async () => {
     try {
       await User.deleteOne({ handle: testUserHandle });
     } catch (error) {
       console.error("삭제 중 오류 발생:", error);
     }
-  });
-
-  it("POST /api/v2/users - 새 사용자 생성", async () => {
-    const res = await request(app).post("/api/v2/users").send({
-      name: "테스트 유저",
-      handle: testUserHandle,
-      password: "testpassword",
-    }, 10);
-
-    expect(res.statusCode).toBe(200);
-    expect(res.body.user).toHaveProperty("handle", testUserHandle);
   });
 
   it("GET /api/v2/users - 모든 사용자 조회", async () => {

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const groupSchema = mongoose.Schema({
   _id: Number,
@@ -8,29 +8,25 @@ const groupSchema = mongoose.Schema({
   },
   admin: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
   },
   members: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
   ],
   description: {
     type: String,
     default: null,
   },
-  dailyProblemCount: {
+  tier: {
     type: Number,
-    default: 1,
-  },
-  dailyProblemDifficulty: {
-    type: Number,
-    default: 1,
+    default: 0,
   },
   score: {
     type: Number,
-    default: 0
+    default: 0,
   },
   survivalStartDate: {
     type: Date,
