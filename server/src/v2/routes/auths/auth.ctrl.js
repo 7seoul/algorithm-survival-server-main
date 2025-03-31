@@ -82,8 +82,9 @@ const post = {
       console.log(solvedacData);
 
       if (
+        solvedacData === undefined ||
         solvedacData.tier === undefined ||
-        solvedacData.cnt === undefined ||
+        solvedacData.solved === undefined ||
         solvedacData.imgSrc === undefined ||
         solvedacData.bio === undefined
       ) {
@@ -108,6 +109,8 @@ const post = {
           tier: solvedacData.tier,
           imgSrc: solvedacData.imgSrc,
           bio: solvedacData.bio,
+          isVerified: true,
+          createdAt: new Date(),
         },
         { new: true }
       );

@@ -42,26 +42,23 @@ const profile = async (handle) => {
     );
     const bio = bioElement.length > 0 ? bioElement.text().trim() : "";
 
-    // 합산할 레벨
-    const targetLevels = ["Silver", "Gold", "Platinum", "Diamond", "Ruby"];
-    let totalProblems = 0;
+    // href="/profile/gonudayo/solved"인 모든 a 태그 찾기
+    const hrefs = $('a[href="/profile/gonudayo/solved"]');
 
-    // 테이블에서 문제 개수 합산
-    $("table tbody tr").each((i, row) => {
-      const level = $(row).find("td:first-child b").text().trim();
-      if (targetLevels.includes(level)) {
-        const problems = $(row)
-          .find("td:nth-child(2) b")
-          .text()
-          .replace(/,/g, "")
-          .trim();
-        totalProblems += parseInt(problems, 10) || 0;
-      }
-    });
+    // 첫 번째 요소 선택
+    const firstLink = hrefs.first();
+
+    if (firstLink.length <= 0) {
+      console.error("profile 파싱 에러");
+      return;
+    }
+
+    const numberText = firstLink.find("b").text(); // 첫 번째 a 태그 안의 b 태그 텍스트
+    const solved = parseInt(numberText.replace(/,/g, ""), 10);
 
     const userProfile = {
       tier: utils.tierList[tier],
-      cnt: totalProblems,
+      solved: solved,
       imgSrc: imgSrc,
       bio: bio,
     };
@@ -100,10 +97,10 @@ const totalSolved = async (handle) => {
     const $ = cheerio.load(html);
 
     // href="/profile/gonudayo/solved"인 모든 a 태그 찾기
-    const links = $('a[href="/profile/gonudayo/solved"]');
+    const hrefs = $('a[href="/profile/gonudayo/solved"]');
 
     // 첫 번째 요소 선택
-    const firstLink = links.first();
+    const firstLink = hrefs.first();
 
     if (firstLink.length > 0) {
       const numberText = firstLink.find("b").text(); // 첫 번째 a 태그 안의 b 태그 텍스트
