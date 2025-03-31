@@ -27,9 +27,9 @@ describe("Users API", () => {
     expect(res.body.user).toHaveProperty("handle", testUserHandle);
   });
 
-  it("PATCH /api/v2/users/:handle - 사용자 정보 수정", async () => {
+  it("POST /api/v2/users/:handle - 사용자 정보 수정", async () => {
     const res = await request(app)
-      .patch(`/api/v2/users/${testUserHandle}`)
+      .post(`/api/v2/users/${testUserHandle}`)
       .send({ name: "테스트 유저123" });
 
     expect(res.statusCode).toBe(200);

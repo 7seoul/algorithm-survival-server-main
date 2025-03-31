@@ -1,5 +1,6 @@
 const { User } = require("../../../models/User/User");
 const solvedac = require("../../../apis/solvedac");
+const scrap = require("../../../apis/scrap");
 const update = require("../../../services/update");
 const bcrypt = require("bcrypt");
 
@@ -76,7 +77,7 @@ const post = {
       }
 
       // solved.ac 파싱
-      const solvedacData = await solvedac.scrapSolvedac(req.body.handle);
+      const solvedacData = await scrap.profile(req.body.handle);
 
       console.log(solvedacData);
 
@@ -167,7 +168,7 @@ const post = {
   },
   verify: async (req, res) => {
     try {
-      const profile = await solvedac.getSolvedacProfile(req.body.handle);
+      const profile = await solvedac.profile(req.body.handle);
       const user = await User.findOne({ handle: req.body.handle });
 
       console.log("sovledac :", profile.bio);

@@ -27,8 +27,8 @@ async function updateUser() {
   const user = userQueue[currentIndex];
 
   try {
-    const problemApiData = await solvedac.getSolvedacProblem(user.handle);
-    const profileApiData = await solvedac.getSolvedacProfile(user.handle);
+    const problemApiData = await solvedac.problem(user.handle);
+    const profileApiData = await solvedac.profile(user.handle);
 
     User.findOneAndUpdate(
       { _id: user._id },

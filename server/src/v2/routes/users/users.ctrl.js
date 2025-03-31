@@ -1,5 +1,6 @@
 const { User } = require("../../../models/User/User");
 const solvedac = require("../../../apis/solvedac");
+const scrap = require("../../../apis/scrap");
 const update = require("../../../services/update");
 
 const get = {
@@ -30,6 +31,18 @@ const get = {
       return res.status(500).json({ success: false, error: "서버 오류 발생" });
     }
   },
+  updateSolved: async (req, res) => {
+    try {
+      const solved = await scrap.totalSolved(req.params.handle);
+      return res.status(200).json({
+        success: true,
+        solved: solved,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+    }
+  },
 };
 
 const post = {
@@ -45,7 +58,7 @@ const post = {
       }
 
       // solved.ac 파싱
-      const solvedacData = await solvedac.scrapSolvedac(req.body.handle);
+      const solvedacData = await scrap.profile(req.body.handle);
 
       console.log(solvedacData);
 
