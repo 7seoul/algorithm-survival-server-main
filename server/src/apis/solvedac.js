@@ -87,6 +87,38 @@ const closeBrowser = async () => {
   }
 };
 
+const scrapTotalSolved = async (handle) => {
+  try {
+    // axios로 HTML 가져오기
+    const response = await axios.get(
+      encodeURI(`https://solved.ac/profile/${handle}`)
+    );
+
+    const html = response.data;
+
+    // cheerio로 HTML 파싱
+    const $ = cheerio.load(html);
+
+    // href="/profile/gonudayo/solved"인 모든 a 태그 찾기
+    const links = $('a[href="/profile/gonudayo/solved"]');
+
+    // 첫 번째 요소 선택
+    const firstLink = links.first();
+
+    if (firstLink.length > 0) {
+      const numberText = firstLink.find("b").text(); // 첫 번째 a 태그 안의 b 태그 텍스트
+      const solved = parseInt(numberText.replace(/,/g, ""), 10);
+      return solved;
+    }
+
+    console.log("해당 href를 가진 요소를 찾을 수 없습니다.");
+    return -1;
+  } catch (error) {
+    console.error("Failed to scrapTotalSolved:", error);
+    throw new Error("Invalid data");
+  }
+};
+
 const getSolvedacProfile = async (handle) => {
   try {
     const response = await axios.get("https://solved.ac/api/v3/user/show", {
@@ -128,8 +160,25 @@ const getSolvedacProblem = async (handle) => {
   }
 };
 
+const getSolvedacGrass = async (handle) => {
+  try {
+    const response = await axios.get("https://solved.ac/api/v3/user/grass", {
+      params: {
+        handle: handle,
+        topic: "today-solved",
+      },
+    });
+    console.log(problems);
+    const problems = response.data;
+  } catch (error) {
+    console.error("Failed to getSolvedacProblem:", error);
+    throw new Error("Invalid data");
+  }
+};
+
 module.exports = {
   scrapSolvedac,
   getSolvedacProfile,
   getSolvedacProblem,
+  scrapTotalSolved,
 };
