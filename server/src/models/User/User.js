@@ -16,25 +16,21 @@ const userSchema = mongoose.Schema({
     type: String,
     minlength: 4,
   },
-  survival: {
-    type: Boolean,
-    default: true,
-  },
   joinedGroupList: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Group",
     },
   ],
-  initialProblemCount: {
+  initialStreak: {
     type: Number,
     default: 0,
   },
-  dailyCheckpointCount: {
+  currentStreak: {
     type: Number,
     default: 0,
   },
-  currentProblemCount: {
+  solved: {
     type: Number,
     default: 0,
   },
@@ -63,7 +59,6 @@ const userSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
   },
 });
 

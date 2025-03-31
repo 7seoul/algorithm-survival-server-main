@@ -100,18 +100,18 @@ describe("Groups API", () => {
     expect(res.body.message).toBe("User accepted into the group");
   });
 
-  test("PATCH /api/v2/groups/:groupId - 그룹 정보 수정", async () => {
+  test("POST /api/v2/groups/:groupId - 그룹 정보 수정", async () => {
     const res = await request(app)
-      .patch(`/api/v2/groups/${group._id}`)
+      .post(`/api/v2/groups/${group._id}`)
       .send({ groupName: "Updated Test Group" })
       .expect(200);
 
     expect(res.body.groupName).toBe("Updated Test Group");
   });
 
-  test("DELETE /api/v2/groups/:groupId/applications/:userId - 신청 거절", async () => {
+  test("POST /api/v2/groups/:groupId/applications/:userId - 신청 거절", async () => {
     const res = await request(app)
-      .delete(`/api/v2/groups/${group._id}/applications/${memberUser._id}`)
+      .post(`/api/v2/groups/${group._id}/applications/${memberUser._id}`)
       .expect(200);
 
     expect(res.body.message).toBe("Application rejected");
