@@ -29,41 +29,39 @@ const profile = async (handle) => {
     const html = await page.content();
     const $ = cheerio.load(html);
 
-    // 티어
-    const tier = $("img.css-19222jw").first().attr("alt") || "";
+    // tier
+    const tier = $("img.css-19222jw").first().attr("alt") || undefined;
 
-    // 프로필 사진
-    const imgTag = $("img.css-1q631t7").first();
-    const imgSrc = imgTag.attr("src") || "";
+    // img
+    const imgSrc = $("img.css-1q631t7").first().attr("src") || undefined;
 
     // bio
-    const bioElement = $(
-      "#__next > div.css-1s1t70h > div.css-1948bce > div:nth-child(4) > p"
-    );
-    const bio = bioElement.length > 0 ? bioElement.text().trim() : "";
+    const bio = $("#__next > div.css-1s1t70h > div.css-1948bce > div:nth-child(4) > p")
+      .text()
+      .trim() || "";
 
-    // href="/profile/gonudayo/solved"인 모든 a 태그 찾기
-    const hrefs = $('a[href="/profile/gonudayo/solved"]');
+    // solved 
+    const solvedElement = $(`a[href="/profile/${handle}/solved"]`).first();
+    const solved = solvedElement.length > 0
+      ? parseInt(solvedElement.find("b").text().replace(/,/g, ""), 10)
+      : undefined;
 
-    // 첫 번째 요소 선택
-    const firstLink = hrefs.first();
-
-    if (firstLink.length <= 0) {
-      console.error("profile 파싱 에러");
-      return;
-    }
-
-    const numberText = firstLink.find("b").text(); // 첫 번째 a 태그 안의 b 태그 텍스트
-    const solved = parseInt(numberText.replace(/,/g, ""), 10);
+    // streak
+    const streakElement = $("#__next > div.css-axxp2y > div > div:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div > div > b");
+    const streakText = streakElement.text();
+    const streak = streakText
+      ? parseInt(streakText.replace(/,/g, ""), 10)
+      : undefined;
 
     const userProfile = {
-      tier: utils.tierList[tier],
+      tier: tier ? utils.tierList[tier] : undefined,
       solved: solved,
       imgSrc: imgSrc,
       bio: bio,
+      streak: streak,
     };
 
-    await page.close(); // 페이지만 닫기
+    await page.close();
     return userProfile;
   } catch (error) {
     console.error("Failed to profile:", error);

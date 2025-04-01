@@ -4,7 +4,7 @@ const groupSchema = mongoose.Schema({
   _id: Number,
   groupName: {
     type: String,
-    require: true,
+    required: true,
   },
   admin: {
     type: mongoose.Schema.Types.ObjectId,
@@ -16,6 +16,9 @@ const groupSchema = mongoose.Schema({
       ref: "User",
     },
   ],
+  downs: {
+    type: Object,
+  },
   description: {
     type: String,
     default: null,
@@ -28,13 +31,18 @@ const groupSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  survivalStartDate: {
-    type: Date,
+  perviousStreak: {
+    type: Number,
+    default: 0,
   },
-  survivalEndDate: {
-    type: Date,
+  currentStreak: {
+    type: Number,
+    default: 0,
   },
   createdAt: {
+    type: Date,
+  },
+  endedAt: {
     type: Date,
   },
 });
