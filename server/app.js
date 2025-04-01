@@ -21,4 +21,7 @@ app.use("/api/v2/auth", auth);
 const groups = require("./src/v2/routes/groups");
 app.use("/api/v2/groups", groups);
 
+const rankings = require("./src/v2/routes/rankings");
+app.use("/api/v2/rankings", rankings);
+
 module.exports = app;

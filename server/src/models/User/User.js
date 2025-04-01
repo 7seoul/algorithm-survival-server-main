@@ -22,7 +22,7 @@ const userSchema = mongoose.Schema({
       ref: "Group",
     },
   ],
-  previousStreak: {
+  initialStreak: {
     type: Number,
     default: 0,
   },

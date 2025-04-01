@@ -103,7 +103,7 @@ const post = {
           name: req.body.name,
           password: req.body.password,
           survival: true,
-          previousStreak: scrapData.streak,
+          initialStreak: scrapData.streak,
           currentStreak: scrapData.streak,
           initialSolved: scrapData.solved,
           currentSolved: scrapData.solved,
