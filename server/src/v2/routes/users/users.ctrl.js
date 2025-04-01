@@ -1,7 +1,7 @@
 const { User } = require("../../../models/User/User");
 const solvedac = require("../../../apis/solvedac");
 const scrap = require("../../../apis/scrap");
-const update = require("../../../services/update");
+const autoUpdate = require("../../../services/autoUpdate");
 
 const get = {
   info: async (req, res) => {
@@ -34,6 +34,20 @@ const get = {
   updateSolved: async (req, res) => {
     try {
       const solved = await scrap.totalSolved(req.params.handle);
+      const user = await User.findOneAndUpdate(
+        { handle: req.params.handle },
+        {
+          solved: solved,
+        },
+        { new: true }
+      );
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, error: "사용자를 찾을 수 없습니다." });
+      }
+
       return res.status(200).json({
         success: true,
         solved: solved,

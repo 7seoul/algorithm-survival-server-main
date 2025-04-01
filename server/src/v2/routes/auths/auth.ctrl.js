@@ -1,7 +1,7 @@
 const { User } = require("../../../models/User/User");
 const solvedac = require("../../../apis/solvedac");
 const scrap = require("../../../apis/scrap");
-const update = require("../../../services/update");
+const update = require("../../../services/autoUpdate");
 const bcrypt = require("bcrypt");
 
 const get = {
@@ -77,16 +77,16 @@ const post = {
       }
 
       // solved.ac 파싱
-      const solvedacData = await scrap.profile(req.body.handle);
+      const scrapData = await scrap.profile(req.body.handle);
 
-      console.log(solvedacData);
+      console.log(scrapData);
 
       if (
-        solvedacData === undefined ||
-        solvedacData.tier === undefined ||
-        solvedacData.solved === undefined ||
-        solvedacData.imgSrc === undefined ||
-        solvedacData.bio === undefined
+        scrapData === undefined ||
+        scrapData.tier === undefined ||
+        scrapData.solved === undefined ||
+        scrapData.imgSrc === undefined ||
+        scrapData.bio === undefined
       ) {
         return res.status(300).json({
           success: false,
@@ -103,12 +103,13 @@ const post = {
           name: req.body.name,
           password: req.body.password,
           survival: true,
-          initialProblemCount: solvedacData.cnt,
-          dailyCheckpointCount: solvedacData.cnt,
-          currentProblemCount: solvedacData.cnt,
-          tier: solvedacData.tier,
-          imgSrc: solvedacData.imgSrc,
-          bio: solvedacData.bio,
+          previousStreak: scrapData.streak,
+          currentStreak: scrapData.streak,
+          initialSolved: scrapData.solved,
+          currentSolved: scrapData.solved,
+          tier: scrapData.tier,
+          imgSrc: scrapData.imgSrc,
+          bio: scrapData.bio,
           isVerified: true,
           createdAt: new Date(),
         },

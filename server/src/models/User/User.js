@@ -22,7 +22,7 @@ const userSchema = mongoose.Schema({
       ref: "Group",
     },
   ],
-  initialStreak: {
+  previousStreak: {
     type: Number,
     default: 0,
   },
@@ -30,7 +30,11 @@ const userSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  solved: {
+  initialSolved: {
+    type: Number,
+    default: 0,
+  },
+  currentSolved: {
     type: Number,
     default: 0,
   },

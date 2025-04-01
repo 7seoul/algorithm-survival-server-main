@@ -18,4 +18,7 @@ app.use("/api/v2/users", usersV2);
 const auth = require("./src/v2/routes/auths");
 app.use("/api/v2/auth", auth);
 
+const groups = require("./src/v2/routes/groups");
+app.use("/api/v2/groups", groups);
+
 module.exports = app;
