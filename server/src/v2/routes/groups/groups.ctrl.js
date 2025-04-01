@@ -38,7 +38,7 @@ const get = {
   applications: async (req, res) => {
     try {
       const { groupId } = req.params;
-      const { success, role, group } = await checkGroupRole(groupId, res.user._id);
+      const { success, role, group } = await utils.checkGroupRole(groupId, req.user._id);
 
       if (!success) {
         return res
@@ -77,7 +77,7 @@ const post = {
 
       const group = await new Group({
         _id: groupId, 
-        name: req.body.name,
+        groupName: req.body.groupName,
         description: req.body.description,
         admin: req.user._id,
         members: [req.user._id],
@@ -97,7 +97,7 @@ const post = {
   edit: async (req, res) => {
     try {
       const { groupId } = req.params;
-      const { success, role } = await checkGroupRole(req.params.groupId, req.user._id);
+      const { success, role } = await utils.checkGroupRole(req.params.groupId, req.user._id);
 
       if (!success) {
         return res
@@ -138,7 +138,7 @@ const post = {
   apply: async (req, res) => {
     try {
       const { groupId } = req.params;
-      const { success, role } = await checkGroupRole(req.params.groupId, req.user._id);
+      const { success, role } = await utils.checkGroupRole(req.params.groupId, req.user._id);
 
       if (!success) {
         return res
@@ -175,7 +175,7 @@ const post = {
   accept: async (req, res) => {
     try {
       const { groupId, userId } = req.params;
-      const { success, role } = await checkGroupRole(groupId, req.user._id);
+      const { success, role } = await utils.checkGroupRole(groupId, req.user._id);
 
       if (!success) {
         return res
@@ -208,7 +208,7 @@ const post = {
   reject: async (req, res) => {
     try {
       const { groupId, userId } = req.params;
-      const { success, role } = await checkGroupRole(groupId, req.user._id);
+      const { success, role } = await utils.checkGroupRole(groupId, req.user._id);
 
       if (!success) {
         return res
