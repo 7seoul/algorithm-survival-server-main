@@ -29,15 +29,11 @@ const groupSchema = mongoose.Schema({
     type: String,
     default: null,
   },
-  tier: {
-    type: Number,
-    default: 0,
-  },
   score: {
     type: Number,
     default: 0,
   },
-  perviousStreak: {
+  initialStreak: {
     type: Number,
     default: 0,
   },
