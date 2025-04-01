@@ -1,4 +1,5 @@
 const solvedac = require("../apis/solvedac");
+const scrap = require("../apis/scrap");
 const { User } = require("../models/User/User");
 
 let userQueue = [];
@@ -27,25 +28,30 @@ async function updateUser() {
   const user = userQueue[currentIndex];
 
   try {
-    const problemApiData = await solvedac.problem(user.handle);
-    const profileApiData = await solvedac.profile(user.handle);
+    console.time("autoUpdate: scrap profile");
+    const profile = await scrap.profile(user.handle);
+    console.timeEnd("autoUpdate: scrap profile");
 
-    User.findOneAndUpdate(
-      { _id: user._id },
-      {
-        $set: {
-          currentProblemCount: problemApiData,
-          tier: profileApiData.tier,
-          bio: profileApiData.bio,
-        },
-      }
-    )
-      .then(() => {
-        console.log(`UPDATE USER : User "${user.handle}" updated`);
-      })
-      .catch((err) => {
-        console.error(`UPDATE USER : Error updating user ${user.handle}:`, err);
-      });
+    if (profile.success === true) {
+      User.findOneAndUpdate(
+        { _id: user._id },
+        {
+          $set: {
+            currentSolved: profile.solved,
+            currentStreak: profile.streak,
+            tier: profile.tier,
+          },
+        }
+      )
+        .then(() => {
+          console.log(`UPDATE USER : User "${user.handle}" updated`);
+        })
+        .catch((err) => {
+          console.error(`UPDATE USER : Error updating user ${user.handle}:`, err);
+        });
+    } else {
+      console.log("SKIP USER : FAIL TO SCRAPING.");
+    }
   } catch (error) {
     console.error(
       `UPDATE USER : Error updating user ${user.handle}:`,
@@ -60,7 +66,7 @@ function startUpdating() {
   if (interval) return; // 이미 실행 중이면 중복 실행 방지
 
   // interval = setInterval(updateUser, 7100); // 서비스 용
-  interval = setInterval(updateUser, 1000000); // 개발 용 (1000s)
+  interval = setInterval(updateUser, 15000); // 개발 용
   console.log("UPDATE USER : User update process started!");
 }
 

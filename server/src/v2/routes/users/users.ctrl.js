@@ -33,11 +33,16 @@ const get = {
   },
   updateSolved: async (req, res) => {
     try {
-      const solved = await scrap.totalSolved(req.params.handle);
+      console.time("scrap profile");
+      const profile = await scrap.profile(req.params.handle);
+      console.timeEnd("scrap profile");
+      
+      console.log(profile)
       const user = await User.findOneAndUpdate(
         { handle: req.params.handle },
         {
-          solved: solved,
+          currentStreak: profile.streak,
+          currentSolved: profile.solved
         },
         { new: true }
       );
@@ -50,7 +55,7 @@ const get = {
 
       return res.status(200).json({
         success: true,
-        solved: solved,
+        user,
       });
     } catch (error) {
       console.log(error);

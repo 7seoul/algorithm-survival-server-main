@@ -1,7 +1,7 @@
 const { User } = require("../../../models/User/User");
 const solvedac = require("../../../apis/solvedac");
 const scrap = require("../../../apis/scrap");
-const update = require("../../../services/autoUpdate");
+const autoUpdate = require("../../../services/autoUpdate");
 const bcrypt = require("bcrypt");
 
 const get = {
@@ -115,6 +115,8 @@ const post = {
         },
         { new: true }
       );
+
+      autoUpdate.addUserInQueue(user.handle);
 
       return res.status(200).json({
         success: true,
