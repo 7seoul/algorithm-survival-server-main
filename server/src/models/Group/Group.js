@@ -16,6 +16,12 @@ const groupSchema = mongoose.Schema({
       ref: "User",
     },
   ],
+  applications: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   downs: {
     type: Object,
   },
