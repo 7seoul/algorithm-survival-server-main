@@ -8,7 +8,15 @@ const get = {
   me: async (req, res) => {
     try {
       const handle = req.user.handle;
-      const user = await User.findOne({ handle });
+      const user = await User.findOne(
+        { handle },
+        "-token -password -createdAt -verificationCode -__v"
+      )
+      .populate(
+        "joinedGroupList",
+        "groupName"
+      );
+      
 
       if (!user) {
         return res
@@ -27,7 +35,10 @@ const get = {
 const post = {
   login: async (req, res) => {
     try {
-      const user = await User.findOne({ handle: req.body.handle });
+      const user = await User.findOne(
+        { handle: req.body.handle },
+      );
+
       if (!user) {
         return res.status(200).json({
           success: false,
@@ -57,7 +68,6 @@ const post = {
 
       return res.status(200).json({
         success: true,
-        user,
       });
     } catch (error) {
       console.log(error);
@@ -99,7 +109,7 @@ const post = {
       await user.save().then((user) => {
         return res.status(200).json({
           success: true,
-          user: user,
+          verificationCode: "test123"
         });
       });
     } catch (error) {
@@ -172,9 +182,19 @@ const post = {
 
       autoUpdate.addUserInQueue(user.handle);
 
+      // 토큰 생성
+      await user.generateToken();
+
+      // 쿠키에 토큰 저장
+      res.cookie("token", user.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 14 * 24 * 60 * 60 * 1000,
+        sameSite: "Strict",
+      });
+
       return res.status(200).json({
         success: true,
-        user: user,
       });
     } catch (error) {
       console.log(error);
