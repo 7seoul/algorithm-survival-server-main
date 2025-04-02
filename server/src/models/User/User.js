@@ -60,11 +60,10 @@ const userSchema = mongoose.Schema({
   isVerified: {
     type: Boolean,
     default: false,
-  },
-  createdAt: {
-    type: Date,
-  },
-});
+  }
+},
+{ timestamps: true }
+);
 
 // 비밀번호 해싱
 userSchema.pre("save", async function (next) {

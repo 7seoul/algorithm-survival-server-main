@@ -41,13 +41,12 @@ const groupSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  createdAt: {
-    type: Date,
-  },
   endedAt: {
     type: Date,
   },
-});
+},
+{ timestamps: true }
+);
 
 const Group = mongoose.model("Group", groupSchema);
 
