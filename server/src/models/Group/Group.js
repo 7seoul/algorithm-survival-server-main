@@ -22,9 +22,12 @@ const groupSchema = mongoose.Schema({
       ref: "User",
     },
   ],
-  downs: {
-    type: Object,
-  },
+  memberData: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "MemberData",
+    },
+  ],
   description: {
     type: String,
     default: null,
@@ -41,13 +44,12 @@ const groupSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  createdAt: {
-    type: Date,
-  },
   endedAt: {
     type: Date,
   },
-});
+},
+{ timestamps: true }
+);
 
 const Group = mongoose.model("Group", groupSchema);
 

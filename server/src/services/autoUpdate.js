@@ -1,5 +1,7 @@
-const solvedac = require("../apis/solvedac");
+const scrap = require("../apis/scrap");
 const { User } = require("../models/User/User");
+const { Group } = require("../models/Group/Group");
+const { MemberData } = require("../models/Group/MemberData");
 
 let userQueue = [];
 let currentIndex = 0;
@@ -27,25 +29,62 @@ async function updateUser() {
   const user = userQueue[currentIndex];
 
   try {
-    const problemApiData = await solvedac.problem(user.handle);
-    const profileApiData = await solvedac.profile(user.handle);
+    console.time("autoUpdate: scrap profile");
+    const profile = await scrap.profile(user.handle);
+    console.timeEnd("autoUpdate: scrap profile");
 
-    User.findOneAndUpdate(
-      { _id: user._id },
-      {
-        $set: {
-          currentProblemCount: problemApiData,
-          tier: profileApiData.tier,
-          bio: profileApiData.bio,
-        },
-      }
-    )
-      .then(() => {
+    if (profile.success === true) {
+      try {
+        const initial = await User.findById(
+          user._id
+        );
+
+        let down = 0;
+        let newStreak = initial.initialStreak;
+        if (initial.initialStreak > profile.streak) {
+          down = 1;
+          newStreak = profile.streak;
+        }
+
+        const saved = await User.findByIdAndUpdate(
+          user._id,
+          {
+            $set: {
+              initialStreak: newStreak,
+              currentStreak: profile.streak,
+              currentSolved: profile.solved,
+              tier: profile.tier,
+            },
+          },
+          { new: true}
+        )
+        .select('-_id joinedGroupList')
+        .populate('joinedGroupList', '_id memberData')
+
         console.log(`UPDATE USER : User "${user.handle}" updated`);
-      })
-      .catch((err) => {
+        
+        const groups = saved.joinedGroupList;
+        // 그룹에 유저 업데이트 정보 반영
+        for (let group of groups) {
+          await MemberData.findOneAndUpdate(
+            { handle: user.handle, _id: { $in: group.memberData } }, // 해당 그룹의 memberData 중 유저 찾기
+            {
+              $set: {
+                initialStreak: newStreak,
+                currentStreak: profile.streak,
+                currentSolved: profile.solved,
+              },
+              $inc: { downs: down },
+            }
+          );
+          console.log(group._id, "반영");
+        }
+      } catch (err) {
         console.error(`UPDATE USER : Error updating user ${user.handle}:`, err);
-      });
+      }
+    } else {
+      console.log("SKIP USER : FAIL TO SCRAPING.");
+    }
   } catch (error) {
     console.error(
       `UPDATE USER : Error updating user ${user.handle}:`,
@@ -60,7 +99,7 @@ function startUpdating() {
   if (interval) return; // 이미 실행 중이면 중복 실행 방지
 
   // interval = setInterval(updateUser, 7100); // 서비스 용
-  interval = setInterval(updateUser, 1000000); // 개발 용 (1000s)
+  interval = setInterval(updateUser, 15000); // 개발 용
   console.log("UPDATE USER : User update process started!");
 }
 

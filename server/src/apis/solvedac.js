@@ -17,7 +17,7 @@ const profile = async (handle) => {
   }
 };
 
-const problem = async (handle) => {
+const problem = async (handle, grade) => {
   try {
     const response = await axios.get(
       "https://solved.ac/api/v3/user/problem_stats",
@@ -29,8 +29,7 @@ const problem = async (handle) => {
     );
     const problems = response.data;
     let cnt = 0;
-    // 난이도 6부터 반영
-    for (let i = 6; i < problems.length; i++) {
+    for (let i = grade; i < problems.length; i++) {
       cnt += problems[i].solved;
     }
 
@@ -49,8 +48,10 @@ const grass = async (handle) => {
         topic: "today-solved",
       },
     });
-    console.log(problems);
-    const problems = response.data;
+
+    const currentStreak = response.data.currentStreak;
+
+    return currentStreak
   } catch (error) {
     console.error("Failed to problem:", error);
     throw new Error("Invalid data");

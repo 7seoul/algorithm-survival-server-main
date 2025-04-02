@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema({
   },
   joinedGroupList: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Number,
       ref: "Group",
     },
   ],
@@ -54,17 +54,13 @@ const userSchema = mongoose.Schema({
   verificationCode: {
     type: String,
   },
-  verificationCodeExp: {
-    type: Date,
-  },
   isVerified: {
     type: Boolean,
     default: false,
-  },
-  createdAt: {
-    type: Date,
-  },
-});
+  }
+},
+{ timestamps: true }
+);
 
 // 비밀번호 해싱
 userSchema.pre("save", async function (next) {

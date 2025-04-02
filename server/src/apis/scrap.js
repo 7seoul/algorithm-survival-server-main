@@ -21,11 +21,29 @@ const profile = async (handle) => {
     const browser = await initBrowser();
     page = await browser.newPage();
 
-    // 페이지로 이동
-    await page.goto(encodeURI(`https://solved.ac/profile/${handle}`), {
-      waitUntil: "networkidle2",
+    // 리소스 차단 설정
+    await page.setRequestInterception(true);
+    page.on("request", (request) => {
+      const resourceType = request.resourceType();
+      if (["image", "stylesheet", "font", "media"].includes(resourceType)) {
+        request.abort();
+      } else {
+        request.continue();
+      }
     });
 
+    // 페이지로 이동
+    try {
+      await page.goto(encodeURI(`https://solved.ac/profile/${handle}`), {
+        waitUntil: "networkidle0",
+        timeout: 15000, // 30초 타임아웃
+      });
+    } catch (timeoutError) {
+      console.warn("Timeout occurred, proceeding with current page state...");
+      // 타임아웃 발생 시 현재 상태로 진행
+    }
+
+    // 현재 HTML 가져오기
     const html = await page.content();
     const $ = cheerio.load(html);
 
@@ -53,11 +71,21 @@ const profile = async (handle) => {
       ? parseInt(streakText.replace(/,/g, ""), 10)
       : undefined;
 
+    let success = true;
+    if (
+      tier === undefined ||
+      solved === undefined ||
+      imgSrc === undefined ||
+      streak === undefined
+    ) {
+      success = false;
+    }
+
     const userProfile = {
+      success: success,
       tier: tier ? utils.tierList[tier] : undefined,
       solved: solved,
       imgSrc: imgSrc,
-      bio: bio,
       streak: streak,
     };
 
