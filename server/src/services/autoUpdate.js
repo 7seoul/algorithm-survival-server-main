@@ -66,7 +66,7 @@ function startUpdating() {
   if (interval) return; // 이미 실행 중이면 중복 실행 방지
 
   // interval = setInterval(updateUser, 7100); // 서비스 용
-  interval = setInterval(updateUser, 15000); // 개발 용
+  interval = setInterval(updateUser, 1500000); // 개발 용
   console.log("UPDATE USER : User update process started!");
 }
 
