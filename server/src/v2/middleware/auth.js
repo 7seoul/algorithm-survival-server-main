@@ -13,6 +13,7 @@ const auth = async (req, res, next) => {
 
     const user = await User.findByToken(token);
     if (!user) {
+      res.clearCookie("token"); // 쿠키 삭제
       return res.status(401).json({
         success: false,
         message: "유효하지 않은 토큰입니다.",
@@ -22,9 +23,9 @@ const auth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    return res.status(401).json({
+    return res.status(500).json({
       success: false,
-      message: "인증 실패",
+      message: "서버 오류",
     });
   }
 };
