@@ -79,9 +79,9 @@ const post = {
       // 유저 정보 저장
       const memberData = new MemberData({
         handle: req.user.handle,
-        initialStreak: req.user.initialStreak,
+        initialStreak: req.user.currentStreak,
         currentStreak: req.user.currentStreak,
-        initialSolved: req.user.initialSolved,
+        initialSolved: req.user.currentSolved,
         currentSolved: req.user.currentSolved,
       });
 

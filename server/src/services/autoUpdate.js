@@ -35,12 +35,24 @@ async function updateUser() {
 
     if (profile.success === true) {
       try {
-        const saved = await User.findOneAndUpdate(
-          { _id: user._id },
+        const initial = await User.findById(
+          user._id
+        );
+
+        let down = 0;
+        let newStreak = initial.initialStreak;
+        if (initial.initialStreak > profile.streak) {
+          down = 1;
+          newStreak = profile.streak;
+        }
+
+        const saved = await User.findByIdAndUpdate(
+          user._id,
           {
             $set: {
-              currentSolved: profile.solved + 1,
+              initialStreak: newStreak,
               currentStreak: profile.streak,
+              currentSolved: profile.solved,
               tier: profile.tier,
             },
           },
@@ -58,11 +70,14 @@ async function updateUser() {
             { handle: user.handle, _id: { $in: group.memberData } }, // 해당 그룹의 memberData 중 유저 찾기
             {
               $set: {
-                currentSolved: profile.solved + 1,
+                initialStreak: newStreak,
                 currentStreak: profile.streak,
+                currentSolved: profile.solved,
               },
+              $inc: { downs: down },
             }
           );
+          console.log(group._id, "반영");
         }
       } catch (err) {
         console.error(`UPDATE USER : Error updating user ${user.handle}:`, err);
