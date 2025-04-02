@@ -29,9 +29,9 @@ async function updateUser() {
   const user = userQueue[currentIndex];
 
   try {
-    console.time("autoUpdate: scrap profile");
+    console.time("1autoUpdate: scrap profile");
     const profile = await scrap.profile(user.handle);
-    console.timeEnd("autoUpdate: scrap profile");
+    console.timeEnd("1autoUpdate: scrap profile");
 
     if (profile.success === true) {
       try {
@@ -97,7 +97,7 @@ function startUpdating() {
   if (interval) return; // 이미 실행 중이면 중복 실행 방지
 
   // interval = setInterval(updateUser, 7100); // 서비스 용
-  interval = setInterval(updateUser, 15000); // 개발 용
+  interval = setInterval(updateUser, 1500000); // 개발 용
   console.log("UPDATE USER : User update process started!");
 }
 

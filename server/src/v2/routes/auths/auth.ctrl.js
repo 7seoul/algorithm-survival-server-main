@@ -126,12 +126,13 @@ const post = {
       console.log("sovledac :", profile.bio);
       console.log("User DB  :", verifyUser.verificationCode);
 
-      if (profile.bio !== verifyUser.verificationCode) {
-        return res.status(200).json({
-          success: false,
-          message: "인증 코드가 일치하지 않습니다.",
-        });
-      }
+      // 개발용 스킵
+      // if (profile.bio !== verifyUser.verificationCode) {
+      //   return res.status(200).json({
+      //     success: false,
+      //     message: "인증 코드가 일치하지 않습니다.",
+      //   });
+      // }
 
       const streak = await solvedac.grass(req.body.handle);
 

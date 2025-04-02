@@ -24,4 +24,7 @@ app.use("/api/v2/groups", groups);
 const rankings = require("./src/v2/routes/rankings");
 app.use("/api/v2/rankings", rankings);
 
+const search = require("./src/v2/routes/search");
+app.use("/api/v2/search", search);
+
 module.exports = app;
