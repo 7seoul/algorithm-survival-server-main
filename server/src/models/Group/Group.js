@@ -22,9 +22,12 @@ const groupSchema = mongoose.Schema({
       ref: "User",
     },
   ],
-  downs: {
-    type: Object,
-  },
+  memberData: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "MemberData",
+    },
+  ],
   description: {
     type: String,
     default: null,
