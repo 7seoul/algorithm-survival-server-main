@@ -132,7 +132,7 @@ const post = {
           message: "인증 코드가 일치하지 않습니다.",
         });
       }
-      
+
       const streak = await solvedac.grass(req.body.handle);
 
       if (

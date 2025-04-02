@@ -35,9 +35,7 @@ async function updateUser() {
 
     if (profile.success === true) {
       try {
-        const initial = await User.findById(
-          user._id
-        );
+        const initial = await User.findById(user._id);
 
         let down = 0;
         let newStreak = initial.initialStreak;
@@ -56,13 +54,13 @@ async function updateUser() {
               tier: profile.tier,
             },
           },
-          { new: true}
+          { new: true }
         )
-        .select('-_id joinedGroupList')
-        .populate('joinedGroupList', '_id memberData')
+          .select("-_id joinedGroupList")
+          .populate("joinedGroupList", "_id memberData");
 
         console.log(`UPDATE USER : User "${user.handle}" updated`);
-        
+
         const groups = saved.joinedGroupList;
         // 그룹에 유저 업데이트 정보 반영
         for (let group of groups) {

@@ -36,13 +36,13 @@ const get = {
       console.time("scrap profile");
       const profile = await scrap.profile(req.params.handle);
       console.timeEnd("scrap profile");
-      
-      console.log(profile)
+
+      console.log(profile);
       const user = await User.findOneAndUpdate(
         { handle: req.params.handle },
         {
           currentStreak: profile.streak,
-          currentSolved: profile.solved
+          currentSolved: profile.solved,
         },
         { new: true }
       );

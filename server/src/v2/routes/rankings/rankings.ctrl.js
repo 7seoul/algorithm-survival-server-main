@@ -5,21 +5,21 @@ const get = {
   usersStreak: async (req, res) => {
     try {
       const users = await User.find({})
-      .select("-_id name handle tier initialStreak currentStreak")
-      .lean(); 
-      
+        .select("-_id name handle tier initialStreak currentStreak")
+        .lean();
+
       const result = users
-      .map(user => ({
-        name: user.name,
-        handle: user.handle,
-        tier: user.tier,
-        streak: user.currentStreak - user.initialStreak 
-      }))
-      .sort((a, b) => b.streak - a.streak);
+        .map((user) => ({
+          name: user.name,
+          handle: user.handle,
+          tier: user.tier,
+          streak: user.currentStreak - user.initialStreak,
+        }))
+        .sort((a, b) => b.streak - a.streak);
 
       return res.status(200).json({
         success: true,
-        result
+        result,
       });
     } catch (error) {
       console.log(error);
@@ -29,21 +29,21 @@ const get = {
   usersScore: async (req, res) => {
     try {
       const users = await User.find({})
-      .select("-_id name handle tier initialSolved currentSolved")
-      .lean(); 
-      
+        .select("-_id name handle tier initialSolved currentSolved")
+        .lean();
+
       const result = users
-      .map(user => ({
-        name: user.name,
-        handle: user.handle,
-        tier: user.tier,
-        solved: user.currentSolved - user.initialSolved 
-      }))
-      .sort((a, b) => b.solved - a.solved);
+        .map((user) => ({
+          name: user.name,
+          handle: user.handle,
+          tier: user.tier,
+          solved: user.currentSolved - user.initialSolved,
+        }))
+        .sort((a, b) => b.solved - a.solved);
 
       return res.status(200).json({
         success: true,
-        result
+        result,
       });
     } catch (error) {
       console.log(error);
@@ -53,20 +53,20 @@ const get = {
   groupsStreak: async (req, res) => {
     try {
       const groups = await Group.find({})
-      .select("groupName handle tier initialStreak currentStreak")
-      .lean(); 
-      
+        .select("groupName handle tier initialStreak currentStreak")
+        .lean();
+
       const result = groups
-      .map(group => ({
-        _id: group._id,
-        groupName: group.groupName,
-        streak: group.currentStreak - group.initialStreak 
-      }))
-      .sort((a, b) => b.streak - a.streak);
+        .map((group) => ({
+          _id: group._id,
+          groupName: group.groupName,
+          streak: group.currentStreak - group.initialStreak,
+        }))
+        .sort((a, b) => b.streak - a.streak);
 
       return res.status(200).json({
         success: true,
-        result
+        result,
       });
     } catch (error) {
       console.log(error);
@@ -76,14 +76,14 @@ const get = {
   groupsScore: async (req, res) => {
     try {
       const groups = await Group.find({})
-      .select("groupName handle tier score")
-      .lean(); 
-      
+        .select("groupName handle tier score")
+        .lean();
+
       const result = groups.sort((a, b) => b.score - a.score);
 
       return res.status(200).json({
         success: true,
-        result
+        result,
       });
     } catch (error) {
       console.log(error);

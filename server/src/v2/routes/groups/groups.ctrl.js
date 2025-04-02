@@ -26,7 +26,10 @@ const get = {
       const group = await Group.findOne(
         { _id: groupId },
         "-__v -applications"
-      ).populate('members admin', '-_id name handle currentSolved currentStreak');
+      ).populate(
+        "members admin",
+        "-_id name handle currentSolved currentStreak"
+      );
       return res.status(200).json({
         success: true,
         group,
@@ -39,32 +42,36 @@ const get = {
   applications: async (req, res) => {
     try {
       const { groupId } = req.params;
-      const { success, role } = await utils.checkGroupRole(groupId, req.user._id);
+      const { success, role } = await utils.checkGroupRole(
+        groupId,
+        req.user._id
+      );
 
       if (!success) {
         return res
-        .status(404)
-        .json({ success: false, error: "그룹을 찾을 수 없습니다." });
+          .status(404)
+          .json({ success: false, error: "그룹을 찾을 수 없습니다." });
       }
 
       if (role !== "admin") {
         return res.status(200).json({
           success: false,
-          error: "권한이 없습니다."
+          error: "권한이 없습니다.",
         });
-      } 
+      }
 
-      const data = await Group.findOne(
-        { _id: groupId },
-      )
-      .select('-_id applications')
-      .populate('applications', '-_id name handle currentSolved currentStreak');
+      const data = await Group.findOne({ _id: groupId })
+        .select("-_id applications")
+        .populate(
+          "applications",
+          "-_id name handle currentSolved currentStreak"
+        );
 
       const applications = data.applications;
 
       return res.status(200).json({
         success: true,
-        applications
+        applications,
       });
     } catch (error) {
       console.log(error);
@@ -96,7 +103,7 @@ const post = {
       const groupId = await counter.seq;
 
       const group = await new Group({
-        _id: groupId, 
+        _id: groupId,
         groupName: req.body.groupName,
         description: req.body.description,
         admin: req.user._id,
@@ -107,8 +114,8 @@ const post = {
       await group.save();
 
       await User.findOneAndUpdate(
-        {handle: req.user.handle},
-        { $push: { joinedGroupList: groupId } },
+        { handle: req.user.handle },
+        { $push: { joinedGroupList: groupId } }
       );
 
       return res.status(200).json({
@@ -123,7 +130,10 @@ const post = {
   edit: async (req, res) => {
     try {
       const { groupId } = req.params;
-      const { success, role } = await utils.checkGroupRole(req.params.groupId, req.user._id);
+      const { success, role } = await utils.checkGroupRole(
+        req.params.groupId,
+        req.user._id
+      );
 
       if (!success) {
         return res
@@ -134,7 +144,7 @@ const post = {
       if (role !== "admin") {
         return res.status(200).json({
           success: false,
-          error: "권한이 없습니다."
+          error: "권한이 없습니다.",
         });
       }
 
@@ -164,7 +174,10 @@ const post = {
   apply: async (req, res) => {
     try {
       const { groupId } = req.params;
-      const { success, role } = await utils.checkGroupRole(req.params.groupId, req.user._id);
+      const { success, role } = await utils.checkGroupRole(
+        req.params.groupId,
+        req.user._id
+      );
 
       if (!success) {
         return res
@@ -175,22 +188,24 @@ const post = {
       if (role !== "none") {
         return res.status(200).json({
           success: false,
-          error: "이미 그룹의 멤버입니다."
+          error: "이미 그룹의 멤버입니다.",
         });
       }
 
       const updatedGroup = await Group.findByIdAndUpdate(
         groupId,
         { $addToSet: { applications: req.user._id } },
-        { new: true } 
+        { new: true }
       );
-  
+
       if (!updatedGroup) {
-        return res.status(404).json({ success: false, error: "그룹을 찾을 수 없습니다." });
+        return res
+          .status(404)
+          .json({ success: false, error: "그룹을 찾을 수 없습니다." });
       }
 
       return res.status(200).json({
-        success: true, 
+        success: true,
         group: updatedGroup,
       });
     } catch (error) {
@@ -201,7 +216,10 @@ const post = {
   accept: async (req, res) => {
     try {
       const { groupId, userId } = req.params;
-      const { success, role } = await utils.checkGroupRole(groupId, req.user._id);
+      const { success, role } = await utils.checkGroupRole(
+        groupId,
+        req.user._id
+      );
 
       if (!success) {
         return res
@@ -212,15 +230,18 @@ const post = {
       if (role !== "admin") {
         return res.status(200).json({
           success: false,
-          error: "권한이 없습니다."
+          error: "권한이 없습니다.",
         });
       }
 
-      const group = await Group.findByIdAndUpdate(groupId, {
-        $pull: { applications: userId },
-        $addToSet: { members: userId }, 
-      },
-      { new: true });
+      const group = await Group.findByIdAndUpdate(
+        groupId,
+        {
+          $pull: { applications: userId },
+          $addToSet: { members: userId },
+        },
+        { new: true }
+      );
 
       return res.status(200).json({
         success: true,
@@ -234,7 +255,10 @@ const post = {
   reject: async (req, res) => {
     try {
       const { groupId, userId } = req.params;
-      const { success, role } = await utils.checkGroupRole(groupId, req.user._id);
+      const { success, role } = await utils.checkGroupRole(
+        groupId,
+        req.user._id
+      );
 
       if (!success) {
         return res
@@ -245,14 +269,17 @@ const post = {
       if (role !== "admin") {
         return res.status(200).json({
           success: false,
-          error: "권한이 없습니다."
+          error: "권한이 없습니다.",
         });
       }
 
-      const group = await Group.findByIdAndUpdate(groupId, {
-        $pull: { applications: userId },
-      },
-      { new: true });
+      const group = await Group.findByIdAndUpdate(
+        groupId,
+        {
+          $pull: { applications: userId },
+        },
+        { new: true }
+      );
 
       return res.status(200).json({
         success: true,

@@ -51,7 +51,7 @@ const grass = async (handle) => {
 
     const currentStreak = response.data.currentStreak;
 
-    return currentStreak
+    return currentStreak;
   } catch (error) {
     console.error("Failed to problem:", error);
     throw new Error("Invalid data");
