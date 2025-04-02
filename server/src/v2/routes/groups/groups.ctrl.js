@@ -25,7 +25,7 @@ const get = {
       const group = await Group.findOne(
         { _id: groupId },
         "-__v -applications"
-      );
+      ).populate('members admin', '-_id name handle currentSolved currentStreak');
       return res.status(200).json({
         success: true,
         group,
@@ -38,7 +38,7 @@ const get = {
   applications: async (req, res) => {
     try {
       const { groupId } = req.params;
-      const { success, role, group } = await utils.checkGroupRole(groupId, req.user._id);
+      const { success, role } = await utils.checkGroupRole(groupId, req.user._id);
 
       if (!success) {
         return res
@@ -53,9 +53,17 @@ const get = {
         });
       } 
 
+      const data = await Group.findOne(
+        { _id: groupId },
+      )
+      .select('-_id applications')
+      .populate('applications', '-_id name handle currentSolved currentStreak');
+
+      const applications = data.applications;
+
       return res.status(200).json({
         success: true,
-        group,
+        applications
       });
     } catch (error) {
       console.log(error);
