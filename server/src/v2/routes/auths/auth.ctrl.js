@@ -64,69 +64,6 @@ const post = {
       return res.status(500).json({ success: false, error: "서버 오류 발생" });
     }
   },
-
-  register: async (req, res) => {
-    try {
-      const existingUser = await User.findOne({ handle: req.body.handle });
-
-      if (existingUser !== undefined && existingUser.isVerified) {
-        return res.status(409).json({
-          success: false,
-          message: "이미 등록된 아이디 입니다.",
-        });
-      }
-
-      // solved.ac 파싱
-      const scrapData = await scrap.profile(req.body.handle);
-
-      console.log(scrapData);
-
-      if (
-        scrapData === undefined ||
-        scrapData.tier === undefined ||
-        scrapData.solved === undefined ||
-        scrapData.imgSrc === undefined ||
-        scrapData.bio === undefined
-      ) {
-        return res.status(300).json({
-          success: false,
-          message: "정보를 불러오는데 실패했습니다.",
-        });
-      }
-
-      const salt = await bcrypt.genSalt(10);
-      req.body.password = await bcrypt.hash(req.body.password, salt);
-
-      const user = await User.findOneAndUpdate(
-        { handle: req.body.handle },
-        {
-          name: req.body.name,
-          password: req.body.password,
-          survival: true,
-          initialStreak: scrapData.streak,
-          currentStreak: scrapData.streak,
-          initialSolved: scrapData.solved,
-          currentSolved: scrapData.solved,
-          tier: scrapData.tier,
-          imgSrc: scrapData.imgSrc,
-          bio: scrapData.bio,
-          isVerified: true,
-          createdAt: new Date(),
-        },
-        { new: true }
-      );
-
-      autoUpdate.addUserInQueue(user.handle);
-
-      return res.status(200).json({
-        success: true,
-        user: user,
-      });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
-    }
-  },
   code: async (req, res) => {
     try {
       const existingUser = await User.findOne({ handle: req.body.handle });
@@ -143,7 +80,6 @@ const post = {
           { handle: req.body.handle },
           {
             verificationCode: "test123",
-            verificationCodeExp: new Date().setHours(new Date().getHours() + 1),
           },
           { new: true }
         );
@@ -156,7 +92,6 @@ const post = {
       const newUser = {
         handle: req.body.handle,
         verificationCode: "test123",
-        verificationCodeExp: new Date().setHours(new Date().getHours() + 1),
       };
 
       const user = await new User(newUser);
@@ -172,24 +107,73 @@ const post = {
       return res.status(500).json({ success: false, error: "서버 오류 발생" });
     }
   },
-  verify: async (req, res) => {
+  register: async (req, res) => {
     try {
-      const profile = await solvedac.profile(req.body.handle);
-      const user = await User.findOne({ handle: req.body.handle });
+      const verifyUser = await User.findOne({ handle: req.body.handle });
 
-      console.log("sovledac :", profile.bio);
-      console.log("user db :", user.verificationCode);
-
-      if (profile.bio === user.verificationCode) {
-        return res.status(200).json({
-          success: true,
-          user: user,
+      if (verifyUser !== undefined && verifyUser.isVerified) {
+        return res.status(409).json({
+          success: false,
+          message: "이미 등록된 아이디 입니다.",
         });
       }
 
+      // 여기서 과요청 방지 가능
+
+      // solved.ac api 사용
+      const profile = await solvedac.profile(req.body.handle);
+
+      console.log("sovledac :", profile.bio);
+      console.log("User DB  :", verifyUser.verificationCode);
+
+      if (profile.bio !== verifyUser.verificationCode) {
+        return res.status(200).json({
+          success: false,
+          message: "인증 코드가 일치하지 않습니다.",
+        });
+      }
+      
+      const streak = await solvedac.grass(req.body.handle);
+
+      if (
+        profile === undefined ||
+        streak === undefined ||
+        profile.tier === undefined ||
+        profile.solvedCount === undefined ||
+        profile.profileImageUrl === undefined ||
+        profile.bio === undefined
+      ) {
+        return res.status(300).json({
+          success: false,
+          message: "정보를 불러오는데 실패했습니다.",
+        });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      req.body.password = await bcrypt.hash(req.body.password, salt);
+
+      const user = await User.findOneAndUpdate(
+        { handle: req.body.handle },
+        {
+          name: req.body.name,
+          password: req.body.password,
+          initialStreak: streak,
+          currentStreak: streak,
+          initialSolved: profile.solvedCount,
+          currentSolved: profile.solvedCount,
+          tier: profile.tier,
+          imgSrc: profile.profileImageUrl,
+          bio: "",
+          isVerified: true,
+        },
+        { new: true }
+      );
+
+      autoUpdate.addUserInQueue(user.handle);
+
       return res.status(200).json({
-        success: false,
-        message: "인증 코드가 일치하지 않습니다.",
+        success: true,
+        user: user,
       });
     } catch (error) {
       console.log(error);
