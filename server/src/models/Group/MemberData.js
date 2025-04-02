@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const groupSchema = mongoose.Schema({
+const memberDataSchema = mongoose.Schema({
   handle: {
     type: String,
     required: true,
@@ -29,6 +29,6 @@ const groupSchema = mongoose.Schema({
 { timestamps: true }
 );
 
-const Group = mongoose.model("Group", groupSchema);
+const MemberData = mongoose.model("MemberData", memberDataSchema);
 
-module.exports = { Group };
+module.exports = { MemberData };

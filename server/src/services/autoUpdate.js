@@ -1,6 +1,7 @@
-const solvedac = require("../apis/solvedac");
 const scrap = require("../apis/scrap");
 const { User } = require("../models/User/User");
+const { Group } = require("../models/Group/Group");
+const { MemberData } = require("../models/Group/MemberData");
 
 let userQueue = [];
 let currentIndex = 0;
@@ -33,22 +34,39 @@ async function updateUser() {
     console.timeEnd("autoUpdate: scrap profile");
 
     if (profile.success === true) {
-      User.findOneAndUpdate(
-        { _id: user._id },
-        {
-          $set: {
-            currentSolved: profile.solved,
-            currentStreak: profile.streak,
-            tier: profile.tier,
+      try {
+        const saved = await User.findOneAndUpdate(
+          { _id: user._id },
+          {
+            $set: {
+              currentSolved: profile.solved + 1,
+              currentStreak: profile.streak,
+              tier: profile.tier,
+            },
           },
+          { new: true}
+        )
+        .select('-_id joinedGroupList')
+        .populate('joinedGroupList', '_id memberData')
+
+        console.log(`UPDATE USER : User "${user.handle}" updated`);
+        
+        const groups = saved.joinedGroupList;
+        // 그룹에 유저 업데이트 정보 반영
+        for (let group of groups) {
+          await MemberData.findOneAndUpdate(
+            { handle: user.handle, _id: { $in: group.memberData } }, // 해당 그룹의 memberData 중 유저 찾기
+            {
+              $set: {
+                currentSolved: profile.solved + 1,
+                currentStreak: profile.streak,
+              },
+            }
+          );
         }
-      )
-        .then(() => {
-          console.log(`UPDATE USER : User "${user.handle}" updated`);
-        })
-        .catch((err) => {
-          console.error(`UPDATE USER : Error updating user ${user.handle}:`, err);
-        });
+      } catch (err) {
+        console.error(`UPDATE USER : Error updating user ${user.handle}:`, err);
+      }
     } else {
       console.log("SKIP USER : FAIL TO SCRAPING.");
     }
@@ -66,7 +84,7 @@ function startUpdating() {
   if (interval) return; // 이미 실행 중이면 중복 실행 방지
 
   // interval = setInterval(updateUser, 7100); // 서비스 용
-  interval = setInterval(updateUser, 1500000); // 개발 용
+  interval = setInterval(updateUser, 15000); // 개발 용
   console.log("UPDATE USER : User update process started!");
 }
 

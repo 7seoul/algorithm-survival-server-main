@@ -1,5 +1,6 @@
 const { User } = require("../../../models/User/User");
 const { Group } = require("../../../models/Group/Group");
+const { MemberData } = require("../../../models/Group/MemberData");
 const { Counter } = require("../../../models/Counter/Counter");
 const solvedac = require("../../../apis/solvedac");
 const scrap = require("../../../apis/scrap");
@@ -75,6 +76,17 @@ const get = {
 const post = {
   create: async (req, res) => {
     try {
+      // 유저 정보 저장
+      const memberData = new MemberData({
+        handle: req.user.handle,
+        initialStreak: req.user.initialStreak,
+        currentStreak: req.user.currentStreak,
+        initialSolved: req.user.initialSolved,
+        currentSolved: req.user.currentSolved,
+      });
+
+      await memberData.save();
+
       const counter = await Counter.findByIdAndUpdate(
         "groupId",
         { $inc: { seq: 1 } },
@@ -89,9 +101,15 @@ const post = {
         description: req.body.description,
         admin: req.user._id,
         members: [req.user._id],
+        memberData: [memberData._id],
       });
 
       await group.save();
+
+      await User.findOneAndUpdate(
+        {handle: req.user.handle},
+        { $push: { joinedGroupList: groupId } },
+      );
 
       return res.status(200).json({
         success: true,

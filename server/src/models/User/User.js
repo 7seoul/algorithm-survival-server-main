@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema({
   },
   joinedGroupList: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Number,
       ref: "Group",
     },
   ],
