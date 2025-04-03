@@ -7,10 +7,6 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(cors());
 
-// API 라우트 설정 v1
-const usersV1 = require("./src/v1/routes/users");
-app.use("/api/v1/users", usersV1);
-
 // API 라우트 설정 v2
 const users = require("./src/v2/routes/users");
 const auth = require("./src/v2/routes/auths");
