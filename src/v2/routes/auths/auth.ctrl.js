@@ -3,6 +3,7 @@ const solvedac = require("../../../apis/solvedac");
 const scrap = require("../../../apis/scrap");
 const autoUpdate = require("../../../services/autoUpdate");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 const get = {
   me: async (req, res) => {
@@ -84,11 +85,16 @@ const post = {
         });
       }
 
+      const verificationCode = await crypto
+      .randomBytes(Math.ceil(16))
+      .toString("hex")
+      .slice(0, 32);
+
       if (existingUser) {
         const user = await User.findOneAndUpdate(
           { handle: req.body.handle },
           {
-            verificationCode: "test123",
+            verificationCode: verificationCode,
           },
           { new: true }
         );
@@ -100,7 +106,7 @@ const post = {
 
       const newUser = {
         handle: req.body.handle,
-        verificationCode: "test123",
+        verificationCode: verificationCode,
       };
 
       const user = await new User(newUser);
@@ -108,7 +114,7 @@ const post = {
       await user.save().then((user) => {
         return res.status(200).json({
           success: true,
-          verificationCode: "test123"
+          verificationCode: verificationCode
         });
       });
     } catch (error) {
@@ -136,6 +142,12 @@ const post = {
       console.log("User DB  :", verifyUser.verificationCode);
 
       // 개발용 스킵
+      // if (!verifyUser.verificationCode) {
+      //   return res.status(200).json({
+      //     success: false,
+      //     message: "인증 코드를 새로 발급해 주세요.",
+      //   });
+      // }
       // if (profile.bio !== verifyUser.verificationCode) {
       //   return res.status(200).json({
       //     success: false,
@@ -226,7 +238,13 @@ const post = {
       const user = await User.findOne({handle: handle});
 
       // 개발용 스킵
-      // if (profile.bio !== user.verificationCode) {
+      // if (!verifyUser.verificationCode) {
+      //   return res.status(200).json({
+      //     success: false,
+      //     message: "인증 코드를 새로 발급해 주세요.",
+      //   });
+      // }
+      // if (profile.bio !== verifyUser.verificationCode) {
       //   return res.status(200).json({
       //     success: false,
       //     message: "인증 코드가 일치하지 않습니다.",
