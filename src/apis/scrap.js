@@ -74,7 +74,7 @@ const profile = async (handle) => {
 
     // streak
     const streakElement = $(
-      "#__next > div.css-axxp2y > div > div:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div > div > b"
+      "#__next > div.css-axxp2y > div > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div > div > b"
     );
     const streakText = streakElement.text();
     const streak = streakText
@@ -99,6 +99,7 @@ const profile = async (handle) => {
       streak: streak,
     };
 
+    
     await page.close();
     return userProfile;
   } catch (error) {
