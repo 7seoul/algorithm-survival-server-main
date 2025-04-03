@@ -46,9 +46,6 @@ const userSchema = mongoose.Schema(
     imgSrc: {
       type: String,
     },
-    bio: {
-      type: String,
-    },
     token: {
       type: String,
     },

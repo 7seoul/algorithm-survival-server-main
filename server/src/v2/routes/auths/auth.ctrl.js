@@ -17,7 +17,6 @@ const get = {
         "groupName"
       );
       
-
       if (!user) {
         return res
           .status(404)
@@ -151,8 +150,7 @@ const post = {
         streak === undefined ||
         profile.tier === undefined ||
         profile.solvedCount === undefined ||
-        profile.profileImageUrl === undefined ||
-        profile.bio === undefined
+        profile.profileImageUrl === undefined
       ) {
         return res.status(300).json({
           success: false,
@@ -174,8 +172,8 @@ const post = {
           currentSolved: profile.solvedCount,
           tier: profile.tier,
           imgSrc: profile.profileImageUrl,
-          bio: "",
           isVerified: true,
+          verificationCode: "",
         },
         { new: true }
       );
@@ -213,6 +211,41 @@ const post = {
       return res.status(200).json({
         success: true,
         message: "로그아웃 성공",
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        success: false,
+        error: "서버 오류 발생",
+      });
+    }
+  },
+  password: async (req, res) => {
+    try {
+      const { newPassword, handle } = req.body;
+      const user = await User.findOne({handle: handle});
+
+      // 개발용 스킵
+      // if (profile.bio !== user.verificationCode) {
+      //   return res.status(200).json({
+      //     success: false,
+      //     message: "인증 코드가 일치하지 않습니다.",
+      //   });
+      // }
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, message: "찾을 수 없는 아이디 입니다." });
+      }
+
+      // 새로운 비밀번호 설정
+      user.password = newPassword;
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "비밀번호 변경 완료",
       });
     } catch (error) {
       console.log(error);

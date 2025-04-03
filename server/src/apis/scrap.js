@@ -54,10 +54,10 @@ const profile = async (handle) => {
     const imgSrc = $("img.css-1q631t7").first().attr("src") || undefined;
 
     // bio
-    const bio =
-      $("#__next > div.css-1s1t70h > div.css-1948bce > div:nth-child(4) > p")
-        .text()
-        .trim() || "";
+    // const bio =
+    //   $("#__next > div.css-1s1t70h > div.css-1948bce > div:nth-child(4) > p")
+    //     .text()
+    //     .trim() || "";
 
     // solved
     const solvedElement = $(`a[href="/profile/${handle}/solved"]`).first();

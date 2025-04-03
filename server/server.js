@@ -1,5 +1,4 @@
 const app = require("./app");
-const cron = require("node-cron");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
