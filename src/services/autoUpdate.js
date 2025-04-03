@@ -36,7 +36,7 @@ async function updateUser() {
 
     if (profile.success === true) {
       try {
-        const initial = await User.findById(user._id);
+        const initial = await User.findOne({handle: user.handle});
 
         let down = 0;
         let newStreak = initial.initialStreak;
@@ -46,7 +46,7 @@ async function updateUser() {
         }
 
         const saved = await User.findByIdAndUpdate(
-          user._id,
+          {handle: user.handle},
           {
             $set: {
               initialStreak: newStreak,
