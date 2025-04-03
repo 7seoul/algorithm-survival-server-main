@@ -27,8 +27,8 @@ const get = {
         { _id: groupId },
         "-__v -applications"
       ).populate(
-        "members admin",
-        "-_id name handle currentSolved currentStreak"
+        "memberData",
+        "-_id handle initialSolved initialStreak currentSolved currentStreak"
       );
       return res.status(200).json({
         success: true,
@@ -85,6 +85,7 @@ const post = {
     try {
       // 유저 정보 저장
       const memberData = new MemberData({
+        name: req.user.name,
         handle: req.user.handle,
         initialStreak: req.user.currentStreak,
         currentStreak: req.user.currentStreak,

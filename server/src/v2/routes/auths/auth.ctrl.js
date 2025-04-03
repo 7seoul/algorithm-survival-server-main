@@ -10,7 +10,7 @@ const get = {
       const handle = req.user.handle;
       const user = await User.findOne(
         { handle },
-        "-token -password -createdAt -verificationCode -__v"
+        "-token -password -createdAt -verificationCode -__v -isVerified"
       )
       .populate(
         "joinedGroupList",

@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 
 const memberDataSchema = mongoose.Schema(
   {
+    name: {
+      type: String,
+    },
     handle: {
       type: String,
       required: true,

@@ -8,7 +8,7 @@ const get = {
     try {
       const user = await User.findOne(
         { handle: req.params.handle },
-        "-_id -__v"
+        "-_id -__v -password -token -verificationCode -isVerified"
       );
       return res.status(200).json({
         success: true,
@@ -21,7 +21,10 @@ const get = {
   },
   all: async (req, res) => {
     try {
-      const users = await User.find({}, "-_id -__v");
+      const users = await User.find(
+        {}, 
+        "-_id -__v -password -token -verificationCode -isVerified"
+      );
       return res.status(200).json({
         success: true,
         users,
@@ -44,8 +47,8 @@ const get = {
           currentStreak: profile.streak,
           currentSolved: profile.solved,
         },
-        { new: true }
-      );
+        { new: true },
+      ).select("-_id -__v -password -token -verificationCode -isVerified");
 
       if (!user) {
         return res
@@ -73,7 +76,7 @@ const post = {
           name: req.body.name,
         },
         { new: true }
-      );
+      ).select("-_id -__v -password -token -verificationCode -isVerified");
 
       if (!user) {
         return res
