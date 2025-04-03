@@ -48,14 +48,18 @@ const checkGroupRole = async (groupId, userId) => {
   }
 
   // 멤버 여부 확인
-  const isMember = group.members.some(member => member.toString() === userId.toString());
+  const isMember = group.members.some(
+    (member) => member.toString() === userId.toString()
+  );
 
   if (isMember) {
     return { success: true, role: "member", group };
   }
 
   // 가입 신청 여부 확인
-  const isApplicant = group.applications.some(applicant => applicant.toString() === userId.toString());
+  const isApplicant = group.applications.some(
+    (applicant) => applicant.toString() === userId.toString()
+  );
 
   if (isApplicant) {
     return { success: true, role: "applicant", group };

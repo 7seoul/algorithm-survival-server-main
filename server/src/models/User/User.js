@@ -2,64 +2,62 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const userSchema = mongoose.Schema({
-  name: {
-    type: String,
-  },
-  handle: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true,
-  },
-  password: {
-    type: String,
-    minlength: 4,
-  },
-  joinedGroupList: [
-    {
-      type: Number,
-      ref: "Group",
+const userSchema = mongoose.Schema(
+  {
+    name: {
+      type: String,
     },
-  ],
-  initialStreak: {
-    type: Number,
-    default: 0,
+    handle: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+    password: {
+      type: String,
+      minlength: 4,
+    },
+    joinedGroupList: [
+      {
+        type: Number,
+        ref: "Group",
+      },
+    ],
+    initialStreak: {
+      type: Number,
+      default: 0,
+    },
+    currentStreak: {
+      type: Number,
+      default: 0,
+    },
+    initialSolved: {
+      type: Number,
+      default: 0,
+    },
+    currentSolved: {
+      type: Number,
+      default: 0,
+    },
+    tier: {
+      type: Number,
+      default: 0,
+    },
+    imgSrc: {
+      type: String,
+    },
+    token: {
+      type: String,
+    },
+    verificationCode: {
+      type: String,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
-  currentStreak: {
-    type: Number,
-    default: 0,
-  },
-  initialSolved: {
-    type: Number,
-    default: 0,
-  },
-  currentSolved: {
-    type: Number,
-    default: 0,
-  },
-  tier: {
-    type: Number,
-    default: 0,
-  },
-  imgSrc: {
-    type: String,
-  },
-  bio: {
-    type: String,
-  },
-  token: {
-    type: String,
-  },
-  verificationCode: {
-    type: String,
-  },
-  isVerified: {
-    type: Boolean,
-    default: false,
-  }
-},
-{ timestamps: true }
+  { timestamps: true }
 );
 
 // 비밀번호 해싱

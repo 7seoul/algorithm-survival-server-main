@@ -54,18 +54,22 @@ const profile = async (handle) => {
     const imgSrc = $("img.css-1q631t7").first().attr("src") || undefined;
 
     // bio
-    const bio = $("#__next > div.css-1s1t70h > div.css-1948bce > div:nth-child(4) > p")
-      .text()
-      .trim() || "";
+    // const bio =
+    //   $("#__next > div.css-1s1t70h > div.css-1948bce > div:nth-child(4) > p")
+    //     .text()
+    //     .trim() || "";
 
-    // solved 
+    // solved
     const solvedElement = $(`a[href="/profile/${handle}/solved"]`).first();
-    const solved = solvedElement.length > 0
-      ? parseInt(solvedElement.find("b").text().replace(/,/g, ""), 10)
-      : undefined;
+    const solved =
+      solvedElement.length > 0
+        ? parseInt(solvedElement.find("b").text().replace(/,/g, ""), 10)
+        : undefined;
 
     // streak
-    const streakElement = $("#__next > div.css-axxp2y > div > div:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div > div > b");
+    const streakElement = $(
+      "#__next > div.css-axxp2y > div > div:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div > div > b"
+    );
     const streakText = streakElement.text();
     const streak = streakText
       ? parseInt(streakText.replace(/,/g, ""), 10)

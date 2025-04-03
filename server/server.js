@@ -1,5 +1,4 @@
 const app = require("./app");
-const cron = require("node-cron");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
@@ -20,9 +19,3 @@ mongoose
 // 유저 정보 자동 업데이트
 const autoUpdate = require("./src/services/autoUpdate");
 autoUpdate.init();
-
-// 06시 마다 생존 업데이트
-// const survival = require("./src/services/dailyUpdate");
-// if (process.env.NODE_ENV !== "test") {
-//   cron.schedule("0 6 * * *", survival.start);
-// }

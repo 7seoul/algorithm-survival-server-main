@@ -1,9 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const counterSchema = mongoose.Schema({
   _id: String,
-  seq: { 
-    type: Number, default: 0 
+  seq: {
+    type: Number,
+    default: 0,
   },
 });
 
