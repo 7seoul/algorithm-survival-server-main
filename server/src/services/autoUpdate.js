@@ -29,9 +29,9 @@ async function updateUser() {
   const user = userQueue[currentIndex];
 
   try {
-    console.time("1autoUpdate: scrap profile");
+    console.time(`"${user.handle}" scraping delay`);
     const profile = await scrap.profile(user.handle);
-    console.timeEnd("1autoUpdate: scrap profile");
+    console.timeEnd(`"${user.handle}" scraping delay`);
 
     if (profile.success === true) {
       try {
@@ -57,7 +57,7 @@ async function updateUser() {
           { new: true }
         )
           .select("-_id joinedGroupList")
-          .populate("joinedGroupList", "_id memberData");
+          .populate("joinedGroupList", "groupName _id memberData");
 
         console.log(`UPDATE USER : User "${user.handle}" updated`);
 
@@ -75,7 +75,7 @@ async function updateUser() {
               $inc: { downs: down },
             }
           );
-          console.log(group._id, "반영");
+          console.log(`그룹에 정보 반영 완료 : ${group.groupName}`);
         }
       } catch (err) {
         console.error(`UPDATE USER : Error updating user ${user.handle}:`, err);
@@ -96,8 +96,7 @@ async function updateUser() {
 function startUpdating() {
   if (interval) return; // 이미 실행 중이면 중복 실행 방지
 
-  // interval = setInterval(updateUser, 7100); // 서비스 용
-  interval = setInterval(updateUser, 1500000); // 개발 용
+  interval = setInterval(updateUser, 5000 + Math.floor(Math.random() * 10000)); // 개발 용
   console.log("UPDATE USER : User update process started!");
 }
 
@@ -108,6 +107,12 @@ function addUserInQueue(handle) {
 
 async function init() {
   userQueue = await loadUsersFromDB();
+  
+  if (!userQueue) {
+    console.log("EMPTY QUEUE!!! RELOADING DB!!!");
+    init();
+    return
+  } 
   console.log(`UPDATE USER : Loaded ${userQueue.length} users from DB.`);
   startUpdating();
 }
