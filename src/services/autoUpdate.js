@@ -45,7 +45,7 @@ async function updateUser() {
           newStreak = profile.streak;
         }
 
-        const saved = await User.findByIdAndUpdate(
+        const saved = await User.findOneAndUpdate(
           {handle: user.handle},
           {
             $set: {
