@@ -3,17 +3,15 @@ const { User } = require("../models/User/User");
 const { Group } = require("../models/Group/Group");
 const { MemberData } = require("../models/Group/MemberData");
 
-const userUpdate = async (user) => {
-  const timerLabel = `[USER UPDATE] "${
-    user.handle
-  }" (${process.hrtime.bigint()}) delay`;
+const userUpdate = async (handle) => {
+  const timerLabel = `[USER UPDATE] "${handle}" (${process.hrtime.bigint()}) delay`;
   console.time(timerLabel);
-  const profile = await scrap.profile(user.handle);
+  const profile = await scrap.profile(handle);
   console.timeEnd(timerLabel);
 
   if (profile.success === true) {
     try {
-      const initial = await User.findOne({ handle: user.handle });
+      const initial = await User.findOne({ handle: handle });
 
       let down = 0;
       let newStreak = initial.initialStreak;
@@ -23,7 +21,7 @@ const userUpdate = async (user) => {
       }
 
       const saved = await User.findOneAndUpdate(
-        { handle: user.handle },
+        { handle: handle },
         {
           $set: {
             initialStreak: newStreak,
@@ -34,16 +32,16 @@ const userUpdate = async (user) => {
         },
         { new: true }
       )
-        .select("-_id joinedGroupList")
+        .select("-_id -__v -password -token -verificationCode -isVerified")
         .populate("joinedGroupList", "groupName _id memberData");
 
-      console.log(`[USER UPDATE] "${user.handle}" profile updated`);
+      console.log(`[USER UPDATE] "${handle}" profile updated`);
 
       const groups = saved.joinedGroupList;
       // 그룹에 유저 업데이트 정보 반영
       for (let group of groups) {
         const member = await MemberData.findOne(
-          { handle: user.handle, _id: { $in: group.memberData } },
+          { handle: handle, _id: { $in: group.memberData } },
           { currentSolved: 1 }
         );
 
@@ -54,7 +52,7 @@ const userUpdate = async (user) => {
 
         // 유저 정보 업데이트
         await MemberData.findOneAndUpdate(
-          { handle: user.handle, _id: { $in: group.memberData } },
+          { handle: handle, _id: { $in: group.memberData } },
           {
             $set: {
               initialStreak: newStreak,
@@ -73,14 +71,15 @@ const userUpdate = async (user) => {
         }
 
         console.log(
-          `[USER UPDATE] "${user.handle}" -> 그룹: "${group.groupName}" 점수 증가: ${solvedIncrease}`
+          `[USER UPDATE] "${handle}" -> 그룹: "${group.groupName}" 점수 증가: ${solvedIncrease}`
         );
       }
+      return saved;
     } catch (err) {
-      console.error(`[USER UPDATE] "${user.handle}" Error updating user:`, err);
+      console.error(`[USER UPDATE] "${handle}" Error updating user:`, err);
     }
   } else {
-    console.log(`[USER UPDATE] "${user.handle}" FAIL TO SCRAPING.`);
+    console.log(`[USER UPDATE] "${handle}" FAIL TO SCRAPING.`);
   }
 };
 

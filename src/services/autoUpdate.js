@@ -30,7 +30,7 @@ async function autoUpdate() {
   const user = userQueue[currentIndex];
 
   try {
-    await userUpdate(user);
+    await userUpdate(user.handle);
   } catch (error) {
     console.error(
       `[AUTO] "${user.handle}" Error updating user:`,
