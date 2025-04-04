@@ -3,7 +3,7 @@ const { MemberData } = require("../../../models/Group/MemberData");
 const solvedac = require("../../../apis/solvedac");
 const scrap = require("../../../apis/scrap");
 const autoUpdate = require("../../../services/autoUpdate");
-const { userUpdate } = require("../../../services/userUpdate");
+const { userUpdateByScrap } = require("../../../services/userUpdate");
 
 const get = {
   info: async (req, res) => {
@@ -38,7 +38,7 @@ const get = {
   },
   updateInfo: async (req, res) => {
     try {
-      const user = await userUpdate(req.params.handle);
+      const user = await userUpdateByScrap(req.params.handle);
 
       if (!user) {
         return res

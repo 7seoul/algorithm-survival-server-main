@@ -1,9 +1,10 @@
 const scrap = require("../apis/scrap");
+const solvedac = require("../apis/solvedac");
 const { User } = require("../models/User/User");
 const { Group } = require("../models/Group/Group");
 const { MemberData } = require("../models/Group/MemberData");
 
-const userUpdate = async (handle) => {
+const userUpdateByScrap = async (handle) => {
   const timerLabel = `[USER UPDATE] "${handle}" (${process.hrtime.bigint()}) delay`;
   console.time(timerLabel);
   const profile = await scrap.profile(handle);
@@ -27,6 +28,7 @@ const userUpdate = async (handle) => {
             initialStreak: newStreak,
             currentStreak: profile.streak,
             currentSolved: profile.solved,
+            imgSrc: profile.imgSrc,
             tier: profile.tier,
           },
         },
@@ -83,6 +85,89 @@ const userUpdate = async (handle) => {
   }
 };
 
+const userUpdateBySolvedac = async (handle) => {
+  const timerLabel = `[USE SOLVEDAC API] "${handle}" (${process.hrtime.bigint()}) delay`;
+  console.time(timerLabel);
+  const profile = await solvedac.profile(handle);
+  const streak = await solvedac.grass(handle);
+  console.timeEnd(timerLabel);
+
+  if (!profile || !streak) {
+    try {
+      const initial = await User.findOne({ handle: handle });
+
+      let down = 0;
+      let newStreak = initial.initialStreak;
+      if (initial.initialStreak > streak) {
+        down = 1;
+        newStreak = streak;
+      }
+
+      const saved = await User.findOneAndUpdate(
+        { handle: handle },
+        {
+          $set: {
+            initialStreak: newStreak,
+            currentStreak: streak,
+            currentSolved: profile.solvedCount,
+            imgSrc: profile.profileImageUrl,
+            tier: profile.tier,
+          },
+        },
+        { new: true }
+      )
+        .select("-_id -__v -password -token -verificationCode -isVerified")
+        .populate("joinedGroupList", "groupName _id memberData");
+
+      console.log(`[USE SOLVEDAC API] "${handle}" profile updated`);
+
+      const groups = saved.joinedGroupList;
+      // 그룹에 유저 업데이트 정보 반영
+      for (let group of groups) {
+        const member = await MemberData.findOne(
+          { handle: handle, _id: { $in: group.memberData } },
+          { currentSolved: 1 }
+        );
+
+        if (!member) continue;
+
+        const previousSolved = member.currentSolved;
+        const solvedIncrease = profile.solvedCount - previousSolved;
+
+        // 유저 정보 업데이트
+        await MemberData.findOneAndUpdate(
+          { handle: handle, _id: { $in: group.memberData } },
+          {
+            $set: {
+              initialStreak: newStreak,
+              currentStreak: streak,
+              currentSolved: profile.solvedCount,
+            },
+            $inc: { downs: down },
+          }
+        );
+
+        // 그룹 점수 업데이트
+        if (solvedIncrease > 0) {
+          await Group.findByIdAndUpdate(group._id, {
+            $inc: { score: solvedIncrease },
+          });
+        }
+
+        console.log(
+          `[USE SOLVEDAC API] "${handle}" -> 그룹: "${group.groupName}" 점수 증가: ${solvedIncrease}`
+        );
+      }
+      return saved;
+    } catch (err) {
+      console.error(`[USE SOLVEDAC API] "${handle}" Error updating user:`, err);
+    }
+  } else {
+    console.log(`[USE SOLVEDAC API] "${handle}" FAIL TO SCRAPING.`);
+  }
+};
+
 module.exports = {
-  userUpdate,
+  userUpdateByScrap,
+  userUpdateBySolvedac,
 };

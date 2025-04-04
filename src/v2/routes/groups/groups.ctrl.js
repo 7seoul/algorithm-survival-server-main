@@ -4,7 +4,7 @@ const { MemberData } = require("../../../models/Group/MemberData");
 const { Counter } = require("../../../models/Counter/Counter");
 const solvedac = require("../../../apis/solvedac");
 const scrap = require("../../../apis/scrap");
-const autoUpdate = require("../../../services/autoUpdate");
+const { userUpdateBySolvedac } = require("../../../services/userUpdate");
 const utils = require("../../../utils/utils");
 
 const get = {
@@ -83,6 +83,9 @@ const get = {
 const post = {
   create: async (req, res) => {
     try {
+      // 유저 추가 전 정보 업데이트
+      await userUpdateBySolvedac(req.user.handle);
+
       // 유저 정보 저장
       const memberData = new MemberData({
         name: req.user.name,
@@ -216,7 +219,7 @@ const post = {
   },
   accept: async (req, res) => {
     try {
-      const { groupId, userId } = req.params;
+      const { groupId, handle } = req.params;
       const { success, role } = await utils.checkGroupRole(
         groupId,
         req.user._id
@@ -235,11 +238,14 @@ const post = {
         });
       }
 
+      // 유저 추가 전 정보 업데이트
+      await userUpdateBySolvedac(handle);
+
       const group = await Group.findByIdAndUpdate(
         groupId,
         {
-          $pull: { applications: userId },
-          $addToSet: { members: userId },
+          $pull: { applications: handle },
+          $addToSet: { members: handle },
         },
         { new: true }
       );
@@ -255,7 +261,7 @@ const post = {
   },
   reject: async (req, res) => {
     try {
-      const { groupId, userId } = req.params;
+      const { groupId, handle } = req.params;
       const { success, role } = await utils.checkGroupRole(
         groupId,
         req.user._id
@@ -277,7 +283,7 @@ const post = {
       const group = await Group.findByIdAndUpdate(
         groupId,
         {
-          $pull: { applications: userId },
+          $pull: { applications: handle },
         },
         { new: true }
       );

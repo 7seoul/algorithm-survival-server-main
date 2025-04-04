@@ -1,5 +1,5 @@
 const { User } = require("../models/User/User");
-const { userUpdate } = require("./userUpdate");
+const { userUpdateByScrap } = require("./userUpdate");
 
 let userQueue = [];
 let currentIndex = 0;
@@ -30,7 +30,7 @@ const autoUpdate = async () => {
   );
 
   try {
-    await userUpdate(user.handle);
+    await userUpdateByScrap(user.handle);
   } catch (error) {
     console.error(
       `[AUTO] "${user.handle}" Error updating user:`,

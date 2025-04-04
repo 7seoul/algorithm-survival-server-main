@@ -1,6 +1,5 @@
 const { User } = require("../../../models/User/User");
 const solvedac = require("../../../apis/solvedac");
-const scrap = require("../../../apis/scrap");
 const autoUpdate = require("../../../services/autoUpdate");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
@@ -12,12 +11,8 @@ const get = {
       const user = await User.findOne(
         { handle },
         "-token -password -createdAt -verificationCode -__v -isVerified"
-      )
-      .populate(
-        "joinedGroupList",
-        "groupName"
-      );
-      
+      ).populate("joinedGroupList", "groupName");
+
       if (!user) {
         return res
           .status(404)
@@ -35,9 +30,7 @@ const get = {
 const post = {
   login: async (req, res) => {
     try {
-      const user = await User.findOne(
-        { handle: req.body.handle },
-      );
+      const user = await User.findOne({ handle: req.body.handle });
 
       if (!user) {
         return res.status(200).json({
@@ -86,9 +79,9 @@ const post = {
       }
 
       const verificationCode = await crypto
-      .randomBytes(Math.ceil(16))
-      .toString("hex")
-      .slice(0, 32);
+        .randomBytes(Math.ceil(16))
+        .toString("hex")
+        .slice(0, 32);
 
       if (existingUser) {
         const user = await User.findOneAndUpdate(
@@ -114,7 +107,7 @@ const post = {
       await user.save().then((user) => {
         return res.status(200).json({
           success: true,
-          verificationCode: verificationCode
+          verificationCode: verificationCode,
         });
       });
     } catch (error) {
@@ -235,7 +228,7 @@ const post = {
   password: async (req, res) => {
     try {
       const { newPassword, handle } = req.body;
-      const user = await User.findOne({handle: handle});
+      const user = await User.findOne({ handle: handle });
 
       // 개발용 스킵
       // if (!verifyUser.verificationCode) {
@@ -244,6 +237,7 @@ const post = {
       //     message: "인증 코드를 새로 발급해 주세요.",
       //   });
       // }
+      // const profile = await solvedac.profile(handle);
       // if (profile.bio !== verifyUser.verificationCode) {
       //   return res.status(200).json({
       //     success: false,
