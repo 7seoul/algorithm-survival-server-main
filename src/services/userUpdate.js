@@ -92,7 +92,7 @@ const userUpdateBySolvedac = async (handle) => {
   const streak = await solvedac.grass(handle);
   console.timeEnd(timerLabel);
 
-  if (!profile || !streak) {
+  if (profile && streak !== undefined) {
     try {
       const initial = await User.findOne({ handle: handle });
 
