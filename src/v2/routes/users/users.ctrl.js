@@ -11,7 +11,7 @@ const get = {
       const user = await User.findOne(
         { handle: req.params.handle },
         "-_id -__v -password -token -verificationCode -isVerified"
-      );
+      ).populate("joinedGroupList", "groupName score");
       return res.status(200).json({
         success: true,
         user,

@@ -25,11 +25,13 @@ const get = {
       const { groupId } = req.params;
       const group = await Group.findOne(
         { _id: groupId },
-        "-__v -applications"
-      ).populate(
-        "memberData",
-        "-_id handle initialSolved initialStreak currentSolved currentStreak"
-      );
+        "-__v -applications -members"
+      )
+        .populate(
+          "memberData",
+          "-_id name handle initialSolved initialStreak currentSolved currentStreak"
+        )
+        .populate("admin", "-_id handle name");
       return res.status(200).json({
         success: true,
         group,
