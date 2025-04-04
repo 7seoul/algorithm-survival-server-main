@@ -116,7 +116,7 @@ const userUpdateBySolvedac = async (handle) => {
         },
         { new: true }
       )
-        .select("-_id -__v -password -token -verificationCode -isVerified")
+        .select("-__v -password -token -verificationCode -isVerified")
         .populate("joinedGroupList", "groupName _id memberData");
 
       console.log(`[USE SOLVEDAC API] "${handle}" profile updated`);

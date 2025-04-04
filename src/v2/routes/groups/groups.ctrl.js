@@ -241,20 +241,58 @@ const post = {
       }
 
       // 유저 추가 전 정보 업데이트
-      await userUpdateBySolvedac(handle);
+      const user = await userUpdateBySolvedac(handle);
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, error: "유저를 찾을 수 없습니다." });
+      }
 
-      const group = await Group.findByIdAndUpdate(
+      // 그룹 가져오기
+      const group = await Group.findById(groupId);
+      if (!group) {
+        return res
+          .status(404)
+          .json({ success: false, error: "그룹을 찾을 수 없습니다." });
+      }
+
+      // 신청 목록에 있는지 확인
+      const isApplied = await group.applications.some(
+        (app) => app.toString() === user._id.toString()
+      );
+      if (!isApplied) {
+        return res
+          .status(400)
+          .json({ success: false, error: "유저가 신청 목록에 없습니다." });
+      }
+
+      // MemberData 생성 및 저장
+      const memberData = new MemberData({
+        name: user.name,
+        handle: user.handle,
+        initialStreak: user.currentStreak,
+        currentStreak: user.currentStreak,
+        initialSolved: user.currentSolved,
+        currentSolved: user.currentSolved,
+      });
+      await memberData.save();
+
+      // 그룹 업데이트
+      const updatedGroup = await Group.findByIdAndUpdate(
         groupId,
         {
-          $pull: { applications: handle },
-          $addToSet: { members: handle },
+          $pull: { applications: user._id },
+          $addToSet: {
+            members: user._id,
+            memberData: memberData._id,
+          },
         },
         { new: true }
       );
 
       return res.status(200).json({
         success: true,
-        group,
+        group: updatedGroup,
       });
     } catch (error) {
       console.log(error);
