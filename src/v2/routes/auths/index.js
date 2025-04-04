@@ -11,6 +11,7 @@ router.post("/code", ctrl.post.code); // 인증 코드 생성
 router.post("/register", ctrl.post.register); // 회원가입
 router.post("/login", ctrl.post.login); // 로그인
 router.post("/logout", auth, ctrl.post.logout); // 로그아웃
-router.post("/password", auth, ctrl.post.password); // 로그아웃
+router.post("/reset", ctrl.get.reset); // 비밀번호 변경을 위한 인증 코드 생성
+router.post("/password", auth, ctrl.post.password); // 비밀번호 변경
 
 module.exports = router;

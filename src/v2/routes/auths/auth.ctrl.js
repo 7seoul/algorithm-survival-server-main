@@ -115,6 +115,39 @@ const post = {
       return res.status(500).json({ success: false, error: "서버 오류 발생" });
     }
   },
+  reset: async (req, res) => {
+    try {
+      const existingUser = await User.findOne({ handle: req.body.handle });
+
+      if (!existingUser) {
+        return res.status(200).json({
+          success: false,
+          message: "가입하지 않은 유저 입니다.",
+        });
+      }
+
+      const verificationCode = await crypto
+        .randomBytes(Math.ceil(16))
+        .toString("hex")
+        .slice(0, 32);
+
+      await User.findOneAndUpdate(
+        { handle: req.body.handle },
+        {
+          verificationCode: verificationCode,
+        },
+        { new: true }
+      );
+
+      return res.status(200).json({
+        success: true,
+        verificationCode: verificationCode,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+    }
+  },
   register: async (req, res) => {
     try {
       const verifyUser = await User.findOne({ handle: req.body.handle });
