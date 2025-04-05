@@ -8,7 +8,7 @@ let isRunning = false;
 
 const loadUsersFromDB = async () => {
   try {
-    const users = await User.find({}, "handle");
+    const users = await User.find({});
     return users;
   } catch (error) {
     logger.error(`[AUTO] Error loading user:`, error.message);
@@ -31,7 +31,11 @@ const autoUpdate = async () => {
   );
 
   try {
-    await userUpdateByScrap(user.handle);
+    if (user.isVerified === false) {
+      logger.info(`[AUTO] "${user.handle}" is not verified.`);
+    } else {
+      await userUpdateByScrap(user.handle);
+    }
   } catch (error) {
     logger.error(`[AUTO] "${user.handle}" Error updating user:`, error.message);
   }
@@ -42,7 +46,7 @@ const autoUpdate = async () => {
 };
 
 const scheduleNext = () => {
-  const delay = 5000 + Math.floor(Math.random() * 10000); // 5초~15초 사이 랜덤
+  const delay = 60000 + Math.floor(Math.random() * 60000);
   setTimeout(autoUpdate, delay);
 };
 
