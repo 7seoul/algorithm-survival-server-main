@@ -6,7 +6,9 @@ const get = {
   usersStreak: async (req, res) => {
     try {
       const users = await User.find({})
-        .select("-_id name handle tier initialStreak currentStreak")
+        .select(
+          "-_id name handle tier initialSolved currentSolved initialStreak currentStreak maxStreak"
+        )
         .lean();
 
       const result = users
@@ -14,9 +16,11 @@ const get = {
           name: user.name,
           handle: user.handle,
           tier: user.tier,
-          streak: user.currentStreak - user.initialStreak,
+          solved: user.currentSolved - user.initialSolved,
+          currentStreak: user.currentStreak - user.initialStreak,
+          maxStreak: user.maxStreak,
         }))
-        .sort((a, b) => b.streak - a.streak);
+        .sort((a, b) => b.maxStreak - a.maxStreak);
 
       return res.status(200).json({
         success: true,
@@ -32,7 +36,9 @@ const get = {
   usersScore: async (req, res) => {
     try {
       const users = await User.find({})
-        .select("-_id name handle tier initialSolved currentSolved")
+        .select(
+          "-_id name handle tier initialSolved currentSolved initialStreak currentStreak maxStreak"
+        )
         .lean();
 
       const result = users
@@ -41,6 +47,8 @@ const get = {
           handle: user.handle,
           tier: user.tier,
           solved: user.currentSolved - user.initialSolved,
+          currentStreak: user.currentStreak - user.initialStreak,
+          maxStreak: user.maxStreak,
         }))
         .sort((a, b) => b.solved - a.solved);
 
@@ -58,16 +66,18 @@ const get = {
   groupsStreak: async (req, res) => {
     try {
       const groups = await Group.find({})
-        .select("groupName handle tier initialStreak currentStreak")
+        .select("groupName handle tier score currentStreak maxStreak")
         .lean();
 
       const result = groups
         .map((group) => ({
           _id: group._id,
           groupName: group.groupName,
-          streak: group.currentStreak - group.initialStreak,
+          score: group.score,
+          currentStreak: group.currentStreak,
+          maxStreak: group.maxStreak,
         }))
-        .sort((a, b) => b.streak - a.streak);
+        .sort((a, b) => b.maxStreak - a.maxStreak);
 
       return res.status(200).json({
         success: true,
@@ -83,10 +93,18 @@ const get = {
   groupsScore: async (req, res) => {
     try {
       const groups = await Group.find({})
-        .select("groupName handle tier score")
+        .select("groupName handle tier score currentStreak maxStreak")
         .lean();
 
-      const result = groups.sort((a, b) => b.score - a.score);
+      const result = groups
+        .map((group) => ({
+          _id: group._id,
+          groupName: group.groupName,
+          score: group.score,
+          currentStreak: group.currentStreak,
+          maxStreak: group.maxStreak,
+        }))
+        .sort((a, b) => b.score - a.score);
 
       return res.status(200).json({
         success: true,
