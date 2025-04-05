@@ -291,6 +291,7 @@ const post = {
             members: user._id,
             memberData: memberData._id,
           },
+          $inc: { size: 1 },
         },
         { new: true }
       );
