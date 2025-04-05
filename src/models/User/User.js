@@ -86,7 +86,7 @@ userSchema.statics.findByToken = function (token) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return this.findOne({ _id: decoded._id, token });
-  } catch (err) {
+  } catch (error) {
     return null;
   }
 };

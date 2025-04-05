@@ -79,11 +79,11 @@ const userUpdateByScrap = async (handle) => {
         );
       }
       return saved;
-    } catch (err) {
-      logger.error(`[USER UPDATE] "${handle}" Error updating user:`, err);
+    } catch (error) {
+      logger.error(`[USER UPDATE] "${handle}" Error updating user:`, error);
     }
   } else {
-    logger.info(`[USER UPDATE] "${handle}" FAIL TO SCRAPING.`);
+    logger.warn(`[USER UPDATE] "${handle}" FAIL TO SCRAPING.`);
   }
 };
 
@@ -161,11 +161,14 @@ const userUpdateBySolvedac = async (handle) => {
         );
       }
       return saved;
-    } catch (err) {
-      logger.error(`[USE SOLVEDAC API] "${handle}" Error updating user:`, err);
+    } catch (error) {
+      logger.error(
+        `[USE SOLVEDAC API] "${handle}" Error updating user:`,
+        error
+      );
     }
   } else {
-    logger.info(`[USE SOLVEDAC API] "${handle}" FAIL TO SCRAPING.`);
+    logger.warn(`[USE SOLVEDAC API] "${handle}" FAIL TO SCRAPING.`);
   }
 };
 

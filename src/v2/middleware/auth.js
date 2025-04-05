@@ -1,4 +1,5 @@
 const { User } = require("../../models/User/User");
+const logger = require("../../../logger");
 
 const auth = async (req, res, next) => {
   try {
@@ -22,7 +23,8 @@ const auth = async (req, res, next) => {
 
     req.user = user;
     next();
-  } catch (err) {
+  } catch (error) {
+    logger.error(`[AUTH ERROR] ${error.stack}`);
     return res.status(500).json({
       success: false,
       message: "서버 오류",

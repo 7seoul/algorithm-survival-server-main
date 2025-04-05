@@ -74,7 +74,7 @@ const profile = async (handle) => {
           }
         );
       } catch (timeoutError) {
-        logger.error("Timeout occurred, proceeding with current page state...");
+        logger.warn("Timeout occurred, proceeding with current page state...");
       }
 
       const html = await page.content();
@@ -121,8 +121,8 @@ const profile = async (handle) => {
       if (page && !page.isClosed?.()) {
         try {
           await page.close();
-        } catch (e) {
-          logger.error("Page close failed:", e);
+        } catch (error) {
+          logger.error("Page close failed:", error);
         }
       }
     }

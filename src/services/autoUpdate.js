@@ -66,7 +66,7 @@ const init = async () => {
   userQueue = await loadUsersFromDB();
 
   if (!userQueue || userQueue.length === 0) {
-    logger.info("[AUTO] EMPTY QUEUE!!! RELOADING DB!!!");
+    logger.wran("[AUTO] EMPTY QUEUE!!! RELOADING DB!!!");
     setTimeout(init, 5000); // 5초 후 재시도
     return;
   }
