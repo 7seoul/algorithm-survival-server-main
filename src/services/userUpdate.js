@@ -69,9 +69,37 @@ const userUpdateByScrap = async (handle) => {
 
         // 그룹 점수 업데이트
         if (solvedIncrease > 0) {
-          await Group.findByIdAndUpdate(group._id, {
-            $inc: { score: solvedIncrease },
-          });
+          const updatedGroup = await Group.findByIdAndUpdate(
+            group._id,
+            {
+              $inc: { score: solvedIncrease },
+              $addToSet: { todaySolvedMembers: initial._id },
+            },
+            { new: true }
+          ).select(
+            "todayAllSolved todaySolvedMembers members currentStreak maxStreak size"
+          );
+
+          const totalMembers = updatedGroup.size;
+          const solvedCount = updatedGroup.todaySolvedMembers.length;
+
+          if (solvedCount === totalMembers && !updatedGroup.todayAllSolved) {
+            // streak 증가
+            const newStreak = updatedGroup.currentStreak + 1;
+
+            const updateFields = {
+              $inc: { currentStreak: 1 },
+              $set: { todayAllSolved: true },
+            };
+
+            if (newStreak > updatedGroup.maxStreak) {
+              updateFields.$set.maxStreak = newStreak;
+            }
+
+            await Group.findByIdAndUpdate(group._id, updateFields);
+
+            logger.info(`[USER UPDATE] 그룹 "${group.groupName}" streak 증가`);
+          }
         }
 
         logger.info(

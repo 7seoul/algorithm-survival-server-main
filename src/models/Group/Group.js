@@ -41,7 +41,7 @@ const groupSchema = mongoose.Schema(
       type: Number,
       default: 1,
     },
-    todaySolvedMember: [
+    todaySolvedMembers: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

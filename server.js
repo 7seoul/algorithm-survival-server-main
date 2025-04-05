@@ -2,6 +2,7 @@ const app = require("./app");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const logger = require("./logger");
+const { migrateGroups, migrateUsers } = require("./migration");
 
 dotenv.config();
 
@@ -14,9 +15,10 @@ app.listen(port, () => {
 // MongoDB 연결
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => logger.info("Connected to MongoDB"))
+  .then(async () => {
+    logger.info("Connected to MongoDB");
+    // 유저 정보 자동 업데이트
+    const autoUpdate = require("./src/services/autoUpdate");
+    autoUpdate.init();
+  })
   .catch((e) => logger.error("MongoDB error: ", e));
-
-// 유저 정보 자동 업데이트
-const autoUpdate = require("./src/services/autoUpdate");
-autoUpdate.init();
