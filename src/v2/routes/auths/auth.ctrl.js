@@ -22,7 +22,9 @@ const get = {
       return res.status(200).json({ success: true, user });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
 };
@@ -64,7 +66,9 @@ const post = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
   code: async (req, res) => {
@@ -112,7 +116,9 @@ const post = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
   reset: async (req, res) => {
@@ -145,7 +151,9 @@ const post = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
   register: async (req, res) => {
@@ -234,7 +242,9 @@ const post = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
   logout: async (req, res) => {
@@ -254,7 +264,7 @@ const post = {
       console.log(error);
       return res.status(500).json({
         success: false,
-        error: "서버 오류 발생",
+        message: "서버 오류 발생",
       });
     }
   },
@@ -296,7 +306,7 @@ const post = {
       console.log(error);
       return res.status(500).json({
         success: false,
-        error: "서버 오류 발생",
+        message: "서버 오류 발생",
       });
     }
   },

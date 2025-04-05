@@ -57,7 +57,9 @@ const get = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
 };

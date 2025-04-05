@@ -17,7 +17,9 @@ const get = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
   info: async (req, res) => {
@@ -38,7 +40,9 @@ const get = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
   applications: async (req, res) => {
@@ -52,13 +56,13 @@ const get = {
       if (!success) {
         return res
           .status(404)
-          .json({ success: false, error: "그룹을 찾을 수 없습니다." });
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
       }
 
       if (role !== "admin") {
         return res.status(200).json({
           success: false,
-          error: "권한이 없습니다.",
+          message: "권한이 없습니다.",
         });
       }
 
@@ -77,7 +81,9 @@ const get = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
 };
@@ -130,7 +136,9 @@ const post = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
   edit: async (req, res) => {
@@ -150,7 +158,7 @@ const post = {
       if (role !== "admin") {
         return res.status(200).json({
           success: false,
-          error: "권한이 없습니다.",
+          message: "권한이 없습니다.",
         });
       }
 
@@ -174,7 +182,9 @@ const post = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
   apply: async (req, res) => {
@@ -188,13 +198,13 @@ const post = {
       if (!success) {
         return res
           .status(404)
-          .json({ success: false, error: "그룹을 찾을 수 없습니다." });
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
       }
 
       if (role !== "none") {
         return res.status(200).json({
           success: false,
-          error: "이미 그룹의 멤버입니다.",
+          message: "이미 그룹의 멤버입니다.",
         });
       }
 
@@ -207,7 +217,7 @@ const post = {
       if (!updatedGroup) {
         return res
           .status(404)
-          .json({ success: false, error: "그룹을 찾을 수 없습니다." });
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
       }
 
       return res.status(200).json({
@@ -216,7 +226,9 @@ const post = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
   accept: async (req, res) => {
@@ -230,13 +242,13 @@ const post = {
       if (!success) {
         return res
           .status(404)
-          .json({ success: false, error: "그룹을 찾을 수 없습니다." });
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
       }
 
       if (role !== "admin") {
         return res.status(200).json({
           success: false,
-          error: "권한이 없습니다.",
+          message: "권한이 없습니다.",
         });
       }
 
@@ -245,7 +257,7 @@ const post = {
       if (!user) {
         return res
           .status(404)
-          .json({ success: false, error: "유저를 찾을 수 없습니다." });
+          .json({ success: false, message: "유저를 찾을 수 없습니다." });
       }
 
       // 그룹 가져오기
@@ -253,7 +265,7 @@ const post = {
       if (!group) {
         return res
           .status(404)
-          .json({ success: false, error: "그룹을 찾을 수 없습니다." });
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
       }
 
       // 신청 목록에 있는지 확인
@@ -263,7 +275,7 @@ const post = {
       if (!isApplied) {
         return res
           .status(400)
-          .json({ success: false, error: "유저가 신청 목록에 없습니다." });
+          .json({ success: false, message: "유저가 신청 목록에 없습니다." });
       }
 
       // MemberData 생성 및 저장
@@ -296,7 +308,9 @@ const post = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
   reject: async (req, res) => {
@@ -310,13 +324,13 @@ const post = {
       if (!success) {
         return res
           .status(404)
-          .json({ success: false, error: "그룹을 찾을 수 없습니다." });
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
       }
 
       if (role !== "admin") {
         return res.status(200).json({
           success: false,
-          error: "권한이 없습니다.",
+          message: "권한이 없습니다.",
         });
       }
 
@@ -334,7 +348,9 @@ const post = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ success: false, error: "서버 오류 발생" });
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
     }
   },
 };
