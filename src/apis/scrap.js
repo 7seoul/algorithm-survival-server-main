@@ -1,7 +1,7 @@
-const axios = require("axios");
 const cheerio = require("cheerio");
 const puppeteer = require("puppeteer");
 const utils = require("../utils/utils");
+
 const PQueue = require("p-queue").default;
 const queue = new PQueue({ concurrency: 5 });
 const MAX_USAGE = 100;
@@ -30,6 +30,7 @@ const initBrowser = async () => {
           console.warn("Failed to close browser:", e);
         }
       }
+
       console.log("Initializing new browser...");
       browserInstance = await puppeteer.launch({
         headless: "new",

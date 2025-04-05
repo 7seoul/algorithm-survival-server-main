@@ -20,7 +20,13 @@ const get = {
             },
           },
         },
-        { $limit: 5 },
+
+        {
+          $project: {
+            groupName: 1,
+          },
+        },
+        { $limit: 10 },
       ]);
 
       const users = await User.aggregate([
@@ -33,7 +39,15 @@ const get = {
             },
           },
         },
-        { $limit: 5 },
+        {
+          $project: {
+            _id: 0,
+            name: 1,
+            handle: 1,
+            tier: 1,
+          },
+        },
+        { $limit: 10 },
       ]);
 
       return res.status(200).json({
