@@ -23,6 +23,10 @@ const userSchema = mongoose.Schema(
         ref: "Group",
       },
     ],
+    maxStreak: {
+      type: Number,
+      default: 0,
+    },
     initialStreak: {
       type: Number,
       default: 0,

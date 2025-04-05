@@ -41,7 +41,20 @@ const groupSchema = mongoose.Schema(
       type: Number,
       default: 1,
     },
-    initialStreak: {
+    todaySolvedMember: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    todayAllSolved: {
+      type: Boolean,
+      default: 0,
+    },
+    lastCheckDate: {
+      type: Date,
+    },
+    maxStreak: {
       type: Number,
       default: 0,
     },
