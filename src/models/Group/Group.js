@@ -51,9 +51,6 @@ const groupSchema = mongoose.Schema(
       type: Boolean,
       default: 0,
     },
-    lastCheckDate: {
-      type: Date,
-    },
     maxStreak: {
       type: Number,
       default: 0,
