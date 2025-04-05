@@ -10,7 +10,7 @@ const get = {
         return res.status(400).json({ error: "검색어를 입력하세요." });
       }
 
-      const groupResults = await Group.aggregate([
+      const groups = await Group.aggregate([
         {
           $search: {
             index: "groupSearchIndex",
@@ -23,7 +23,7 @@ const get = {
         { $limit: 5 },
       ]);
 
-      const userResults = await User.aggregate([
+      const users = await User.aggregate([
         {
           $search: {
             index: "userSearchIndex",
@@ -38,7 +38,8 @@ const get = {
 
       return res.status(200).json({
         success: true,
-        results: [...groupResults, ...userResults],
+        groups,
+        users,
       });
     } catch (error) {
       console.log(error);
