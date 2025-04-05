@@ -161,7 +161,10 @@ const post = {
       const group = await Group.findByIdAndUpdate(
         groupId,
         {
-          description: req.body.description,
+          $set: {
+            groupName: req.body.groupName,
+            description: req.body.description,
+          },
         },
         { new: true }
       );
