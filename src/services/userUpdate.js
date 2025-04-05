@@ -4,12 +4,13 @@ const { User } = require("../models/User/User");
 const { Group } = require("../models/Group/Group");
 const { MemberData } = require("../models/Group/MemberData");
 const logger = require("../../logger");
+const timer = require("../utils/timer");
 
 const userUpdateByScrap = async (handle) => {
-  const timerLabel = `[USER UPDATE] "${handle}" (${process.hrtime.bigint()}) delay`;
-  console.time(timerLabel);
+  const label = `[USER UPDATE] "${handle}"`;
+  timer.start(label);
   const profile = await scrap.profile(handle);
-  console.timeEnd(timerLabel);
+  timer.end(label, logger);
 
   if (profile.success === true) {
     try {

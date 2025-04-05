@@ -1,6 +1,6 @@
 const cheerio = require("cheerio");
 const puppeteer = require("puppeteer");
-const utils = require("../utils/utils");
+const { tierList } = require("../utils/tier");
 const logger = require("../../logger");
 
 const PQueue = require("p-queue").default;
@@ -109,7 +109,7 @@ const profile = async (handle) => {
 
       return {
         success,
-        tier: tier ? utils.tierList[tier] : undefined,
+        tier: tier ? tierList[tier] : undefined,
         solved,
         imgSrc,
         streak,

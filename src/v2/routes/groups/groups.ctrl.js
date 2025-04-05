@@ -2,10 +2,8 @@ const { User } = require("../../../models/User/User");
 const { Group } = require("../../../models/Group/Group");
 const { MemberData } = require("../../../models/Group/MemberData");
 const { Counter } = require("../../../models/Counter/Counter");
-const solvedac = require("../../../apis/solvedac");
-const scrap = require("../../../apis/scrap");
 const { userUpdateBySolvedac } = require("../../../services/userUpdate");
-const utils = require("../../../utils/utils");
+const { checkRole } = require("../../../utils/checkRole");
 const logger = require("../../../../logger");
 
 const get = {
@@ -49,10 +47,7 @@ const get = {
   applications: async (req, res) => {
     try {
       const { groupId } = req.params;
-      const { success, role } = await utils.checkGroupRole(
-        groupId,
-        req.user._id
-      );
+      const { success, role } = await checkRole(groupId, req.user._id);
 
       if (!success) {
         return res
@@ -145,7 +140,7 @@ const post = {
   edit: async (req, res) => {
     try {
       const { groupId } = req.params;
-      const { success, role } = await utils.checkGroupRole(
+      const { success, role } = await checkRole(
         req.params.groupId,
         req.user._id
       );
@@ -191,7 +186,7 @@ const post = {
   apply: async (req, res) => {
     try {
       const { groupId } = req.params;
-      const { success, role } = await utils.checkGroupRole(
+      const { success, role } = await checkRole(
         req.params.groupId,
         req.user._id
       );
@@ -235,10 +230,7 @@ const post = {
   accept: async (req, res) => {
     try {
       const { groupId, handle } = req.params;
-      const { success, role } = await utils.checkGroupRole(
-        groupId,
-        req.user._id
-      );
+      const { success, role } = await checkRole(groupId, req.user._id);
 
       if (!success) {
         return res
@@ -317,10 +309,7 @@ const post = {
   reject: async (req, res) => {
     try {
       const { groupId, handle } = req.params;
-      const { success, role } = await utils.checkGroupRole(
-        groupId,
-        req.user._id
-      );
+      const { success, role } = await checkRole(groupId, req.user._id);
 
       if (!success) {
         return res
