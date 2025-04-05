@@ -4,6 +4,7 @@ const solvedac = require("../../../apis/solvedac");
 const scrap = require("../../../apis/scrap");
 const autoUpdate = require("../../../services/autoUpdate");
 const { userUpdateByScrap } = require("../../../services/userUpdate");
+const logger = require("../../../../logger");
 
 const get = {
   info: async (req, res) => {
@@ -17,7 +18,7 @@ const get = {
         user,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -34,7 +35,7 @@ const get = {
         users,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -55,7 +56,7 @@ const get = {
         user,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -85,7 +86,7 @@ const post = {
         user,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });

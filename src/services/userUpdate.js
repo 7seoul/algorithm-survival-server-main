@@ -3,6 +3,7 @@ const solvedac = require("../apis/solvedac");
 const { User } = require("../models/User/User");
 const { Group } = require("../models/Group/Group");
 const { MemberData } = require("../models/Group/MemberData");
+const logger = require("../../logger");
 
 const userUpdateByScrap = async (handle) => {
   const timerLabel = `[USER UPDATE] "${handle}" (${process.hrtime.bigint()}) delay`;
@@ -37,7 +38,7 @@ const userUpdateByScrap = async (handle) => {
         .select("-_id -__v -password -token -verificationCode -isVerified")
         .populate("joinedGroupList", "groupName _id memberData");
 
-      console.log(`[USER UPDATE] "${handle}" profile updated`);
+      logger.info(`[USER UPDATE] "${handle}" profile updated`);
 
       const groups = saved.joinedGroupList;
       // 그룹에 유저 업데이트 정보 반영
@@ -72,16 +73,16 @@ const userUpdateByScrap = async (handle) => {
           });
         }
 
-        console.log(
+        logger.info(
           `[USER UPDATE] "${handle}" -> 그룹: "${group.groupName}" 점수 증가: ${solvedIncrease}`
         );
       }
       return saved;
     } catch (err) {
-      console.error(`[USER UPDATE] "${handle}" Error updating user:`, err);
+      logger.error(`[USER UPDATE] "${handle}" Error updating user:`, err);
     }
   } else {
-    console.log(`[USER UPDATE] "${handle}" FAIL TO SCRAPING.`);
+    logger.info(`[USER UPDATE] "${handle}" FAIL TO SCRAPING.`);
   }
 };
 
@@ -119,7 +120,7 @@ const userUpdateBySolvedac = async (handle) => {
         .select("-__v -password -token -verificationCode -isVerified")
         .populate("joinedGroupList", "groupName _id memberData");
 
-      console.log(`[USE SOLVEDAC API] "${handle}" profile updated`);
+      logger.info(`[USE SOLVEDAC API] "${handle}" profile updated`);
 
       const groups = saved.joinedGroupList;
       // 그룹에 유저 업데이트 정보 반영
@@ -154,16 +155,16 @@ const userUpdateBySolvedac = async (handle) => {
           });
         }
 
-        console.log(
+        logger.info(
           `[USE SOLVEDAC API] "${handle}" -> 그룹: "${group.groupName}" 점수 증가: ${solvedIncrease}`
         );
       }
       return saved;
     } catch (err) {
-      console.error(`[USE SOLVEDAC API] "${handle}" Error updating user:`, err);
+      logger.error(`[USE SOLVEDAC API] "${handle}" Error updating user:`, err);
     }
   } else {
-    console.log(`[USE SOLVEDAC API] "${handle}" FAIL TO SCRAPING.`);
+    logger.info(`[USE SOLVEDAC API] "${handle}" FAIL TO SCRAPING.`);
   }
 };
 

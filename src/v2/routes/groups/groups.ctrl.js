@@ -6,6 +6,7 @@ const solvedac = require("../../../apis/solvedac");
 const scrap = require("../../../apis/scrap");
 const { userUpdateBySolvedac } = require("../../../services/userUpdate");
 const utils = require("../../../utils/utils");
+const logger = require("../../../../logger");
 
 const get = {
   all: async (req, res) => {
@@ -16,7 +17,7 @@ const get = {
         groups,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -39,7 +40,7 @@ const get = {
         group,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -80,7 +81,7 @@ const get = {
         applications,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -135,7 +136,7 @@ const post = {
         group,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -181,7 +182,7 @@ const post = {
         group,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -225,7 +226,7 @@ const post = {
         group: updatedGroup,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -307,7 +308,7 @@ const post = {
         group: updatedGroup,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -347,7 +348,7 @@ const post = {
         group,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });

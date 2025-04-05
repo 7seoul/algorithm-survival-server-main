@@ -1,4 +1,5 @@
 const axios = require("axios");
+const logger = require("../../logger");
 
 const profile = async (handle) => {
   try {
@@ -12,7 +13,7 @@ const profile = async (handle) => {
 
     return profile;
   } catch (error) {
-    console.error("Failed to profile:", error);
+    logger.error("Failed to profile:", error);
     throw new Error("Invalid data");
   }
 };
@@ -35,7 +36,7 @@ const problem = async (handle, grade) => {
 
     return cnt;
   } catch (error) {
-    console.error("Failed to problem:", error);
+    logger.error("Failed to problem:", error);
     throw new Error("Invalid data");
   }
 };
@@ -53,7 +54,7 @@ const grass = async (handle) => {
 
     return currentStreak;
   } catch (error) {
-    console.error("Failed to problem:", error);
+    logger.error("Failed to problem:", error);
     throw new Error("Invalid data");
   }
 };

@@ -1,5 +1,6 @@
 const { User } = require("../../../models/User/User");
 const { Group } = require("../../../models/Group/Group");
+const logger = require("../../../../logger");
 
 const get = {
   usersStreak: async (req, res) => {
@@ -22,7 +23,7 @@ const get = {
         result,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -48,7 +49,7 @@ const get = {
         result,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -73,7 +74,7 @@ const get = {
         result,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -92,7 +93,7 @@ const get = {
         result,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });

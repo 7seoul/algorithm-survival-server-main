@@ -15,7 +15,7 @@ app.listen(port, () => {
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => logger.info("Connected to MongoDB"))
-  .catch((e) => logger.info("MongoDB error: ", e));
+  .catch((e) => logger.error("MongoDB error: ", e));
 
 // 유저 정보 자동 업데이트
 const autoUpdate = require("./src/services/autoUpdate");

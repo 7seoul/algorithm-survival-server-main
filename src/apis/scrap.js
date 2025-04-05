@@ -1,6 +1,7 @@
 const cheerio = require("cheerio");
 const puppeteer = require("puppeteer");
 const utils = require("../utils/utils");
+const logger = require("../../logger");
 
 const PQueue = require("p-queue").default;
 const queue = new PQueue({ concurrency: 5 });
@@ -25,13 +26,13 @@ const initBrowser = async () => {
       if (browserInstance) {
         try {
           await browserInstance.close();
-          console.log("Old browser closed.");
+          logger.info("Old browser closed.");
         } catch (e) {
-          console.warn("Failed to close browser:", e);
+          logger.error("Failed to close browser:", e);
         }
       }
 
-      console.log("Initializing new browser...");
+      logger.info("Initializing new browser...");
       browserInstance = await puppeteer.launch({
         headless: "new",
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -73,7 +74,7 @@ const profile = async (handle) => {
           }
         );
       } catch (timeoutError) {
-        console.warn("Timeout occurred, proceeding with current page state...");
+        logger.error("Timeout occurred, proceeding with current page state...");
       }
 
       const html = await page.content();
@@ -114,14 +115,14 @@ const profile = async (handle) => {
         streak,
       };
     } catch (error) {
-      console.error("Failed to scrape profile:", error);
+      logger.error("Failed to scrape profile:", error);
       return { success: false };
     } finally {
       if (page && !page.isClosed?.()) {
         try {
           await page.close();
         } catch (e) {
-          console.warn("Page close failed:", e);
+          logger.error("Page close failed:", e);
         }
       }
     }
@@ -133,7 +134,7 @@ const closeBrowser = async () => {
   if (browserInstance && browserInstance.isConnected()) {
     await browserInstance.close();
     browserInstance = null;
-    console.log("Browser closed.");
+    logger.info("Browser closed.");
   }
 };
 

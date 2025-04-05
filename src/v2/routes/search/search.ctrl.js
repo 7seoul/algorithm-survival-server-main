@@ -1,5 +1,6 @@
 const { User } = require("../../../models/User/User");
 const { Group } = require("../../../models/Group/Group");
+const logger = require("../../../../logger");
 
 const get = {
   all: async (req, res) => {
@@ -56,7 +57,7 @@ const get = {
         users,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });

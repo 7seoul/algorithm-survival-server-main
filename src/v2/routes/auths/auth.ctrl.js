@@ -3,6 +3,7 @@ const solvedac = require("../../../apis/solvedac");
 const autoUpdate = require("../../../services/autoUpdate");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const logger = require("../../../../logger");
 
 const get = {
   me: async (req, res) => {
@@ -21,7 +22,7 @@ const get = {
 
       return res.status(200).json({ success: true, user });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -65,7 +66,7 @@ const post = {
         success: true,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -115,7 +116,7 @@ const post = {
         });
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -150,7 +151,7 @@ const post = {
         verificationCode: verificationCode,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -172,8 +173,8 @@ const post = {
       // solved.ac api 사용
       const profile = await solvedac.profile(req.body.handle);
 
-      console.log("sovledac :", profile.bio);
-      console.log("User DB  :", verifyUser.verificationCode);
+      logger.info("sovledac :", profile.bio);
+      logger.info("User DB  :", verifyUser.verificationCode);
 
       // 개발용 스킵
       // if (!verifyUser.verificationCode) {
@@ -241,7 +242,7 @@ const post = {
         success: true,
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -261,7 +262,7 @@ const post = {
         message: "로그아웃 성공",
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res.status(500).json({
         success: false,
         message: "서버 오류 발생",
@@ -303,7 +304,7 @@ const post = {
         message: "비밀번호 변경 완료",
       });
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       return res.status(500).json({
         success: false,
         message: "서버 오류 발생",
