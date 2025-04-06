@@ -41,6 +41,11 @@ const get = {
           },
         },
         {
+          $match: {
+            isVerified: true,
+          },
+        },
+        {
           $project: {
             _id: 0,
             name: 1,

@@ -27,7 +27,7 @@ const get = {
   all: async (req, res) => {
     try {
       const users = await User.find(
-        {},
+        { isVerified: true },
         "-_id -__v -password -token -verificationCode -isVerified"
       );
       return res.status(200).json({

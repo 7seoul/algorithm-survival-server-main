@@ -5,7 +5,7 @@ const logger = require("../../../../logger");
 const get = {
   usersStreak: async (req, res) => {
     try {
-      const users = await User.find({})
+      const users = await User.find({ isVerified: true })
         .select(
           "-_id name handle tier initialSolved currentSolved initialStreak currentStreak maxStreak"
         )
