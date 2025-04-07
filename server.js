@@ -26,8 +26,5 @@ mongoose
 
     // 유저 정보 자동 업데이트
     autoUpdate.init();
-
-    await migrateUsers();
-    await migrateUserVerifications();
   })
   .catch((e) => logger.error("MongoDB error: ", e));
