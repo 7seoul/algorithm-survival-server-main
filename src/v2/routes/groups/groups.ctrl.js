@@ -36,7 +36,19 @@ const get = {
         )
         .populate("admin", "-_id handle name");
 
+      const groupScore = group.score;
+      const groupMaxStreak = group.maxStreak;
+
+      const scoreRank =
+        (await Group.countDocuments({ score: { $gt: groupScore } })) + 1;
+      const streakRank =
+        (await Group.countDocuments({ maxStreak: { $gt: groupMaxStreak } })) +
+        1;
+
       const groupObj = group.toObject();
+
+      groupObj.scoreRank = scoreRank;
+      groupObj.streakRank = streakRank;
 
       groupObj.memberData = group.memberData.map((member) => ({
         name: member.name,

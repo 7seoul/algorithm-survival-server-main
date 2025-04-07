@@ -1,8 +1,4 @@
 const { User } = require("../../../models/User/User");
-const { MemberData } = require("../../../models/Group/MemberData");
-const solvedac = require("../../../apis/solvedac");
-const scrap = require("../../../apis/scrap");
-const autoUpdate = require("../../../services/autoUpdate");
 const { userUpdateByScrap } = require("../../../services/userUpdate");
 const logger = require("../../../../logger");
 
@@ -13,9 +9,24 @@ const get = {
         { handle: req.params.handle },
         "-_id -__v -password -token"
       ).populate("joinedGroupList", "groupName score");
+
+      const userScore = user.score;
+      const userMaxStreak = user.maxStreak;
+
+      const scoreRank =
+        (await User.countDocuments({ score: { $gt: userScore } })) + 1;
+      const streakRank =
+        (await User.countDocuments({ maxStreak: { $gt: userMaxStreak } })) + 1;
+
+      const userWithRank = {
+        ...user.toObject(),
+        scoreRank,
+        streakRank,
+      };
+
       return res.status(200).json({
         success: true,
-        user,
+        userWithRank,
       });
     } catch (error) {
       logger.error(error);
