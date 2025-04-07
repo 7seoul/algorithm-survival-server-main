@@ -27,6 +27,7 @@ const userUpdateByScrap = async (handle) => {
         initialStreak: newStreak,
         currentStreak: profile.streak,
         currentSolved: profile.solved,
+        score: profile.solved - initUser.initialSolved,
         imgSrc: profile.imgSrc,
         tier: profile.tier,
       };
@@ -145,6 +146,7 @@ const userUpdateBySolvedac = async (handle) => {
         initialStreak: newStreak,
         currentStreak: streak,
         currentSolved: profile.solvedCount,
+        score: profile.solvedCount - initUser.initialSolved,
         imgSrc: profile.profileImageUrl,
         tier: profile.tier,
       };
