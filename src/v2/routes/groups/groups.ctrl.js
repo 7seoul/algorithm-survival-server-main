@@ -9,7 +9,9 @@ const logger = require("../../../../logger");
 const get = {
   all: async (req, res) => {
     try {
-      const groups = await Group.find({}, "-__v");
+      const groups = await Group.find({}).select(
+        "groupName _id description score maxStreak size"
+      );
       return res.status(200).json({
         success: true,
         groups,

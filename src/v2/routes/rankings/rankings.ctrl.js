@@ -118,7 +118,9 @@ const get = {
     }
   },
   groupsMain: async (req, res) => {
-    const groups = await Group.find({}, "-__v").lean();
+    const groups = await Group.find({})
+      .select("groupName _id description score maxStreak size")
+      .lean();
 
     const score = groups.sort((a, b) => b.score - a.score).slice(0, 3);
 
