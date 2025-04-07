@@ -4,7 +4,11 @@ const dotenv = require("dotenv");
 const logger = require("./logger");
 const autoUpdate = require("./src/services/autoUpdate");
 
-const { migrateGroups, migrateUsers } = require("./migration");
+const {
+  migrateGroups,
+  migrateUsers,
+  migrateUserVerifications,
+} = require("./migration");
 
 dotenv.config();
 
@@ -22,5 +26,8 @@ mongoose
 
     // 유저 정보 자동 업데이트
     autoUpdate.init();
+
+    await migrateUsers();
+    await migrateUserVerifications();
   })
   .catch((e) => logger.error("MongoDB error: ", e));

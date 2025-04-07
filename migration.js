@@ -1,5 +1,6 @@
 const { Group } = require("./src/models/Group/Group");
 const { User } = require("./src/models/User/User");
+const { UserVerification } = require("./src/models/User/UserVerification");
 const logger = require("./logger");
 
 const migrateGroups = async () => {
@@ -21,25 +22,49 @@ const migrateGroups = async () => {
   );
 
   logger.info(
-    `[MIGRATION] 그룹 필드 초기화 완료: ${result.modifiedCount}개 그룹 업데이트`
+    `[MIGRATION] 그룹 마이그레이션 완료: ${result.modifiedCount}개 그룹 업데이트`
   );
 };
 
 const migrateUsers = async () => {
   const result = await User.updateMany(
     {
-      $or: [{ maxStreak: { $exists: false } }],
+      $or: [
+        { verificationCode: { $exists: true } },
+        { isVerified: { $exists: true } },
+      ],
     },
     {
-      $set: {
-        maxStreak: 0,
+      $unset: {
+        verificationCode: "",
+        isVerified: "",
       },
     }
   );
 
   logger.info(
-    `[MIGRATION] 유저 필드 초기화 완료: ${result.modifiedCount}개 유저 업데이트`
+    `[MIGRATION] 유저 마이그레이션 완료: ${result.modifiedCount}개 유저 업데이트`
   );
 };
 
-module.exports = { migrateGroups, migrateUsers };
+const migrateUserVerifications = async () => {
+  const users = await User.find({}, "handle");
+
+  let created = 0;
+  for (const user of users) {
+    const exists = await UserVerification.findOne({ handle: user.handle });
+    if (exists) continue;
+
+    await UserVerification.create({
+      handle: user.handle,
+      verificationCode: "",
+      isVerified: true,
+    });
+
+    created++;
+  }
+
+  logger.info(`[MIGRATION] UserVerification 생성 완료: ${created}개 생성됨`);
+};
+
+module.exports = { migrateGroups, migrateUsers, migrateUserVerifications };
