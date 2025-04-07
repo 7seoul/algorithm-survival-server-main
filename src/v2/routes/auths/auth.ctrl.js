@@ -1,4 +1,5 @@
 const { User } = require("../../../models/User/User");
+const { UserVerification } = require("../../../models/User/UserVerification");
 const solvedac = require("../../../apis/solvedac");
 const autoUpdate = require("../../../services/autoUpdate");
 const bcrypt = require("bcrypt");
@@ -11,7 +12,7 @@ const get = {
       const handle = req.user.handle;
       const user = await User.findOne(
         { handle },
-        "-token -password -createdAt -verificationCode -__v -isVerified"
+        "-token -password -createdAt -verificationCode -__v"
       ).populate("joinedGroupList", "groupName");
 
       if (!user) {
@@ -74,9 +75,11 @@ const post = {
   },
   code: async (req, res) => {
     try {
-      const existingUser = await User.findOne({ handle: req.body.handle });
+      const existingUser = await UserVerification.findOne({
+        handle: req.body.handle,
+      });
 
-      if (existingUser && existingUser.isVerified) {
+      if (existingUser && existingUser?.isVerified) {
         return res.status(409).json({
           success: false,
           message: "이미 등록된 아이디 입니다.",
@@ -124,9 +127,11 @@ const post = {
   },
   reset: async (req, res) => {
     try {
-      const existingUser = await User.findOne({ handle: req.body.handle });
+      const existingUser = await UserVerification.findOne({
+        handle: req.body.handle,
+      });
 
-      if (!existingUser) {
+      if (!existingUser || !existingUser?.isVerified) {
         return res.status(200).json({
           success: false,
           message: "가입하지 않은 유저 입니다.",
@@ -159,9 +164,11 @@ const post = {
   },
   register: async (req, res) => {
     try {
-      const verifyUser = await User.findOne({ handle: req.body.handle });
+      const verifyUser = await UserVerification.findOne({
+        handle: req.body.handle,
+      });
 
-      if (verifyUser !== undefined && verifyUser.isVerified) {
+      if (verifyUser && verifyUser?.isVerified) {
         return res.status(409).json({
           success: false,
           message: "이미 등록된 아이디 입니다.",
@@ -193,13 +200,12 @@ const post = {
       const streak = await solvedac.grass(req.body.handle);
 
       if (
-        profile === undefined ||
-        streak === undefined ||
-        profile.tier === undefined ||
-        profile.solvedCount === undefined ||
-        profile.profileImageUrl === undefined
+        !streak ||
+        !profile?.tier ||
+        !profile?.solvedCount ||
+        !profile?.profileImageUrl
       ) {
-        return res.status(300).json({
+        return res.status(424).json({
           success: false,
           message: "정보를 불러오는데 실패했습니다.",
         });
@@ -219,8 +225,6 @@ const post = {
           currentSolved: profile.solvedCount,
           tier: profile.tier,
           imgSrc: profile.profileImageUrl,
-          isVerified: true,
-          verificationCode: "",
         },
         { new: true }
       );
