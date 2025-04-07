@@ -8,7 +8,7 @@ let isRunning = false;
 
 const loadUsersFromDB = async () => {
   try {
-    const users = await User.find({});
+    const users = await User.find({ isVerified: true });
     return users;
   } catch (error) {
     logger.error(`[AUTO] Error loading user:`, error.message);
