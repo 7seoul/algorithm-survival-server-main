@@ -11,7 +11,7 @@ const get = {
     try {
       const user = await User.findOne(
         { handle: req.params.handle },
-        "-_id -__v -password -token -verificationCode"
+        "-_id -__v -password -token"
       ).populate("joinedGroupList", "groupName score");
       return res.status(200).json({
         success: true,
@@ -26,10 +26,7 @@ const get = {
   },
   all: async (req, res) => {
     try {
-      const users = await User.find(
-        {},
-        "-_id -__v -password -token -verificationCode"
-      );
+      const users = await User.find({}, "-_id -__v -password -token");
       return res.status(200).json({
         success: true,
         users,
@@ -73,7 +70,7 @@ const post = {
           name: req.body.name,
         },
         { new: true }
-      ).select("-_id -__v -password -token -verificationCode");
+      ).select("-_id -__v -password -token");
 
       if (!user) {
         return res

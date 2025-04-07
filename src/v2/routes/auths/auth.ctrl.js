@@ -12,7 +12,7 @@ const get = {
       const handle = req.user.handle;
       const user = await User.findOne(
         { handle },
-        "-token -password -createdAt -verificationCode -__v"
+        "-token -password -createdAt -__v"
       ).populate("joinedGroupList", "groupName");
 
       if (!user) {
@@ -75,48 +75,47 @@ const post = {
   },
   code: async (req, res) => {
     try {
-      const existingUser = await UserVerification.findOne({
+      const existingVerification = await UserVerification.findOne({
         handle: req.body.handle,
       });
 
-      if (existingUser && existingUser?.isVerified) {
+      if (existingVerification?.isVerified) {
         return res.status(409).json({
           success: false,
           message: "이미 등록된 아이디 입니다.",
         });
       }
 
-      const verificationCode = await crypto
+      const code = await crypto
         .randomBytes(Math.ceil(16))
         .toString("hex")
         .slice(0, 32);
 
-      if (existingUser) {
-        const user = await User.findOneAndUpdate(
+      if (existingVerification) {
+        await UserVerification.findOneAndUpdate(
           { handle: req.body.handle },
           {
-            verificationCode: verificationCode,
-          },
-          { new: true }
+            $set: {
+              verificationCode: code,
+            },
+          }
         );
         return res.status(200).json({
           success: true,
-          user: user,
+          verificationCode: code,
         });
       }
 
-      const newUser = {
+      const newVerification = new UserVerification({
         handle: req.body.handle,
-        verificationCode: verificationCode,
-      };
+        verificationCode: code,
+      });
 
-      const user = await new User(newUser);
+      await newVerification.save();
 
-      await user.save().then((user) => {
-        return res.status(200).json({
-          success: true,
-          verificationCode: verificationCode,
-        });
+      return res.status(200).json({
+        success: true,
+        verificationCode: code,
       });
     } catch (error) {
       logger.error(error);
@@ -127,33 +126,34 @@ const post = {
   },
   reset: async (req, res) => {
     try {
-      const existingUser = await UserVerification.findOne({
+      const existingVerification = await UserVerification.findOne({
         handle: req.body.handle,
       });
 
-      if (!existingUser || !existingUser?.isVerified) {
+      if (!existingVerification?.isVerified) {
         return res.status(200).json({
           success: false,
           message: "가입하지 않은 유저 입니다.",
         });
       }
 
-      const verificationCode = await crypto
+      const code = await crypto
         .randomBytes(Math.ceil(16))
         .toString("hex")
         .slice(0, 32);
 
-      await User.findOneAndUpdate(
+      await UserVerification.findOneAndUpdate(
         { handle: req.body.handle },
         {
-          verificationCode: verificationCode,
-        },
-        { new: true }
+          $set: {
+            verificationCode: code,
+          },
+        }
       );
 
       return res.status(200).json({
         success: true,
-        verificationCode: verificationCode,
+        verificationCode: code,
       });
     } catch (error) {
       logger.error(error);
@@ -164,11 +164,18 @@ const post = {
   },
   register: async (req, res) => {
     try {
-      const verifyUser = await UserVerification.findOne({
+      const verification = await UserVerification.findOne({
         handle: req.body.handle,
       });
 
-      if (verifyUser && verifyUser?.isVerified) {
+      if (!verification) {
+        return res.status(409).json({
+          success: false,
+          message: "인증 코드를 발급해 주세요.",
+        });
+      }
+
+      if (verification?.isVerified) {
         return res.status(409).json({
           success: false,
           message: "이미 등록된 아이디 입니다.",
@@ -181,16 +188,20 @@ const post = {
       const profile = await solvedac.profile(req.body.handle);
 
       logger.info("sovledac :", profile.bio);
-      logger.info("User DB  :", verifyUser.verificationCode);
+      logger.info("User DB  :", verification.verificationCode);
+      logger.info(
+        "compare result :",
+        profile.bio === verification.verificationCode
+      );
 
       // 개발용 스킵
-      // if (!verifyUser.verificationCode) {
+      // if (!userVerification.verificationCode) {
       //   return res.status(200).json({
       //     success: false,
       //     message: "인증 코드를 새로 발급해 주세요.",
       //   });
       // }
-      // if (profile.bio !== verifyUser.verificationCode) {
+      // if (profile.bio !== userVerification.verificationCode) {
       //   return res.status(200).json({
       //     success: false,
       //     message: "인증 코드가 일치하지 않습니다.",
@@ -199,12 +210,7 @@ const post = {
 
       const streak = await solvedac.grass(req.body.handle);
 
-      if (
-        !streak ||
-        !profile?.tier ||
-        !profile?.solvedCount ||
-        !profile?.profileImageUrl
-      ) {
+      if (streak === undefined || !profile) {
         return res.status(424).json({
           success: false,
           message: "정보를 불러오는데 실패했습니다.",
@@ -212,30 +218,40 @@ const post = {
       }
 
       const salt = await bcrypt.genSalt(10);
-      req.body.password = await bcrypt.hash(req.body.password, salt);
+      const hashedPassword = await bcrypt.hash(req.body.password, salt);
+      const newUser = new User({
+        handle: req.body.handle,
+        name: req.body.name,
+        password: hashedPassword,
+        initialStreak: streak,
+        currentStreak: streak,
+        initialSolved: profile.solvedCount,
+        currentSolved: profile.solvedCount,
+        tier: profile.tier,
+        imgSrc: profile.profileImageUrl
+          ? profile.profileImageUrl
+          : "https://static.solved.ac/misc/360x360/default_profile.png",
+      });
 
-      const user = await User.findOneAndUpdate(
+      await newUser.save();
+
+      autoUpdate.addUserInQueue(newUser.handle);
+
+      await UserVerification.findOneAndUpdate(
         { handle: req.body.handle },
         {
-          name: req.body.name,
-          password: req.body.password,
-          initialStreak: streak,
-          currentStreak: streak,
-          initialSolved: profile.solvedCount,
-          currentSolved: profile.solvedCount,
-          tier: profile.tier,
-          imgSrc: profile.profileImageUrl,
-        },
-        { new: true }
+          $set: {
+            verificationCode: "",
+            isVerified: true,
+          },
+        }
       );
 
-      autoUpdate.addUserInQueue(user.handle);
-
       // 토큰 생성
-      await user.generateToken();
+      await newUser.generateToken();
 
       // 쿠키에 토큰 저장
-      res.cookie("token", user.token, {
+      res.cookie("token", newUser.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 14 * 24 * 60 * 60 * 1000,
@@ -276,32 +292,45 @@ const post = {
   password: async (req, res) => {
     try {
       const { newPassword, handle } = req.body;
+
       const user = await User.findOne({ handle: handle });
 
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, message: "아이디를 찾을 수 없습니다." });
+      }
+
+      const userVerification = await UserVerification.findOne({
+        handle: handle,
+      });
+      if (!userVerification.verificationCode) {
+        return res.status(200).json({
+          success: false,
+          message: "인증 코드를 새로 발급해 주세요.",
+        });
+      }
       // 개발용 스킵
-      // if (!verifyUser.verificationCode) {
-      //   return res.status(200).json({
-      //     success: false,
-      //     message: "인증 코드를 새로 발급해 주세요.",
-      //   });
-      // }
       // const profile = await solvedac.profile(handle);
-      // if (profile.bio !== verifyUser.verificationCode) {
+      // if (profile.bio !== userVerification.verificationCode) {
       //   return res.status(200).json({
       //     success: false,
       //     message: "인증 코드가 일치하지 않습니다.",
       //   });
       // }
 
-      if (!user) {
-        return res
-          .status(404)
-          .json({ success: false, message: "찾을 수 없는 아이디 입니다." });
-      }
-
       // 새로운 비밀번호 설정
       user.password = newPassword;
       await user.save();
+
+      await UserVerification.findOneAndUpdate(
+        { handle: req.body.handle },
+        {
+          $set: {
+            verificationCode: "",
+          },
+        }
+      );
 
       return res.status(200).json({
         success: true,
