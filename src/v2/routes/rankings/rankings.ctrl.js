@@ -130,7 +130,8 @@ const get = {
         currentStreak: group.currentStreak,
         maxStreak: group.maxStreak,
       }))
-      .sort((a, b) => b.score - a.score);
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
 
     const streak = groups
       .map((group) => ({
@@ -140,7 +141,8 @@ const get = {
         currentStreak: group.currentStreak,
         maxStreak: group.maxStreak,
       }))
-      .sort((a, b) => b.maxStreak - a.maxStreak);
+      .sort((a, b) => b.maxStreak - a.maxStreak)
+      .slice(0, 3);
 
     return res.status(200).json({
       success: true,
