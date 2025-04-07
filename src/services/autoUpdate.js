@@ -31,11 +31,7 @@ const autoUpdate = async () => {
   );
 
   try {
-    if (user.isVerified === false) {
-      logger.info(`[AUTO] "${user.handle}" is not verified.`);
-    } else {
-      await userUpdateByScrap(user.handle);
-    }
+    await userUpdateByScrap(user.handle);
   } catch (error) {
     logger.error(`[AUTO] "${user.handle}" Error updating user:`, error.message);
   }
@@ -70,8 +66,8 @@ const init = async () => {
   userQueue = await loadUsersFromDB();
 
   if (!userQueue || userQueue.length === 0) {
-    logger.wran("[AUTO] EMPTY QUEUE!!! RELOADING DB!!!");
-    setTimeout(init, 5000); // 5초 후 재시도
+    logger.wran("[AUTO] EMPTY QUEUE after reload! Retrying in 5s...");
+    setTimeout(init, 5000);
     return;
   }
 
