@@ -117,6 +117,39 @@ const get = {
         .json({ success: false, message: "서버 오류 발생" });
     }
   },
+  groupsMain: async (req, res) => {
+    const groups = await Group.find({})
+      .select("groupName handle tier score currentStreak maxStreak")
+      .lean();
+
+    const score = groups
+      .map((group) => ({
+        _id: group._id,
+        groupName: group.groupName,
+        score: group.score,
+        currentStreak: group.currentStreak,
+        maxStreak: group.maxStreak,
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+
+    const streak = groups
+      .map((group) => ({
+        _id: group._id,
+        groupName: group.groupName,
+        score: group.score,
+        currentStreak: group.currentStreak,
+        maxStreak: group.maxStreak,
+      }))
+      .sort((a, b) => b.maxStreak - a.maxStreak)
+      .slice(0, 3);
+
+    return res.status(200).json({
+      success: true,
+      score,
+      streak,
+    });
+  },
 };
 module.exports = {
   get,
