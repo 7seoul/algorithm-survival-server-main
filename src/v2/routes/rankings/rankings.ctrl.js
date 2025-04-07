@@ -15,10 +15,8 @@ const get = {
         .map((user) => ({
           name: user.name,
           handle: user.handle,
-          tier: user.tier,
-          solved: user.currentSolved - user.initialSolved,
-          currentStreak: user.currentStreak - user.initialStreak,
-          maxStreak: user.maxStreak,
+          streak: user.maxStreak,
+          score: user.currentSolved - user.initialSolved,
         }))
         .sort((a, b) => b.maxStreak - a.maxStreak);
 
@@ -45,10 +43,8 @@ const get = {
         .map((user) => ({
           name: user.name,
           handle: user.handle,
-          tier: user.tier,
-          solved: user.currentSolved - user.initialSolved,
-          currentStreak: user.currentStreak - user.initialStreak,
-          maxStreak: user.maxStreak,
+          streak: user.maxStreak,
+          score: user.currentSolved - user.initialSolved,
         }))
         .sort((a, b) => b.solved - a.solved);
 
