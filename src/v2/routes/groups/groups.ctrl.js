@@ -33,9 +33,19 @@ const get = {
           "-_id name handle initialSolved initialStreak currentSolved currentStreak"
         )
         .populate("admin", "-_id handle name");
+
+      const groupObj = group.toObject();
+
+      groupObj.memberData = group.memberData.map((member) => ({
+        name: member.name,
+        handle: member.handle,
+        streak: member.currentStreak - member.initialStreak,
+        score: member.currentSolved - member.initialSolved,
+      }));
+
       return res.status(200).json({
         success: true,
-        group,
+        group: groupObj,
       });
     } catch (error) {
       logger.error(error);
