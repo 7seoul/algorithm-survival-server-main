@@ -65,6 +65,10 @@ const post = {
 
       return res.status(200).json({
         success: true,
+        user: {
+          handle: user.handle,
+          name: user.name,
+        },
       });
     } catch (error) {
       logger.error(error);
@@ -260,6 +264,10 @@ const post = {
 
       return res.status(200).json({
         success: true,
+        user: {
+          handle: newUser.handle,
+          name: newUser.name,
+        },
       });
     } catch (error) {
       logger.error(error);
