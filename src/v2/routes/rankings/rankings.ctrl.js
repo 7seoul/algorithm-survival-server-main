@@ -18,7 +18,7 @@ const get = {
           streak: user.maxStreak,
           score: user.currentSolved - user.initialSolved,
         }))
-        .sort((a, b) => b.maxStreak - a.maxStreak);
+        .sort((a, b) => b.streak - a.streak);
 
       return res.status(200).json({
         success: true,
@@ -46,7 +46,7 @@ const get = {
           streak: user.maxStreak,
           score: user.currentSolved - user.initialSolved,
         }))
-        .sort((a, b) => b.solved - a.solved);
+        .sort((a, b) => b.score - a.score);
 
       return res.status(200).json({
         success: true,
