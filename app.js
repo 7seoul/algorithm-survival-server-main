@@ -6,8 +6,19 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 
+const allowedOrigins = [
+  "https://survialgo.netlify.app", // 배포 클라이언트
+  "http://localhost:8080", // 로컬 클라이언트
+];
+
 const corsOptions = {
-  origin: "https://survialgo.netlify.app",
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 };
 
