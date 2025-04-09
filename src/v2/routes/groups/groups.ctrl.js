@@ -347,6 +347,12 @@ const post = {
         { new: true }
       );
 
+      // 유저 정보에 그룹 저장
+      await User.findOneAndUpdate(
+        { handle: handle },
+        { $push: { joinedGroupList: groupId } }
+      );
+
       return res.status(200).json({
         success: true,
         group: updatedGroup,
