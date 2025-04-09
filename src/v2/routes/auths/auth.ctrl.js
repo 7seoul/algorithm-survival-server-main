@@ -2,7 +2,6 @@ const { User } = require("../../../models/User/User");
 const { UserVerification } = require("../../../models/User/UserVerification");
 const solvedac = require("../../../apis/solvedac");
 const autoUpdate = require("../../../services/autoUpdate");
-const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const logger = require("../../../../logger");
 
@@ -221,12 +220,10 @@ const post = {
         });
       }
 
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(req.body.password, salt);
       const newUser = new User({
         handle: req.body.handle,
         name: req.body.name,
-        password: hashedPassword,
+        password: req.body.password,
         initialStreak: streak,
         currentStreak: streak,
         initialSolved: profile.solvedCount,
