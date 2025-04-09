@@ -52,10 +52,7 @@ const get = {
           "-_id name handle initialSolved initialStreak currentSolved currentStreak"
         )
         .populate("admin", "-_id handle name")
-        .populate(
-          "applications",
-          "-_id name handle currentSolved currentStreak"
-        );
+        .populate("applications", "-_id name handle");
 
       const groupScore = group.score;
       const groupMaxStreak = group.maxStreak;
