@@ -53,35 +53,41 @@ const userUpdateByScrap = async (handle) => {
       const groups = saved.joinedGroupList;
       // 그룹에 유저 업데이트 정보 반영
       for (let group of groups) {
-        const member = await MemberData.findOne(
-          { handle: handle, _id: { $in: group.memberData } },
-          { currentSolved: 1 }
-        );
+        const member = await MemberData.findOne({
+          handle,
+          _id: { $in: group.memberData },
+        });
 
         if (!member) continue;
 
-        const previousSolved = member.currentSolved;
-        const solvedIncrease = profile.solved - previousSolved;
+        const solvedIncrease = profile.solved - member.currentSolved;
+        if (solvedIncrease <= 0) continue;
 
         // 유저 정보 업데이트
-        await MemberData.findOneAndUpdate(
-          { handle: handle, _id: { $in: group.memberData } },
+        const memberUpdateResult = await MemberData.updateOne(
+          {
+            _id: member._id,
+            currentSolved: member.currentSolved,
+          },
           {
             $set: {
               initialStreak: newStreak,
               currentStreak: profile.streak,
               currentSolved: profile.solved,
+              score: profile.solved - member.initialSolved,
+              downs: member.downs + down,
             },
-            $inc: { downs: down },
           }
         );
 
         // 그룹 점수 업데이트
-        if (solvedIncrease > 0) {
+        if (memberUpdateResult.modifiedCount > 0) {
           const updatedGroup = await Group.findByIdAndUpdate(
             group._id,
             {
-              $inc: { score: solvedIncrease },
+              $set: {
+                score: group.score + solvedIncrease,
+              },
               $addToSet: { todaySolvedMembers: initUser._id },
             },
             { new: true }
@@ -94,18 +100,15 @@ const userUpdateByScrap = async (handle) => {
 
           if (solvedCount === totalMembers && !updatedGroup.todayAllSolved) {
             // streak 증가
-            const newStreak = updatedGroup.currentStreak + 1;
+            const newGroupStreak = updatedGroup.currentStreak + 1;
 
-            const updateFields = {
-              $inc: { currentStreak: 1 },
-              $set: { todayAllSolved: true },
-            };
-
-            if (newStreak > updatedGroup.maxStreak) {
-              updateFields.$set.maxStreak = newStreak;
-            }
-
-            await Group.findByIdAndUpdate(group._id, updateFields);
+            await Group.findByIdAndUpdate(group._id, {
+              $set: {
+                currentStreak: newGroupStreak,
+                maxStreak: Math.max(newGroupStreak, updatedGroup.maxStreak),
+                todayAllSolved: true,
+              },
+            });
 
             logger.info(`[USER UPDATE] 그룹 "${group.groupName}" streak 증가`);
           }
@@ -164,43 +167,49 @@ const userUpdateBySolvedac = async (handle) => {
         { $set: updateFields },
         { new: true }
       )
-        .select("-__v -password -token -verificationCode")
+        .select("-_id -__v -password -token -verificationCode")
         .populate("joinedGroupList", "groupName _id memberData");
 
-      logger.info(`[USE SOLVEDAC API] "${handle}" profile updated`);
+      logger.info(`[USER UPDATE] "${handle}" profile updated`);
 
       const groups = saved.joinedGroupList;
       // 그룹에 유저 업데이트 정보 반영
       for (let group of groups) {
-        const member = await MemberData.findOne(
-          { handle: handle, _id: { $in: group.memberData } },
-          { currentSolved: 1 }
-        );
+        const member = await MemberData.findOne({
+          handle,
+          _id: { $in: group.memberData },
+        });
 
         if (!member) continue;
 
-        const previousSolved = member.currentSolved;
-        const solvedIncrease = profile.solvedCount - previousSolved;
+        const solvedIncrease = profile.solvedCount - member.currentSolved;
+        if (solvedIncrease <= 0) continue;
 
         // 유저 정보 업데이트
-        await MemberData.findOneAndUpdate(
-          { handle: handle, _id: { $in: group.memberData } },
+        const memberUpdateResult = await MemberData.updateOne(
+          {
+            _id: member._id,
+            currentSolved: member.currentSolved,
+          },
           {
             $set: {
               initialStreak: newStreak,
               currentStreak: streak,
               currentSolved: profile.solvedCount,
+              score: profile.solvedCount - member.initialSolved,
+              downs: member.downs + down,
             },
-            $inc: { downs: down },
           }
         );
 
         // 그룹 점수 업데이트
-        if (solvedIncrease > 0) {
+        if (memberUpdateResult.modifiedCount > 0) {
           const updatedGroup = await Group.findByIdAndUpdate(
             group._id,
             {
-              $inc: { score: solvedIncrease },
+              $set: {
+                score: group.score + solvedIncrease,
+              },
               $addToSet: { todaySolvedMembers: initUser._id },
             },
             { new: true }
@@ -213,27 +222,22 @@ const userUpdateBySolvedac = async (handle) => {
 
           if (solvedCount === totalMembers && !updatedGroup.todayAllSolved) {
             // streak 증가
-            const newStreak = updatedGroup.currentStreak + 1;
+            const newGroupStreak = updatedGroup.currentStreak + 1;
 
-            const updateFields = {
-              $inc: { currentStreak: 1 },
-              $set: { todayAllSolved: true },
-            };
+            await Group.findByIdAndUpdate(group._id, {
+              $set: {
+                currentStreak: newGroupStreak,
+                maxStreak: Math.max(newGroupStreak, updatedGroup.maxStreak),
+                todayAllSolved: true,
+              },
+            });
 
-            if (newStreak > updatedGroup.maxStreak) {
-              updateFields.$set.maxStreak = newStreak;
-            }
-
-            await Group.findByIdAndUpdate(group._id, updateFields);
-
-            logger.info(
-              `[USE SOLVEDAC API] 그룹 "${group.groupName}" streak 증가`
-            );
+            logger.info(`[USER UPDATE] 그룹 "${group.groupName}" streak 증가`);
           }
         }
 
         logger.info(
-          `[USE SOLVEDAC API] "${handle}" -> 그룹: "${group.groupName}" 점수 증가: ${solvedIncrease}`
+          `[USER UPDATE] "${handle}" -> 그룹: "${group.groupName}" 점수 증가: ${solvedIncrease}`
         );
       }
       return saved;
