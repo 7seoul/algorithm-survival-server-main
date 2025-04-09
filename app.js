@@ -7,7 +7,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 const allowedOrigins = [
-  "https://survialgo.netlify.app", // 배포 클라이언트
+  "https://survivalgo.netlify.app", // 배포 클라이언트
   "http://localhost:8080", // 로컬 클라이언트
 ];
 
