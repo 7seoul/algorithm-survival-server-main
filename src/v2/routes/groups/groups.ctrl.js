@@ -26,15 +26,36 @@ const get = {
   info: async (req, res) => {
     try {
       const { groupId } = req.params;
-      const group = await Group.findOne(
-        { _id: groupId },
-        "-__v -applications -members"
-      )
+      let token = req.cookies.token;
+      let user = { _id: 0 };
+
+      if (token) {
+        const foundUser = await User.findByToken(token);
+        if (foundUser) {
+          user = foundUser;
+        } else {
+          res.clearCookie("token");
+        }
+      }
+
+      const { success, role } = await checkRole(groupId, user._id);
+
+      if (!success) {
+        return res
+          .status(404)
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
+      }
+
+      const group = await Group.findOne({ _id: groupId }, "-__v -members")
         .populate(
           "memberData",
           "-_id name handle initialSolved initialStreak currentSolved currentStreak"
         )
-        .populate("admin", "-_id handle name");
+        .populate("admin", "-_id handle name")
+        .populate(
+          "applications",
+          "-_id name handle currentSolved currentStreak"
+        );
 
       const groupScore = group.score;
       const groupMaxStreak = group.maxStreak;
@@ -46,6 +67,12 @@ const get = {
         1;
 
       const groupObj = group.toObject();
+
+      if (role !== "admin") {
+        delete groupObj.applications;
+      }
+
+      groupObj.isMember = role !== "none";
 
       groupObj.scoreRank = scoreRank;
       groupObj.streakRank = streakRank;

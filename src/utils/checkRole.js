@@ -1,6 +1,10 @@
 const { Group } = require("../models/Group/Group");
 
 const checkRole = async (groupId, userId) => {
+  if (!userId) {
+    return { success: true, role: "none" };
+  }
+
   const group = await Group.findOne({ _id: groupId });
 
   if (!group) {
