@@ -38,7 +38,7 @@ const userUpdateCore = async (handle, profile) => {
     { $set: updateFields },
     { new: true }
   )
-    .select("-_id -__v -password -token -verificationCode")
+    .select("-__v -password -token -verificationCode")
     .populate("joinedGroupList", "groupName _id memberData score");
 
   logger.info(`[UPDATE CORE] "${handle}" profile updated`);

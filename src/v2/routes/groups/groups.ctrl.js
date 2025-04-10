@@ -252,7 +252,7 @@ const post = {
       if (role !== "none") {
         return res.status(200).json({
           success: false,
-          message: "이미 그룹의 멤버입니다.",
+          message: "이미 가입 신청을 하였습니다.",
         });
       }
 
