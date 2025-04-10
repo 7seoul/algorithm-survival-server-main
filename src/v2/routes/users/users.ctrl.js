@@ -1,6 +1,7 @@
 const { User } = require("../../../models/User/User");
 const { userUpdateByScrap } = require("../../../services/userUpdate");
 const logger = require("../../../../logger");
+const moment = require("moment-timezone");
 
 const get = {
   info: async (req, res) => {
@@ -18,15 +19,16 @@ const get = {
       const streakRank =
         (await User.countDocuments({ maxStreak: { $gt: userMaxStreak } })) + 1;
 
-      const userWithRank = {
-        ...user.toObject(),
-        scoreRank,
-        streakRank,
-      };
+      const userObj = user.toObject();
+
+      userObj.scoreRank = scoreRank;
+      userObj.streakRank = streakRank;
+      userObj.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
+      userObj.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
 
       return res.status(200).json({
         success: true,
-        userWithRank,
+        user: userObj,
       });
     } catch (error) {
       logger.error(error);

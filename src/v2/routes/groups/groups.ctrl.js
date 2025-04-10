@@ -5,6 +5,7 @@ const { Counter } = require("../../../models/Counter/Counter");
 const { userUpdateBySolvedac } = require("../../../services/userUpdate");
 const { checkRole } = require("../../../utils/checkRole");
 const logger = require("../../../../logger");
+const moment = require("moment-timezone");
 
 const get = {
   all: async (req, res) => {
@@ -27,7 +28,7 @@ const get = {
     try {
       const { groupId } = req.params;
       let token = req.cookies.token;
-      let user = { _id: 0 };
+      let user = { _id: -1 };
 
       if (token) {
         const foundUser = await User.findByToken(token);
@@ -38,13 +39,7 @@ const get = {
         }
       }
 
-      const { success, role } = await checkRole(groupId, user._id);
-
-      if (!success) {
-        return res
-          .status(404)
-          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
-      }
+      const { role } = await checkRole(groupId, user._id);
 
       const group = await Group.findOne({ _id: groupId }, "-__v -members")
         .populate(
@@ -53,6 +48,12 @@ const get = {
         )
         .populate("admin", "-_id handle name")
         .populate("applications", "-_id name handle");
+
+      if (!group) {
+        return res
+          .status(404)
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
+      }
 
       const groupScore = group.score;
       const groupMaxStreak = group.maxStreak;
@@ -69,11 +70,11 @@ const get = {
         delete groupObj.applications;
       }
 
+      groupObj.createdAt = moment(group.createdAt).tz("Asia/Seoul").format();
+      groupObj.updatedAt = moment(group.updatedAt).tz("Asia/Seoul").format();
       groupObj.isMember = role !== "none";
-
       groupObj.scoreRank = scoreRank;
       groupObj.streakRank = streakRank;
-
       groupObj.memberData = group.memberData.map((member) => ({
         name: member.name,
         handle: member.handle,

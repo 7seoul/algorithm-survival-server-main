@@ -1,7 +1,7 @@
 const { Group } = require("../models/Group/Group");
 
 const checkRole = async (groupId, userId) => {
-  if (!userId) {
+  if (userId === -1) {
     return { success: true, role: "none" };
   }
 
