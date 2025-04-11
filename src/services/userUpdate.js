@@ -38,7 +38,7 @@ const userUpdateCore = async (handle, profile) => {
     { $set: updateFields },
     { new: true }
   )
-    .select("-__v -password -token -verificationCode")
+    .select("-__v -password -token")
     .populate("joinedGroupList", "groupName _id memberData score");
 
   logger.info(`[UPDATE CORE] "${handle}" profile updated`);
@@ -84,7 +84,7 @@ const userUpdateCore = async (handle, profile) => {
         },
         { new: true }
       ).select(
-        "todayAllSolved todaySolvedMembers members currentStreak maxStreak size"
+        "todayAllSolved todaySolvedMembers currentStreak maxStreak size"
       );
 
       const totalMembers = updatedGroup.size;

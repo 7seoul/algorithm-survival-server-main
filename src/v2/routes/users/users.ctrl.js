@@ -61,9 +61,29 @@ const get = {
           .json({ success: false, message: "업데이트에 실패했습니다." });
       }
 
+      const userScore = user.score;
+      const userMaxStreak = user.maxStreak;
+
+      const scoreRank =
+        (await User.countDocuments({ score: { $gt: userScore } })) + 1;
+      const streakRank =
+        (await User.countDocuments({ maxStreak: { $gt: userMaxStreak } })) + 1;
+
+      const userObj = user.toObject();
+
+      delete userObj._id;
+      userObj.joinedGroupList.forEach((group) => {
+        delete group.memberData;
+      });
+
+      userObj.scoreRank = scoreRank;
+      userObj.streakRank = streakRank;
+      userObj.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
+      userObj.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
+
       return res.status(200).json({
         success: true,
-        user,
+        user: userObj,
       });
     } catch (error) {
       logger.error(error);
