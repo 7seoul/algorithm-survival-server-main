@@ -53,10 +53,12 @@ const userUpdateCore = async (handle, profile) => {
 
     if (!member) continue;
 
-    const solvedIncrease = initUser.currentSolved - member.initialSolved;
+    const previousScore = initUser.currentSolved - member.initialSolved;
 
     // 이미 반영된 점수인 경우
-    if (solvedIncrease <= member.score) continue;
+    if (previousScore <= member.score) continue;
+
+    const solvedIncrease = profile.solvedCount - initUser.currentSolved;
 
     // 유저 정보 업데이트
     const memberUpdateResult = await MemberData.updateOne(
