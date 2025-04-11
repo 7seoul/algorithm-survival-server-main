@@ -27,14 +27,14 @@ const migrateMemberDatas = async () => {
 
   let updatedCount = 0;
 
-  logger.info(memberDatas);
-
   for (const member of memberDatas) {
-    const handle = member.handle;
+    const obj = member.toObject();
+    logger.info(obj);
+
+    const handle = obj.handle;
 
     const user = await User.findOne({ handle });
 
-    logger.info(member);
     logger.info(handle);
     logger.info(user);
 
@@ -44,7 +44,7 @@ const migrateMemberDatas = async () => {
     }
 
     await MemberData.updateOne(
-      { _id: member._id },
+      { _id: obj._id },
       {
         $set: { user: user._id },
         $unset: { handle: "", name: "" },
