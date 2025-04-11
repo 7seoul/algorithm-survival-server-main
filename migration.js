@@ -25,6 +25,8 @@ const migrateGroups = async () => {
 const migrateMemberDatas = async () => {
   const memberDatas = await MemberData.find({});
 
+  console.log(memberDatas);
+
   let updatedCount = 0;
 
   for (const member of memberDatas) {
