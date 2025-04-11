@@ -42,10 +42,14 @@ const get = {
       const { role } = await checkRole(groupId, user._id);
 
       const group = await Group.findOne({ _id: groupId }, "-__v -members")
-        .populate(
-          "memberData",
-          "-_id name handle initialSolved initialStreak currentSolved currentStreak"
-        )
+        .populate({
+          path: "memberData",
+          select: "-_id initialStreak score",
+          populate: {
+            path: "user",
+            select: "-_id name handle currentStreak",
+          },
+        })
         .populate("admin", "-_id handle name")
         .populate("applications", "-_id name handle");
 
@@ -76,10 +80,10 @@ const get = {
       groupObj.scoreRank = scoreRank;
       groupObj.streakRank = streakRank;
       groupObj.memberData = group.memberData.map((member) => ({
-        name: member.name,
-        handle: member.handle,
-        streak: member.currentStreak - member.initialStreak,
-        score: member.currentSolved - member.initialSolved,
+        name: member.user.name,
+        handle: member.user.handle,
+        streak: member.user.currentStreak - member.initialStreak,
+        score: member.score,
       }));
 
       return res.status(200).json({
@@ -141,12 +145,9 @@ const post = {
 
       // 유저 정보 저장
       const memberData = new MemberData({
-        name: req.user.name,
-        handle: req.user.handle,
+        user: req.user._id,
         initialStreak: req.user.currentStreak,
-        currentStreak: req.user.currentStreak,
         initialSolved: req.user.currentSolved,
-        currentSolved: req.user.currentSolved,
       });
 
       await memberData.save();
@@ -164,7 +165,6 @@ const post = {
         groupName: req.body.groupName,
         description: req.body.description,
         admin: req.user._id,
-        members: [req.user._id],
         memberData: [memberData._id],
       });
 
@@ -325,12 +325,9 @@ const post = {
 
       // MemberData 생성 및 저장
       const memberData = new MemberData({
-        name: user.name,
-        handle: user.handle,
+        user: user._id,
         initialStreak: user.currentStreak,
-        currentStreak: user.currentStreak,
         initialSolved: user.currentSolved,
-        currentSolved: user.currentSolved,
       });
       await memberData.save();
 
@@ -340,7 +337,6 @@ const post = {
         {
           $pull: { applications: user._id },
           $addToSet: {
-            members: user._id,
             memberData: memberData._id,
           },
           $inc: { size: 1 },
