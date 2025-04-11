@@ -53,12 +53,9 @@ const userUpdateCore = async (handle, profile) => {
 
     if (!member) continue;
 
-    const previousScore = initUser.currentSolved - member.initialSolved;
-
-    // 이미 반영된 점수인 경우
-    if (previousScore <= member.score) continue;
-
     const solvedIncrease = profile.solvedCount - initUser.currentSolved;
+
+    if (solvedIncrease === 0) continue;
 
     // 유저 정보 업데이트
     const memberUpdateResult = await MemberData.updateOne(
@@ -69,7 +66,9 @@ const userUpdateCore = async (handle, profile) => {
         $set: {
           initialStreak: newStreak,
           score: profile.solvedCount - member.initialSolved,
-          downs: member.downs + down,
+        },
+        $inc: {
+          downs: down,
         },
       }
     );
@@ -79,10 +78,12 @@ const userUpdateCore = async (handle, profile) => {
       const updatedGroup = await Group.findByIdAndUpdate(
         group._id,
         {
-          $set: {
-            score: group.score + solvedIncrease,
+          $inc: {
+            score: solvedIncrease,
           },
-          $addToSet: { todaySolvedMembers: initUser._id },
+          $addToSet: {
+            todaySolvedMembers: initUser._id,
+          },
         },
         { new: true }
       ).select(

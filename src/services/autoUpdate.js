@@ -8,7 +8,8 @@ let isRunning = false;
 
 const loadUsersFromDB = async () => {
   try {
-    const users = await User.find({});
+    const users = await User.find({}).sort({ _id: 1 });
+
     return users;
   } catch (error) {
     logger.error(`[AUTO] Error loading user:`, error.message);
@@ -25,9 +26,9 @@ const autoUpdate = async () => {
 
   const user = userQueue[currentIndex];
   logger.info(
-    `[AUTO] User Queue: ${currentIndex + 1}/${userQueue.length} | Handle: "${
-      user.handle
-    }"`
+    `[AUTO] User Queue: ${Math.floor(currentIndex / 2) + 1}/${Math.ceil(
+      userQueue.length / 2
+    )} | Handle: "${user.handle}"`
   );
 
   try {
@@ -36,13 +37,27 @@ const autoUpdate = async () => {
     logger.error(`[AUTO] "${user.handle}" Error updating user:`, error.message);
   }
 
-  currentIndex = (currentIndex + 1) % userQueue.length;
+  currentIndex += 2;
 
-  scheduleNext(); // 다음 사용자 업데이트 예약
+  if (currentIndex >= userQueue.length) {
+    logger.info("[AUTO] Completed one round of updates. Reloading users...");
+    currentIndex = 0;
+    userQueue = await loadUsersFromDB();
+
+    if (!userQueue || userQueue.length === 0) {
+      logger.warn("[AUTO] EMPTY QUEUE after reload! Retrying in 5s...");
+      setTimeout(init, 5000);
+      return;
+    }
+
+    logger.info(`[AUTO] Reloaded ${userQueue.length} users from DB.`);
+  }
+
+  scheduleNext();
 };
 
 const scheduleNext = () => {
-  const delay = 15000 + Math.floor(Math.random() * 15000);
+  const delay = 30000 + Math.floor(Math.random() * 30000);
   setTimeout(autoUpdate, delay);
 };
 
@@ -53,21 +68,12 @@ const startUpdating = () => {
   autoUpdate(); // 첫 실행
 };
 
-const addUserInQueue = (handle) => {
-  if (!userQueue.find((u) => u.handle === handle)) {
-    userQueue.push({ handle });
-    logger.info(`[AUTO] New user "${handle}" added to queue!`);
-  } else {
-    logger.info(`[AUTO] User "${handle}" is already in queue.`);
-  }
-};
-
 const init = async () => {
   userQueue = await loadUsersFromDB();
 
   if (!userQueue || userQueue.length === 0) {
     logger.warn("[AUTO] EMPTY QUEUE after reload! Retrying in 5s...");
-    setTimeout(init, 5000);
+    setTimeout(init, 5000); // 5초 후 재시도
     return;
   }
 
@@ -77,5 +83,4 @@ const init = async () => {
 
 module.exports = {
   init,
-  addUserInQueue,
 };
