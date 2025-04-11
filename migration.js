@@ -25,18 +25,18 @@ const migrateGroups = async () => {
 const migrateMemberDatas = async () => {
   const memberDatas = await MemberData.find({});
 
-  console.log(memberDatas);
-
   let updatedCount = 0;
+
+  logger.info(memberDatas);
 
   for (const member of memberDatas) {
     const handle = member.handle;
 
     const user = await User.findOne({ handle });
 
-    console.log(member);
-    console.log(handle);
-    console.log(user);
+    logger.info(member);
+    logger.info(handle);
+    logger.info(user);
 
     if (!user) {
       console.warn(`[WARN] 사용자 ${handle} 찾을 수 없음`);
