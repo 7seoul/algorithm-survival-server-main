@@ -34,6 +34,10 @@ const migrateMemberDatas = async () => {
 
     const user = await User.findOne({ handle });
 
+    console.log(member);
+    console.log(handle);
+    console.log(user);
+
     if (!user) {
       console.warn(`[WARN] 사용자 ${handle} 찾을 수 없음`);
       continue;
