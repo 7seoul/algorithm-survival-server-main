@@ -23,16 +23,12 @@ const migrateGroups = async () => {
 };
 
 const migrateMemberDatas = async () => {
-  const memberDatas = await MemberData.find({
-    $or: [{ handle: { $exists: true } }, { name: { $exists: true } }],
-  });
+  const memberDatas = await MemberData.find({});
 
   let updatedCount = 0;
 
   for (const member of memberDatas) {
-    const handle = member.handle || member.name;
-
-    if (!handle) continue;
+    const handle = member.handle;
 
     const user = await User.findOne({ handle });
 
