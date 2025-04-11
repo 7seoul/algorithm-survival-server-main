@@ -47,7 +47,7 @@ const get = {
           select: "-_id initialStreak score",
           populate: {
             path: "user",
-            select: "-_id name handle currentStreak",
+            select: "-_id name handle currentStreak imgSrc",
           },
         })
         .populate("admin", "-_id handle name")
@@ -82,6 +82,7 @@ const get = {
       groupObj.memberData = group.memberData.map((member) => ({
         name: member.user.name,
         handle: member.user.handle,
+        imgSrc: member.user.imgSrc,
         streak: member.user.currentStreak - member.initialStreak,
         score: member.score,
       }));
