@@ -23,39 +23,27 @@ const migrateGroups = async () => {
 };
 
 const migrateMemberDatas = async () => {
-  const memberDatas = await MemberData.find({});
+  const memberDatas = await MemberData.find({
+    user: { $exists: true },
+  }).populate("user");
 
   let updatedCount = 0;
 
   for (const member of memberDatas) {
-    const obj = member.toObject();
-    logger.info(obj);
-
-    const handle = obj.handle;
-
-    const user = await User.findOne({ handle });
-
-    logger.info(handle);
-    logger.info(user);
-
-    if (!user) {
-      console.warn(`[WARN] 사용자 ${handle} 찾을 수 없음`);
-      continue;
-    }
+    const score = member.user.currentSolved - member.initialSolved;
 
     await MemberData.updateOne(
-      { _id: obj._id },
-      {
-        $set: { user: user._id },
-        $unset: { handle: "", name: "" },
-      },
+      { _id: member._id },
+      { $set: { score } },
       { strict: false }
     );
 
     updatedCount++;
   }
 
-  logger.info(`[MIGRATION] ${updatedCount}개의 MemberData 업데이트 완료`);
+  logger.info(
+    `[MIGRATION] 멤버데이터 마이그레이션 완료: ${updatedCount}개 멤버데이터 업데이트`
+  );
 };
 
 const migrateUsers = async () => {
