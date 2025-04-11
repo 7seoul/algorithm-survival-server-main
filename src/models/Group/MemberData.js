@@ -1,14 +1,15 @@
 const mongoose = require("mongoose");
 
 const memberDataSchema = mongoose.Schema({
-  name: {
-    type: String,
-  },
-  handle: {
-    type: String,
-    required: true,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   downs: {
+    type: Number,
+    default: 0,
+  },
+  score: {
     type: Number,
     default: 0,
   },
@@ -16,15 +17,7 @@ const memberDataSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  currentStreak: {
-    type: Number,
-    default: 0,
-  },
   initialSolved: {
-    type: Number,
-    default: 0,
-  },
-  currentSolved: {
     type: Number,
     default: 0,
   },

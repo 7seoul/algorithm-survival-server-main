@@ -11,12 +11,6 @@ const groupSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    members: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
     applications: [
       {
         type: mongoose.Schema.Types.ObjectId,

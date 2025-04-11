@@ -38,7 +38,7 @@ const userUpdateCore = async (handle, profile) => {
     { $set: updateFields },
     { new: true }
   )
-    .select("-__v -password -token -verificationCode")
+    .select("-__v -password -token")
     .populate("joinedGroupList", "groupName _id memberData score");
 
   logger.info(`[UPDATE CORE] "${handle}" profile updated`);
@@ -47,26 +47,25 @@ const userUpdateCore = async (handle, profile) => {
   // 그룹에 유저 업데이트 정보 반영
   for (let group of groups) {
     const member = await MemberData.findOne({
-      handle,
+      user: initUser._id,
       _id: { $in: group.memberData },
     });
 
     if (!member) continue;
 
-    const solvedIncrease = profile.solvedCount - member.currentSolved;
-    if (solvedIncrease <= 0) continue;
+    const solvedIncrease = initUser.currentSolved - member.initialSolved;
+
+    // 이미 반영된 점수인 경우
+    if (solvedIncrease <= member.score) continue;
 
     // 유저 정보 업데이트
     const memberUpdateResult = await MemberData.updateOne(
       {
         _id: member._id,
-        currentSolved: member.currentSolved,
       },
       {
         $set: {
           initialStreak: newStreak,
-          currentStreak: profile.streak,
-          currentSolved: profile.solvedCount,
           score: profile.solvedCount - member.initialSolved,
           downs: member.downs + down,
         },
@@ -85,7 +84,7 @@ const userUpdateCore = async (handle, profile) => {
         },
         { new: true }
       ).select(
-        "todayAllSolved todaySolvedMembers members currentStreak maxStreak size"
+        "todayAllSolved todaySolvedMembers currentStreak maxStreak size"
       );
 
       const totalMembers = updatedGroup.size;
