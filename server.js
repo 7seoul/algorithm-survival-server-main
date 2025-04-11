@@ -4,11 +4,7 @@ const dotenv = require("dotenv");
 const logger = require("./logger");
 const autoUpdate = require("./src/services/autoUpdate");
 
-const {
-  migrateGroups,
-  migrateUsers,
-  migrateUserVerifications,
-} = require("./migration");
+const migration = require("./migration");
 
 dotenv.config();
 

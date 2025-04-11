@@ -1,4 +1,5 @@
 const { Group } = require("./src/models/Group/Group");
+const { MemberData } = require("./src/models/Group/MemberData");
 const { User } = require("./src/models/User/User");
 const { UserVerification } = require("./src/models/User/UserVerification");
 const logger = require("./logger");
@@ -6,23 +7,38 @@ const logger = require("./logger");
 const migrateGroups = async () => {
   const result = await Group.updateMany(
     {
-      $or: [
-        { todaySolvedMembers: { $exists: false } },
-        { todayAllSolved: { $exists: false } },
-        { maxStreak: { $exists: false } },
-      ],
+      $or: [{ members: { $exists: true } }],
     },
     {
-      $set: {
-        todaySolvedMembers: [],
-        todayAllSolved: false,
-        maxStreak: 0,
+      $unset: {
+        members: "",
       },
     }
   );
 
   logger.info(
     `[MIGRATION] 그룹 마이그레이션 완료: ${result.modifiedCount}개 그룹 업데이트`
+  );
+};
+
+const migrateMemberDatas = async () => {
+  const result = await MemberData.updateMany(
+    {
+      $or: [
+        { currentStreak: { $exists: true } },
+        { currentSolved: { $exists: true } },
+      ],
+    },
+    {
+      $unset: {
+        currentStreak: "",
+        currentSolved: "",
+      },
+    }
+  );
+
+  logger.info(
+    `[MIGRATION] 멤버데이터 마이그레이션 완료: ${result.modifiedCount}개 멤버데이터 업데이트`
   );
 };
 
@@ -67,4 +83,9 @@ const migrateUserVerifications = async () => {
   logger.info(`[MIGRATION] UserVerification 생성 완료: ${created}개 생성됨`);
 };
 
-module.exports = { migrateGroups, migrateUsers, migrateUserVerifications };
+module.exports = {
+  migrateGroups,
+  migrateMemberDatas,
+  migrateUsers,
+  migrateUserVerifications,
+};
