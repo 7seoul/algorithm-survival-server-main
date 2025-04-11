@@ -1,7 +1,6 @@
 const { User } = require("../../../models/User/User");
 const { UserVerification } = require("../../../models/User/UserVerification");
 const solvedac = require("../../../apis/solvedac");
-const autoUpdate = require("../../../services/autoUpdate");
 const crypto = require("crypto");
 const logger = require("../../../../logger");
 
@@ -235,8 +234,6 @@ const post = {
       });
 
       await newUser.save();
-
-      autoUpdate.addUserInQueue(newUser.handle);
 
       await UserVerification.findOneAndUpdate(
         { handle: req.body.handle },
