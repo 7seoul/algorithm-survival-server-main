@@ -13,7 +13,8 @@ const migrateGroups = async () => {
       $unset: {
         members: "",
       },
-    }
+    },
+    { strict: false }
   );
 
   logger.info(
@@ -34,7 +35,8 @@ const migrateMemberDatas = async () => {
         currentStreak: "",
         currentSolved: "",
       },
-    }
+    },
+    { strict: false }
   );
 
   logger.info(
@@ -55,7 +57,8 @@ const migrateUsers = async () => {
         verificationCode: "",
         isVerified: "",
       },
-    }
+    },
+    { strict: false }
   );
 
   logger.info(
