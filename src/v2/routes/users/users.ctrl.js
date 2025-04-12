@@ -55,10 +55,10 @@ const get = {
     try {
       const user = await userUpdateByScrap(req.params.handle);
 
-      if (!user) {
+      if (!user.success) {
         return res
           .status(200)
-          .json({ success: false, message: "업데이트에 실패했습니다." });
+          .json({ success: false, message: "스크래핑에 실패하였습니다." });
       }
 
       const userScore = user.score;
