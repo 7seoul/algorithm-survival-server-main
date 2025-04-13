@@ -55,7 +55,7 @@ const get = {
     try {
       const user = await userUpdateByScrap(req.params.handle);
 
-      if (!user.success) {
+      if (!user) {
         return res
           .status(200)
           .json({ success: false, message: "스크래핑에 실패하였습니다." });
