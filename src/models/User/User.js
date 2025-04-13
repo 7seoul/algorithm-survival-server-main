@@ -54,9 +54,6 @@ const userSchema = mongoose.Schema(
     imgSrc: {
       type: String,
     },
-    token: {
-      type: String,
-    },
   },
   { timestamps: true }
 );
@@ -78,18 +75,17 @@ userSchema.methods.comparePassword = async function (plainPassword) {
 };
 
 // 토큰 생성
-userSchema.methods.generateToken = async function () {
-  this.token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: "14d",
+userSchema.methods.generateToken = function () {
+  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: "365d",
   });
-  return this.save();
 };
 
 // 토큰 검증
 userSchema.statics.findByToken = function (token) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return this.findOne({ _id: decoded._id, token });
+    return this.findById(decoded._id);
   } catch (error) {
     return null;
   }

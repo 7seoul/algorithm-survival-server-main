@@ -51,13 +51,13 @@ const post = {
       }
 
       // 토큰 생성
-      await user.generateToken();
+      const token = await user.generateToken();
 
       // 쿠키에 토큰 저장
-      res.cookie("token", user.token, {
+      res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 14 * 24 * 60 * 60 * 1000,
+        maxAge: 365 * 24 * 60 * 60 * 1000,
         sameSite: "Strict",
       });
 
@@ -246,13 +246,13 @@ const post = {
       );
 
       // 토큰 생성
-      await newUser.generateToken();
+      const token = await newUser.generateToken();
 
       // 쿠키에 토큰 저장
-      res.cookie("token", newUser.token, {
+      res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 14 * 24 * 60 * 60 * 1000,
+        maxAge: 365 * 24 * 60 * 60 * 1000,
         sameSite: "Strict",
       });
 
@@ -272,10 +272,6 @@ const post = {
   },
   logout: async (req, res) => {
     try {
-      const user = req.user;
-      user.token = null;
-      await user.save();
-
       // 쿠키 삭제
       res.clearCookie("token");
 
