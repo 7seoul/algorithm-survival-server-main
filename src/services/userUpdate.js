@@ -51,7 +51,6 @@ const userUpdateCore = async (handle, profile) => {
       _id: { $in: group.memberData },
     });
 
-    const solvedIncrease = profile.solvedCount - initUser.currentSolved;
     const newScore = profile.solvedCount - member.initialSolved;
 
     // 유저 정보 업데이트
@@ -112,10 +111,6 @@ const userUpdateCore = async (handle, profile) => {
         logger.info(`[UPDATE CORE] 그룹 "${group.groupName}" streak 증가`);
       }
     }
-
-    logger.info(
-      `[UPDATE CORE] "${handle}" -> 그룹: "${group.groupName}" 점수 증가: ${solvedIncrease}`
-    );
   }
   return saved;
 };
