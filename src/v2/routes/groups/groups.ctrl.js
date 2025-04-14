@@ -11,7 +11,7 @@ const get = {
   all: async (req, res) => {
     try {
       const groups = await Group.find({}).select(
-        "groupName _id description score maxStreak size"
+        "groupName _id description score count maxStreak size"
       );
       return res.status(200).json({
         success: true,
@@ -85,6 +85,7 @@ const get = {
         imgSrc: member.user.imgSrc,
         streak: member.user.currentStreak - member.initialStreak,
         score: member.score,
+        count: member.count,
       }));
 
       return res.status(200).json({
@@ -149,6 +150,7 @@ const post = {
         user: req.user._id,
         initialStreak: req.user.currentStreak,
         initialCount: req.user.currentCount,
+        initialScore: req.user.score,
       });
 
       await memberData.save();
@@ -329,6 +331,7 @@ const post = {
         user: user._id,
         initialStreak: user.currentStreak,
         initialCount: user.currentCount,
+        initialScore: user.score,
       });
       await memberData.save();
 
