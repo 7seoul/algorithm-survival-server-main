@@ -166,18 +166,18 @@ const post = {
   },
   register: async (req, res) => {
     try {
-      const verification = await UserVerification.findOne({
+      const userVerification = await UserVerification.findOne({
         handle: req.body.handle,
       });
 
-      if (!verification) {
+      if (!userVerification) {
         return res.status(409).json({
           success: false,
           message: "인증 코드를 발급해 주세요.",
         });
       }
 
-      if (verification?.isVerified) {
+      if (userVerification?.isVerified) {
         return res.status(409).json({
           success: false,
           message: "이미 등록된 아이디 입니다.",
@@ -190,10 +190,10 @@ const post = {
       const profile = await solvedac.profile(req.body.handle);
 
       logger.info("sovledac :", profile.bio);
-      logger.info("User DB  :", verification.verificationCode);
+      logger.info("User DB  :", userVerification.verificationCode);
       logger.info(
         "compare result :",
-        profile.bio === verification.verificationCode
+        profile.bio === userVerification.verificationCode
       );
 
       // 개발용 스킵
