@@ -25,10 +25,11 @@ const autoUpdate = async () => {
   }
 
   const user = userQueue[currentIndex];
+
   logger.info(
-    `[AUTO] User Queue: ${currentIndex + 1}/${userQueue.length} | Handle: "${
-      user.handle
-    }"`
+    `[AUTO] User Queue: ${Math.floor(currentIndex / 2) + 1}/${Math.ceil(
+      userQueue.length / 2
+    )} | Handle: "${user.handle}"`
   );
 
   try {
@@ -37,7 +38,7 @@ const autoUpdate = async () => {
     logger.error(`[AUTO] "${user.handle}" Error updating user:`, error.message);
   }
 
-  currentIndex += 1;
+  currentIndex += 2;
 
   if (currentIndex >= userQueue.length) {
     logger.info("[AUTO] Completed one round of updates. Reloading users...");
