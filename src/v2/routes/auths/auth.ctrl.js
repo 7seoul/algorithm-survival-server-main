@@ -189,12 +189,10 @@ const post = {
       // solved.ac api 사용
       const profile = await solvedac.profile(req.body.handle);
 
-      logger.info("sovledac :", profile.bio);
-      logger.info("User DB  :", userVerification.verificationCode);
-      logger.info(
-        "compare result :",
-        profile.bio === userVerification.verificationCode
-      );
+      logger.warn("register");
+      logger.warn(profile.bio);
+      logger.warn(userVerification.verificationCode);
+      logger.warn(profile.bio === userVerification.verificationCode);
 
       // 개발용 스킵
       // if (!userVerification.verificationCode) {

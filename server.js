@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const logger = require("./logger");
 const autoUpdate = require("./src/services/autoUpdate");
+const { initGroupResetJob } = require("./src/scheduler/groupReset");
 
 const migration = require("./migration");
 
