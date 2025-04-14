@@ -12,16 +12,20 @@ const get = {
       ).populate("joinedGroupList", "groupName score");
 
       const userScore = user.score;
+      const userCount = user.count;
       const userMaxStreak = user.maxStreak;
 
       const scoreRank =
         (await User.countDocuments({ score: { $gt: userScore } })) + 1;
+      const countRank =
+        (await User.countDocuments({ count: { $gt: userCount } })) + 1;
       const streakRank =
         (await User.countDocuments({ maxStreak: { $gt: userMaxStreak } })) + 1;
 
       const userObj = user.toObject();
 
       userObj.scoreRank = scoreRank;
+      userObj.countRank = countRank;
       userObj.streakRank = streakRank;
       userObj.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
       userObj.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
@@ -62,10 +66,13 @@ const get = {
       }
 
       const userScore = user.score;
+      const userCount = user.count;
       const userMaxStreak = user.maxStreak;
 
       const scoreRank =
         (await User.countDocuments({ score: { $gt: userScore } })) + 1;
+      const countRank =
+        (await User.countDocuments({ count: { $gt: userCount } })) + 1;
       const streakRank =
         (await User.countDocuments({ maxStreak: { $gt: userMaxStreak } })) + 1;
 
@@ -77,6 +84,7 @@ const get = {
       });
 
       userObj.scoreRank = scoreRank;
+      userObj.countRank = countRank;
       userObj.streakRank = streakRank;
       userObj.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
       userObj.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
@@ -115,16 +123,20 @@ const post = {
         .populate("joinedGroupList", "groupName score");
 
       const userScore = user.score;
+      const userCount = user.count;
       const userMaxStreak = user.maxStreak;
 
       const scoreRank =
         (await User.countDocuments({ score: { $gt: userScore } })) + 1;
+      const countRank =
+        (await User.countDocuments({ count: { $gt: userCount } })) + 1;
       const streakRank =
         (await User.countDocuments({ maxStreak: { $gt: userMaxStreak } })) + 1;
 
       const userObj = user.toObject();
 
       userObj.scoreRank = scoreRank;
+      userObj.countRank = countRank;
       userObj.streakRank = streakRank;
       userObj.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
       userObj.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
