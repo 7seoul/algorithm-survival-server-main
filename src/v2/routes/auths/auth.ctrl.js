@@ -209,6 +209,7 @@ const post = {
       // }
 
       const streak = await solvedac.grass(req.body.handle);
+      const initial = await solvedac.problem(req.body.handle);
 
       if (streak === undefined || !profile) {
         return res.status(424).json({
@@ -229,6 +230,7 @@ const post = {
         imgSrc: profile.profileImageUrl
           ? profile.profileImageUrl
           : "https://static.solved.ac/misc/360x360/default_profile.png",
+        initial,
       });
 
       await newUser.save();
