@@ -120,7 +120,7 @@ const get = {
         .select("-_id applications")
         .populate(
           "applications",
-          "-_id name handle currentSolved currentStreak"
+          "-_id name handle currentCount currentStreak"
         );
 
       const applications = data.applications;
@@ -148,7 +148,7 @@ const post = {
       const memberData = new MemberData({
         user: req.user._id,
         initialStreak: req.user.currentStreak,
-        initialSolved: req.user.currentSolved,
+        initialCount: req.user.currentCount,
       });
 
       await memberData.save();
@@ -328,7 +328,7 @@ const post = {
       const memberData = new MemberData({
         user: user._id,
         initialStreak: user.currentStreak,
-        initialSolved: user.currentSolved,
+        initialCount: user.currentCount,
       });
       await memberData.save();
 

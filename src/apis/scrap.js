@@ -135,8 +135,7 @@ const profile = async (handle) => {
         tier !== undefined &&
         solvedCount !== undefined &&
         profileImageUrl !== undefined &&
-        streak !== undefined &&
-        current;
+        streak !== undefined;
 
       return {
         success,

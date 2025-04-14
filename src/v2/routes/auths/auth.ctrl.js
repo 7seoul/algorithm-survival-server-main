@@ -224,8 +224,8 @@ const post = {
         password: req.body.password,
         initialStreak: streak,
         currentStreak: streak,
-        initialSolved: profile.solvedCount,
-        currentSolved: profile.solvedCount,
+        initialCount: profile.solvedCount,
+        currentCount: profile.solvedCount,
         tier: profile.tier,
         imgSrc: profile.profileImageUrl
           ? profile.profileImageUrl

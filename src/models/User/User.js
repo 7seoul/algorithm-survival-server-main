@@ -87,11 +87,11 @@ const userSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    initialSolved: {
+    initialCount: {
       type: Number,
       default: 0,
     },
-    currentSolved: {
+    currentCount: {
       type: Number,
       default: 0,
     },

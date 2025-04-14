@@ -7,7 +7,7 @@ const get = {
     try {
       const users = await User.find({})
         .select(
-          "-_id name handle tier initialSolved currentSolved initialStreak currentStreak maxStreak"
+          "-_id name handle tier initialCount currentCount initialStreak currentStreak maxStreak"
         )
         .lean();
 
@@ -16,7 +16,7 @@ const get = {
           name: user.name,
           handle: user.handle,
           streak: user.maxStreak,
-          score: user.currentSolved - user.initialSolved,
+          score: user.currentCount - user.initialCount,
         }))
         .sort((a, b) => b.streak - a.streak);
 
@@ -35,7 +35,7 @@ const get = {
     try {
       const users = await User.find({})
         .select(
-          "-_id name handle tier initialSolved currentSolved initialStreak currentStreak maxStreak"
+          "-_id name handle tier initialCount currentCount initialStreak currentStreak maxStreak"
         )
         .lean();
 
@@ -44,7 +44,7 @@ const get = {
           name: user.name,
           handle: user.handle,
           streak: user.maxStreak,
-          score: user.currentSolved - user.initialSolved,
+          score: user.currentCount - user.initialCount,
         }))
         .sort((a, b) => b.score - a.score);
 

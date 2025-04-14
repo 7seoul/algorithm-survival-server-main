@@ -6,6 +6,26 @@ const { MemberData } = require("../models/Group/MemberData");
 const logger = require("../../logger");
 const timer = require("../utils/timer");
 
+const calculateTotalScore = (current, initial) => {
+  const pointValues = {
+    bronze: 1,
+    silver: 3,
+    gold: 5,
+    platinum: 10,
+    diamond: 20,
+    ruby: 50,
+  };
+
+  let totalScore = 0;
+
+  for (const key in pointValues) {
+    const diff = (current[key] || 0) - (initial[key] || 0);
+    totalScore += diff * pointValues[key];
+  }
+
+  return totalScore;
+};
+
 const userUpdateCore = async (handle, profile) => {
   const initUser = await User.findOne({ handle: handle });
 
@@ -16,11 +36,15 @@ const userUpdateCore = async (handle, profile) => {
     newStreak = profile.streak;
   }
 
+  const totalScore = calculateTotalScore(profile.current, initUser.initial);
+
   const updateFields = {
     initialStreak: newStreak,
     currentStreak: profile.streak,
-    currentSolved: profile.solvedCount,
-    score: profile.solvedCount - initUser.initialSolved,
+    currentCount: profile.solvedCount,
+    score: totalScore,
+    count: profile.solvedCount - initUser.initialCount,
+    current: profile.current,
     imgSrc: profile.profileImageUrl,
     tier: profile.tier,
   };
@@ -39,7 +63,7 @@ const userUpdateCore = async (handle, profile) => {
     { new: true }
   )
     .select("-__v -password -token")
-    .populate("joinedGroupList", "groupName _id memberData score");
+    .populate("joinedGroupList", "groupName _id memberData score count");
 
   logger.info(`[UPDATE CORE] "${handle}" profile updated`);
 
@@ -51,7 +75,8 @@ const userUpdateCore = async (handle, profile) => {
       _id: { $in: group.memberData },
     });
 
-    const newScore = profile.solvedCount - member.initialSolved;
+    const newCount = profile.solvedCount - member.initialCount;
+    const newScore = totalScore - member.initialScore;
 
     // 유저 정보 업데이트
     const memberUpdateResult = await MemberData.updateOne(
@@ -61,6 +86,7 @@ const userUpdateCore = async (handle, profile) => {
       {
         $set: {
           initialStreak: newStreak,
+          count: newCount,
           score: newScore,
         },
         $inc: {
@@ -71,9 +97,10 @@ const userUpdateCore = async (handle, profile) => {
 
     const allMembers = await MemberData.find({
       _id: { $in: group.memberData },
-    }).select("score");
+    }).select("score count");
 
-    const totalScore = allMembers.reduce((sum, m) => sum + (m.score || 0), 0);
+    const groupScore = allMembers.reduce((sum, m) => sum + (m.score || 0), 0);
+    const groupCount = allMembers.reduce((sum, m) => sum + (m.count || 0), 0);
 
     // 그룹 점수 업데이트
     if (memberUpdateResult.modifiedCount > 0) {
@@ -81,7 +108,8 @@ const userUpdateCore = async (handle, profile) => {
         group._id,
         {
           $set: {
-            score: totalScore,
+            score: groupScore,
+            count: groupCount,
           },
           $addToSet: {
             todaySolvedMembers: initUser._id,
@@ -138,7 +166,9 @@ const userUpdateBySolvedac = async (handle) => {
   timer.start(label);
   const profile = await solvedac.profile(handle);
   const streak = await solvedac.grass(handle);
+  const current = await solvedac.problem(handle);
   profile.streak = streak;
+  profile.current = current;
   timer.end(label, logger);
 
   if (profile && streak !== undefined) {
