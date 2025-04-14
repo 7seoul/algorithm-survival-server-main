@@ -97,23 +97,41 @@ const get = {
 const post = {
   edit: async (req, res) => {
     try {
+      if (req.user.handle !== req.params.handle) {
+        return res.status(200).json({
+          success: false,
+          message: "권한이 없습니다.",
+        });
+      }
+
       const user = await User.findOneAndUpdate(
         { handle: req.params.handle },
         {
           name: req.body.name,
         },
         { new: true }
-      ).select("-_id -__v -password -token");
+      )
+        .select("-_id -__v -password -token")
+        .populate("joinedGroupList", "groupName score");
 
-      if (!user) {
-        return res
-          .status(404)
-          .json({ success: false, message: "사용자를 찾을 수 없습니다." });
-      }
+      const userScore = user.score;
+      const userMaxStreak = user.maxStreak;
+
+      const scoreRank =
+        (await User.countDocuments({ score: { $gt: userScore } })) + 1;
+      const streakRank =
+        (await User.countDocuments({ maxStreak: { $gt: userMaxStreak } })) + 1;
+
+      const userObj = user.toObject();
+
+      userObj.scoreRank = scoreRank;
+      userObj.streakRank = streakRank;
+      userObj.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
+      userObj.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
 
       return res.status(200).json({
         success: true,
-        user,
+        user: userObj,
       });
     } catch (error) {
       logger.error(error);
