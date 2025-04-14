@@ -60,10 +60,13 @@ const get = {
       }
 
       const groupScore = group.score;
+      const groupCount = group.count;
       const groupMaxStreak = group.maxStreak;
 
       const scoreRank =
         (await Group.countDocuments({ score: { $gt: groupScore } })) + 1;
+      const countRank =
+        (await Group.countDocuments({ count: { $gt: groupCount } })) + 1;
       const streakRank =
         (await Group.countDocuments({ maxStreak: { $gt: groupMaxStreak } })) +
         1;
@@ -78,6 +81,7 @@ const get = {
       groupObj.updatedAt = moment(group.updatedAt).tz("Asia/Seoul").format();
       groupObj.isMember = role !== "none";
       groupObj.scoreRank = scoreRank;
+      groupObj.countRank = countRank;
       groupObj.streakRank = streakRank;
       groupObj.memberData = group.memberData.map((member) => ({
         name: member.user.name,
