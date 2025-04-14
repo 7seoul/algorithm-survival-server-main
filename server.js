@@ -22,5 +22,7 @@ mongoose
 
     // 유저 정보 자동 업데이트
     autoUpdate.init();
+    // 06시 그룹 초기화
+    initGroupResetJob();
   })
   .catch((e) => logger.error("MongoDB error: ", e));

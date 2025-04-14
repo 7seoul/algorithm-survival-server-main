@@ -53,9 +53,6 @@ const userUpdateCore = async (handle, profile) => {
 
     const newScore = profile.solvedCount - member.initialSolved;
 
-    logger.warn(newScore);
-    logger.warn(member);
-
     // 유저 정보 업데이트
     const memberUpdateResult = await MemberData.updateOne(
       {
@@ -71,8 +68,6 @@ const userUpdateCore = async (handle, profile) => {
         },
       }
     );
-
-    logger.warn(memberUpdateResult.modifiedCount);
 
     const allMembers = await MemberData.find({
       _id: { $in: group.memberData },
