@@ -23,6 +23,58 @@ const userSchema = mongoose.Schema(
         ref: "Group",
       },
     ],
+    initial: {
+      bronze: {
+        type: Number,
+        default: 0,
+      },
+      silver: {
+        type: Number,
+        default: 0,
+      },
+      gold: {
+        type: Number,
+        default: 0,
+      },
+      platinum: {
+        type: Number,
+        default: 0,
+      },
+      diamond: {
+        type: Number,
+        default: 0,
+      },
+      ruby: {
+        type: Number,
+        default: 0,
+      },
+    },
+    current: {
+      bronze: {
+        type: Number,
+        default: 0,
+      },
+      silver: {
+        type: Number,
+        default: 0,
+      },
+      gold: {
+        type: Number,
+        default: 0,
+      },
+      platinum: {
+        type: Number,
+        default: 0,
+      },
+      diamond: {
+        type: Number,
+        default: 0,
+      },
+      ruby: {
+        type: Number,
+        default: 0,
+      },
+    },
     maxStreak: {
       type: Number,
       default: 0,
@@ -44,6 +96,10 @@ const userSchema = mongoose.Schema(
       default: 0,
     },
     score: {
+      type: Number,
+      default: 0,
+    },
+    count: {
       type: Number,
       default: 0,
     },
