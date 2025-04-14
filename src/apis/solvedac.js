@@ -13,7 +13,7 @@ const profile = async (handle) => {
 
     return profile;
   } catch (error) {
-    logger.error("Failed to profile:", error);
+    logger.error(`Failed to profile: ${error}`);
     throw new Error("Invalid data");
   }
 };
@@ -36,7 +36,7 @@ const problem = async (handle, grade) => {
 
     return cnt;
   } catch (error) {
-    logger.error("Failed to problem:", error);
+    logger.error(`Failed to problem: ${error}`);
     throw new Error("Invalid data");
   }
 };
@@ -54,7 +54,7 @@ const grass = async (handle) => {
 
     return currentStreak;
   } catch (error) {
-    logger.error("Failed to problem:", error);
+    logger.error(`Failed to problem: ${error}`);
     throw new Error("Invalid data");
   }
 };

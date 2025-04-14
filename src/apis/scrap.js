@@ -27,8 +27,8 @@ const initBrowser = async () => {
         try {
           await browserInstance.close();
           logger.info("Old browser closed.");
-        } catch (e) {
-          logger.error("Failed to close browser:", e);
+        } catch (error) {
+          logger.error(`Failed to close browser: ${error}`);
         }
       }
 
@@ -116,14 +116,14 @@ const profile = async (handle) => {
         streak,
       };
     } catch (error) {
-      logger.error("Failed to scrape profile:", error);
+      logger.error(`Failed to scrape profile: ${error}`);
       return { success: false };
     } finally {
       if (page && !page.isClosed?.()) {
         try {
           await page.close();
         } catch (error) {
-          logger.error("Page close failed:", error);
+          logger.error(`Page close failed: ${error}`);
         }
       }
     }

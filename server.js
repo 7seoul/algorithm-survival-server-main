@@ -26,4 +26,4 @@ mongoose
     // 06시 그룹 초기화
     initGroupResetJob();
   })
-  .catch((e) => logger.error("MongoDB error: ", e));
+  .catch((error) => logger.error(`MongoDB error: ${error}`));

@@ -21,7 +21,7 @@ const initGroupResetJob = async () => {
           "[CRON] 그룹 todaySolvedMembers, todayAllSolved 초기화 완료"
         );
       } catch (error) {
-        logger.error("[CRON] 그룹 초기화 실패:", error);
+        logger.error(`[CRON] 그룹 초기화 실패: ${error}`);
       }
     },
     {

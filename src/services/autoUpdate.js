@@ -12,7 +12,7 @@ const loadUsersFromDB = async () => {
 
     return users;
   } catch (error) {
-    logger.error(`[AUTO] Error loading user:`, error.message);
+    logger.error(`[AUTO] Error loading user: ${error}`);
     return [];
   }
 };
@@ -41,7 +41,7 @@ const autoUpdate = async () => {
   try {
     await userUpdateByScrap(user.handle);
   } catch (error) {
-    logger.error(`[AUTO] "${user.handle}" Error updating user:`, error.message);
+    logger.error(`[AUTO] "${user.handle}" Error updating user: ${error}`);
   }
 
   currentIndex += 1;

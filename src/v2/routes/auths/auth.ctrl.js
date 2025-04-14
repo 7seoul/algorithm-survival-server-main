@@ -189,10 +189,10 @@ const post = {
       // solved.ac api 사용
       const profile = await solvedac.profile(req.body.handle);
 
-      logger.warn("register");
-      logger.warn(profile.bio);
-      logger.warn(userVerification.verificationCode);
-      logger.warn(profile.bio === userVerification.verificationCode);
+      logger.warn("--register--");
+      logger.warn(`스크랩한 bio: ${profile.bio}`);
+      logger.warn(`db의 코드: ${userVerification.verificationCode}`);
+      logger.warn(`결과: ${profile.bio === userVerification.verificationCode}`);
 
       // 개발용 스킵
       // if (!userVerification.verificationCode) {
