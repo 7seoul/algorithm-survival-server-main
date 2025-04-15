@@ -86,7 +86,7 @@ const get = {
         name: member.user.name,
         handle: member.user.handle,
         imgSrc: member.user.imgSrc,
-        streak: member.user.currentStreak - member.initialStreak,
+        maxStreak: member.user.currentStreak - member.initialStreak,
         score: member.score,
         count: member.count,
       }));
