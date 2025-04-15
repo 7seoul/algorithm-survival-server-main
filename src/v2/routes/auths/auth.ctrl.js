@@ -214,18 +214,18 @@ const post = {
         );
 
         // 개발용 스킵
-        // if (!userVerification.verificationCode) {
-        //   return res.status(200).json({
-        //     success: false,
-        //     message: "인증 코드를 새로 발급해 주세요.",
-        //   });
-        // }
-        // if (profile.bio !== userVerification.verificationCode) {
-        //   return res.status(200).json({
-        //     success: false,
-        //     message: "인증 코드가 일치하지 않습니다.",
-        //   });
-        // }
+        if (!userVerification.verificationCode) {
+          return res.status(200).json({
+            success: false,
+            message: "인증 코드를 새로 발급해 주세요.",
+          });
+        }
+        if (profile.bio !== userVerification.verificationCode) {
+          return res.status(200).json({
+            success: false,
+            message: "인증 코드가 일치하지 않습니다.",
+          });
+        }
 
         streak = await solvedac.grass(req.body.handle);
         initial = await solvedac.problem(req.body.handle);
@@ -337,13 +337,13 @@ const post = {
         });
       }
       // 개발용 스킵
-      // const profile = await solvedac.profile(handle);
-      // if (profile.bio !== userVerification.verificationCode) {
-      //   return res.status(200).json({
-      //     success: false,
-      //     message: "인증 코드가 일치하지 않습니다.",
-      //   });
-      // }
+      const profile = await solvedac.profile(handle);
+      if (profile.bio !== userVerification.verificationCode) {
+        return res.status(200).json({
+          success: false,
+          message: "인증 코드가 일치하지 않습니다.",
+        });
+      }
 
       // 새로운 비밀번호 설정
       user.password = newPassword;
