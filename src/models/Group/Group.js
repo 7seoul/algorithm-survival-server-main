@@ -31,6 +31,10 @@ const groupSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    count: {
+      type: Number,
+      default: 0,
+    },
     size: {
       type: Number,
       default: 1,
@@ -61,6 +65,7 @@ const groupSchema = mongoose.Schema(
 );
 
 groupSchema.index({ score: -1 });
+groupSchema.index({ count: -1 });
 groupSchema.index({ maxStreak: -1 });
 
 const Group = mongoose.model("Group", groupSchema);

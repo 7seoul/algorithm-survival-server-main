@@ -3,50 +3,12 @@ const { Group } = require("../../../models/Group/Group");
 const logger = require("../../../../logger");
 
 const get = {
-  usersStreak: async (req, res) => {
-    try {
-      const users = await User.find({})
-        .select(
-          "-_id name handle tier initialSolved currentSolved initialStreak currentStreak maxStreak"
-        )
-        .lean();
-
-      const result = users
-        .map((user) => ({
-          name: user.name,
-          handle: user.handle,
-          streak: user.maxStreak,
-          score: user.currentSolved - user.initialSolved,
-        }))
-        .sort((a, b) => b.streak - a.streak);
-
-      return res.status(200).json({
-        success: true,
-        result,
-      });
-    } catch (error) {
-      logger.error(error);
-      return res
-        .status(500)
-        .json({ success: false, message: "서버 오류 발생" });
-    }
-  },
   usersScore: async (req, res) => {
     try {
-      const users = await User.find({})
-        .select(
-          "-_id name handle tier initialSolved currentSolved initialStreak currentStreak maxStreak"
-        )
+      const result = await User.find({})
+        .select("-_id name handle tier score imgSrc")
+        .sort({ score: -1 })
         .lean();
-
-      const result = users
-        .map((user) => ({
-          name: user.name,
-          handle: user.handle,
-          streak: user.maxStreak,
-          score: user.currentSolved - user.initialSolved,
-        }))
-        .sort((a, b) => b.score - a.score);
 
       return res.status(200).json({
         success: true,
@@ -59,21 +21,30 @@ const get = {
         .json({ success: false, message: "서버 오류 발생" });
     }
   },
-  groupsStreak: async (req, res) => {
+  usersCount: async (req, res) => {
     try {
-      const groups = await Group.find({})
-        .select("groupName handle tier score currentStreak maxStreak")
+      const result = await User.find({})
+        .select("-_id name handle tier count imgSrc")
+        .sort({ count: -1 })
         .lean();
 
-      const result = groups
-        .map((group) => ({
-          _id: group._id,
-          groupName: group.groupName,
-          score: group.score,
-          currentStreak: group.currentStreak,
-          maxStreak: group.maxStreak,
-        }))
-        .sort((a, b) => b.maxStreak - a.maxStreak);
+      return res.status(200).json({
+        success: true,
+        result,
+      });
+    } catch (error) {
+      logger.error(error);
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
+    }
+  },
+  usersStreak: async (req, res) => {
+    try {
+      const result = await User.find({})
+        .select("-_id name handle tier maxStreak imgSrc")
+        .sort({ maxStreak: -1 })
+        .lean();
 
       return res.status(200).json({
         success: true,
@@ -88,19 +59,46 @@ const get = {
   },
   groupsScore: async (req, res) => {
     try {
-      const groups = await Group.find({})
-        .select("groupName handle tier score currentStreak maxStreak")
+      const result = await Group.find({})
+        .select("groupName handle score")
+        .sort({ score: -1 })
         .lean();
 
-      const result = groups
-        .map((group) => ({
-          _id: group._id,
-          groupName: group.groupName,
-          score: group.score,
-          currentStreak: group.currentStreak,
-          maxStreak: group.maxStreak,
-        }))
-        .sort((a, b) => b.score - a.score);
+      return res.status(200).json({
+        success: true,
+        result,
+      });
+    } catch (error) {
+      logger.error(error);
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
+    }
+  },
+  groupsCount: async (req, res) => {
+    try {
+      const result = await Group.find({})
+        .select("groupName handle count")
+        .sort({ count: -1 })
+        .lean();
+
+      return res.status(200).json({
+        success: true,
+        result,
+      });
+    } catch (error) {
+      logger.error(error);
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
+    }
+  },
+  groupsStreak: async (req, res) => {
+    try {
+      const result = await Group.find({})
+        .select("groupName handle maxStreak")
+        .sort({ maxStreak: -1 })
+        .lean();
 
       return res.status(200).json({
         success: true,
@@ -129,6 +127,7 @@ const get = {
     });
   },
 };
+
 module.exports = {
   get,
 };

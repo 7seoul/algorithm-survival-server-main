@@ -23,6 +23,58 @@ const userSchema = mongoose.Schema(
         ref: "Group",
       },
     ],
+    initial: {
+      bronze: {
+        type: Number,
+        default: 0,
+      },
+      silver: {
+        type: Number,
+        default: 0,
+      },
+      gold: {
+        type: Number,
+        default: 0,
+      },
+      platinum: {
+        type: Number,
+        default: 0,
+      },
+      diamond: {
+        type: Number,
+        default: 0,
+      },
+      ruby: {
+        type: Number,
+        default: 0,
+      },
+    },
+    current: {
+      bronze: {
+        type: Number,
+        default: 0,
+      },
+      silver: {
+        type: Number,
+        default: 0,
+      },
+      gold: {
+        type: Number,
+        default: 0,
+      },
+      platinum: {
+        type: Number,
+        default: 0,
+      },
+      diamond: {
+        type: Number,
+        default: 0,
+      },
+      ruby: {
+        type: Number,
+        default: 0,
+      },
+    },
     maxStreak: {
       type: Number,
       default: 0,
@@ -35,15 +87,19 @@ const userSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    initialSolved: {
+    initialCount: {
       type: Number,
       default: 0,
     },
-    currentSolved: {
+    currentCount: {
       type: Number,
       default: 0,
     },
     score: {
+      type: Number,
+      default: 0,
+    },
+    count: {
       type: Number,
       default: 0,
     },
@@ -59,6 +115,7 @@ const userSchema = mongoose.Schema(
 );
 
 userSchema.index({ score: -1 });
+userSchema.index({ count: -1 });
 userSchema.index({ maxStreak: -1 });
 
 // 비밀번호 해싱

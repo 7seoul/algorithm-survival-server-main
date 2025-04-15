@@ -102,6 +102,35 @@ const profile = async (handle) => {
         ? parseInt(streakText.replace(/,/g, ""), 10)
         : undefined;
 
+      // solved by grade
+      const tiers = ["bronze", "silver", "gold", "platinum", "diamond", "ruby"];
+
+      const current = {
+        bronze: 0,
+        silver: 0,
+        gold: 0,
+        platinum: 0,
+        diamond: 0,
+        ruby: 0,
+      };
+
+      tiers.forEach((tier) => {
+        const tierCell = $(`table.css-a651il td.${tier}`).first();
+
+        if (tierCell.length) {
+          const scoreCell = tierCell.next();
+          if (scoreCell.length) {
+            const scoreText = scoreCell.find("b").text().trim();
+
+            const score = parseInt(scoreText.replace(/,/g, ""), 10);
+
+            if (!isNaN(score)) {
+              current[tier] = score;
+            }
+          }
+        }
+      });
+
       const success =
         tier !== undefined &&
         solvedCount !== undefined &&
@@ -114,6 +143,7 @@ const profile = async (handle) => {
         solvedCount,
         profileImageUrl,
         streak,
+        current,
       };
     } catch (error) {
       logger.error(`Failed to scrape profile: ${error}`);

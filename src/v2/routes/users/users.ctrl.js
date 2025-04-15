@@ -9,26 +9,30 @@ const get = {
       const user = await User.findOne(
         { handle: req.params.handle },
         "-_id -__v -password -token"
-      ).populate("joinedGroupList", "groupName score");
+      )
+        .populate("joinedGroupList", "groupName score")
+        .lean();
 
       const userScore = user.score;
+      const userCount = user.count;
       const userMaxStreak = user.maxStreak;
 
       const scoreRank =
         (await User.countDocuments({ score: { $gt: userScore } })) + 1;
+      const countRank =
+        (await User.countDocuments({ count: { $gt: userCount } })) + 1;
       const streakRank =
         (await User.countDocuments({ maxStreak: { $gt: userMaxStreak } })) + 1;
 
-      const userObj = user.toObject();
-
-      userObj.scoreRank = scoreRank;
-      userObj.streakRank = streakRank;
-      userObj.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
-      userObj.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
+      user.scoreRank = scoreRank;
+      user.countRank = countRank;
+      user.streakRank = streakRank;
+      user.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
+      user.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
 
       return res.status(200).json({
         success: true,
-        user: userObj,
+        user,
       });
     } catch (error) {
       logger.error(error);
@@ -39,7 +43,7 @@ const get = {
   },
   all: async (req, res) => {
     try {
-      const users = await User.find({}, "-_id -__v -password -token");
+      const users = await User.find({}, "-_id -__v -password -token").lean();
       return res.status(200).json({
         success: true,
         users,
@@ -62,10 +66,13 @@ const get = {
       }
 
       const userScore = user.score;
+      const userCount = user.count;
       const userMaxStreak = user.maxStreak;
 
       const scoreRank =
         (await User.countDocuments({ score: { $gt: userScore } })) + 1;
+      const countRank =
+        (await User.countDocuments({ count: { $gt: userCount } })) + 1;
       const streakRank =
         (await User.countDocuments({ maxStreak: { $gt: userMaxStreak } })) + 1;
 
@@ -77,6 +84,7 @@ const get = {
       });
 
       userObj.scoreRank = scoreRank;
+      userObj.countRank = countRank;
       userObj.streakRank = streakRank;
       userObj.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
       userObj.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
@@ -115,16 +123,20 @@ const post = {
         .populate("joinedGroupList", "groupName score");
 
       const userScore = user.score;
+      const userCount = user.count;
       const userMaxStreak = user.maxStreak;
 
       const scoreRank =
         (await User.countDocuments({ score: { $gt: userScore } })) + 1;
+      const countRank =
+        (await User.countDocuments({ count: { $gt: userCount } })) + 1;
       const streakRank =
         (await User.countDocuments({ maxStreak: { $gt: userMaxStreak } })) + 1;
 
       const userObj = user.toObject();
 
       userObj.scoreRank = scoreRank;
+      userObj.countRank = countRank;
       userObj.streakRank = streakRank;
       userObj.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
       userObj.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();

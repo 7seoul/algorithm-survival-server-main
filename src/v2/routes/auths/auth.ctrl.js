@@ -3,21 +3,34 @@ const { UserVerification } = require("../../../models/User/UserVerification");
 const solvedac = require("../../../apis/solvedac");
 const crypto = require("crypto");
 const logger = require("../../../../logger");
+const moment = require("moment-timezone");
+const { userRank } = require("../../../utils/checkRank");
 
 const get = {
   me: async (req, res) => {
     try {
       const handle = req.user.handle;
-      const user = await User.findOne(
-        { handle },
-        "-token -password -createdAt -__v"
-      ).populate("joinedGroupList", "groupName");
+      let user = await User.findOne({ handle })
+        .select("-password -initial -current -initialCount -currentCount -__v")
+        .populate(
+          "joinedGroupList",
+          "groupName _id description score maxStreak size"
+        )
+        .lean();
 
       if (!user) {
         return res
           .status(404)
           .json({ success: false, message: "찾을 수 없는 아이디 입니다." });
       }
+
+      user = await userRank(user);
+
+      user.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
+      user.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
+      user.currentStreak = user.currentStreak - user.initialStreak;
+
+      delete user.initialStreak;
 
       return res.status(200).json({ success: true, user });
     } catch (error) {
@@ -79,7 +92,7 @@ const post = {
     try {
       const existingVerification = await UserVerification.findOne({
         handle: req.body.handle,
-      });
+      }).lean();
 
       if (existingVerification?.isVerified) {
         return res.status(409).json({
@@ -130,7 +143,7 @@ const post = {
     try {
       const existingVerification = await UserVerification.findOne({
         handle: req.body.handle,
-      });
+      }).lean();
 
       if (!existingVerification?.isVerified) {
         return res.status(200).json({
@@ -168,7 +181,7 @@ const post = {
     try {
       const userVerification = await UserVerification.findOne({
         handle: req.body.handle,
-      });
+      }).lean();
 
       if (!userVerification) {
         return res.status(409).json({
@@ -187,33 +200,47 @@ const post = {
       // 여기서 과요청 방지 가능
 
       // solved.ac api 사용
-      const profile = await solvedac.profile(req.body.handle);
+      let profile;
+      let streak;
+      let initial;
+      try {
+        profile = await solvedac.profile(req.body.handle);
 
-      logger.warn("--register--");
-      logger.warn(`스크랩한 bio: ${profile.bio}`);
-      logger.warn(`db의 코드: ${userVerification.verificationCode}`);
-      logger.warn(`결과: ${profile.bio === userVerification.verificationCode}`);
+        logger.warn("--register--");
+        logger.warn(`스크랩한 bio: ${profile.bio}`);
+        logger.warn(`db의 코드: ${userVerification.verificationCode}`);
+        logger.warn(
+          `결과: ${profile.bio === userVerification.verificationCode}`
+        );
 
-      // 개발용 스킵
-      // if (!userVerification.verificationCode) {
-      //   return res.status(200).json({
-      //     success: false,
-      //     message: "인증 코드를 새로 발급해 주세요.",
-      //   });
-      // }
-      // if (profile.bio !== userVerification.verificationCode) {
-      //   return res.status(200).json({
-      //     success: false,
-      //     message: "인증 코드가 일치하지 않습니다.",
-      //   });
-      // }
+        // 개발용 스킵
+        // if (!userVerification.verificationCode) {
+        //   return res.status(200).json({
+        //     success: false,
+        //     message: "인증 코드를 새로 발급해 주세요.",
+        //   });
+        // }
+        // if (profile.bio !== userVerification.verificationCode) {
+        //   return res.status(200).json({
+        //     success: false,
+        //     message: "인증 코드가 일치하지 않습니다.",
+        //   });
+        // }
 
-      const streak = await solvedac.grass(req.body.handle);
+        streak = await solvedac.grass(req.body.handle);
+        initial = await solvedac.problem(req.body.handle);
 
-      if (streak === undefined || !profile) {
-        return res.status(424).json({
+        if (streak === undefined || initial === undefined || !profile) {
+          return res.status(424).json({
+            success: false,
+            message: "정보를 불러오는데 실패했습니다.",
+          });
+        }
+      } catch (error) {
+        logger.error(error);
+        return res.status(404).json({
           success: false,
-          message: "정보를 불러오는데 실패했습니다.",
+          message: "solved.ac에 가입되지 않은 ID입니다.",
         });
       }
 
@@ -223,12 +250,14 @@ const post = {
         password: req.body.password,
         initialStreak: streak,
         currentStreak: streak,
-        initialSolved: profile.solvedCount,
-        currentSolved: profile.solvedCount,
+        initialCount: profile.solvedCount,
+        currentCount: profile.solvedCount,
         tier: profile.tier,
         imgSrc: profile.profileImageUrl
           ? profile.profileImageUrl
           : "https://static.solved.ac/misc/360x360/default_profile.png",
+        initial,
+        current: initial,
       });
 
       await newUser.save();
@@ -299,7 +328,8 @@ const post = {
 
       const userVerification = await UserVerification.findOne({
         handle: handle,
-      });
+      }).lean();
+
       if (!userVerification.verificationCode) {
         return res.status(200).json({
           success: false,

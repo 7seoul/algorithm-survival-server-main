@@ -11,7 +11,7 @@ const get = {
   all: async (req, res) => {
     try {
       const groups = await Group.find({}).select(
-        "groupName _id description score maxStreak size"
+        "groupName _id description score count maxStreak size"
       );
       return res.status(200).json({
         success: true,
@@ -44,14 +44,15 @@ const get = {
       const group = await Group.findOne({ _id: groupId }, "-__v -members")
         .populate({
           path: "memberData",
-          select: "-_id initialStreak score",
+          select: "-_id initialStreak score count",
           populate: {
             path: "user",
             select: "-_id name handle currentStreak imgSrc",
           },
         })
         .populate("admin", "-_id handle name")
-        .populate("applications", "-_id name handle");
+        .populate("applications", "-_id name handle")
+        .lean();
 
       if (!group) {
         return res
@@ -60,36 +61,39 @@ const get = {
       }
 
       const groupScore = group.score;
+      const groupCount = group.count;
       const groupMaxStreak = group.maxStreak;
 
       const scoreRank =
         (await Group.countDocuments({ score: { $gt: groupScore } })) + 1;
+      const countRank =
+        (await Group.countDocuments({ count: { $gt: groupCount } })) + 1;
       const streakRank =
         (await Group.countDocuments({ maxStreak: { $gt: groupMaxStreak } })) +
         1;
 
-      const groupObj = group.toObject();
-
       if (role !== "admin") {
-        delete groupObj.applications;
+        delete group.applications;
       }
 
-      groupObj.createdAt = moment(group.createdAt).tz("Asia/Seoul").format();
-      groupObj.updatedAt = moment(group.updatedAt).tz("Asia/Seoul").format();
-      groupObj.isMember = role !== "none";
-      groupObj.scoreRank = scoreRank;
-      groupObj.streakRank = streakRank;
-      groupObj.memberData = group.memberData.map((member) => ({
+      group.createdAt = moment(group.createdAt).tz("Asia/Seoul").format();
+      group.updatedAt = moment(group.updatedAt).tz("Asia/Seoul").format();
+      group.isMember = role !== "none";
+      group.scoreRank = scoreRank;
+      group.countRank = countRank;
+      group.streakRank = streakRank;
+      group.memberData = group.memberData.map((member) => ({
         name: member.user.name,
         handle: member.user.handle,
         imgSrc: member.user.imgSrc,
-        streak: member.user.currentStreak - member.initialStreak,
+        maxStreak: member.user.currentStreak - member.initialStreak,
         score: member.score,
+        count: member.count,
       }));
 
       return res.status(200).json({
         success: true,
-        group: groupObj,
+        group,
       });
     } catch (error) {
       logger.error(error);
@@ -120,7 +124,7 @@ const get = {
         .select("-_id applications")
         .populate(
           "applications",
-          "-_id name handle currentSolved currentStreak"
+          "-_id name handle currentCount currentStreak"
         );
 
       const applications = data.applications;
@@ -142,13 +146,14 @@ const post = {
   create: async (req, res) => {
     try {
       // 유저 추가 전 정보 업데이트
-      await userUpdateBySolvedac(req.user.handle);
+      const user = await userUpdateBySolvedac(req.user.handle);
 
       // 유저 정보 저장
       const memberData = new MemberData({
-        user: req.user._id,
-        initialStreak: req.user.currentStreak,
-        initialSolved: req.user.currentSolved,
+        user: user._id,
+        initialStreak: user.currentStreak,
+        initialCount: user.currentCount,
+        initial: user.current,
       });
 
       await memberData.save();
@@ -165,14 +170,14 @@ const post = {
         _id: groupId,
         groupName: req.body.groupName,
         description: req.body.description,
-        admin: req.user._id,
+        admin: user._id,
         memberData: [memberData._id],
       });
 
       await group.save();
 
       await User.findOneAndUpdate(
-        { handle: req.user.handle },
+        { handle: user.handle },
         { $push: { joinedGroupList: groupId } }
       );
 
@@ -328,7 +333,8 @@ const post = {
       const memberData = new MemberData({
         user: user._id,
         initialStreak: user.currentStreak,
-        initialSolved: user.currentSolved,
+        initialCount: user.currentCount,
+        initial: user.current,
       });
       await memberData.save();
 
