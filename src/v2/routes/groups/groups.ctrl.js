@@ -386,10 +386,18 @@ const post = {
         });
       }
 
+      const user = await User.findOne({ handle }, "_id").lean();
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, message: "유저를 찾을 수 없습니다." });
+      }
+
       const group = await Group.findByIdAndUpdate(
         groupId,
         {
-          $pull: { applications: handle },
+          $pull: { applications: user._id },
         },
         { new: true }
       );
