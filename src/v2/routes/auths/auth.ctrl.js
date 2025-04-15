@@ -3,16 +3,19 @@ const { UserVerification } = require("../../../models/User/UserVerification");
 const solvedac = require("../../../apis/solvedac");
 const crypto = require("crypto");
 const logger = require("../../../../logger");
+const moment = require("moment-timezone");
+const { userRank } = require("../../../utils/checkRank");
 
 const get = {
   me: async (req, res) => {
     try {
       const handle = req.user.handle;
-      const user = await User.findOne(
-        { handle },
-        "-token -password -createdAt -__v"
-      )
-        .populate("joinedGroupList", "groupName")
+      let user = await User.findOne({ handle })
+        .select("-password -initial -current -initialCount -currentCount -__v")
+        .populate(
+          "joinedGroupList",
+          "groupName _id description score maxStreak size"
+        )
         .lean();
 
       if (!user) {
@@ -20,6 +23,14 @@ const get = {
           .status(404)
           .json({ success: false, message: "찾을 수 없는 아이디 입니다." });
       }
+
+      user = await userRank(user);
+
+      user.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
+      user.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
+      user.currentStreak = user.currentStreak - user.initialStreak;
+
+      delete user.initialStreak;
 
       return res.status(200).json({ success: true, user });
     } catch (error) {
