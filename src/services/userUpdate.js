@@ -9,11 +9,11 @@ const timer = require("../utils/timer");
 const calculateScore = (current, initial) => {
   const pointValues = {
     bronze: 1,
-    silver: 3,
-    gold: 5,
-    platinum: 10,
-    diamond: 20,
-    ruby: 50,
+    silver: 5,
+    gold: 10,
+    platinum: 20,
+    diamond: 50,
+    ruby: 100,
   };
 
   let totalScore = 0;
