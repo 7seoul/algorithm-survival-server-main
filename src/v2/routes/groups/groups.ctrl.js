@@ -44,7 +44,7 @@ const get = {
       const group = await Group.findOne({ _id: groupId }, "-__v -members")
         .populate({
           path: "memberData",
-          select: "-_id initialStreak score",
+          select: "-_id initialStreak score count",
           populate: {
             path: "user",
             select: "-_id name handle currentStreak imgSrc",
