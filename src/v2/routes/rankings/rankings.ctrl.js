@@ -6,9 +6,7 @@ const get = {
   usersScore: async (req, res) => {
     try {
       const users = await User.find({})
-        .select(
-          "-_id name handle tier initialCount currentCount initialStreak currentStreak maxStreak score"
-        )
+        .select("-_id name handle tier score imgSrc")
         .lean();
 
       const result = users
@@ -16,6 +14,7 @@ const get = {
           name: user.name,
           handle: user.handle,
           score: user.score,
+          imgSrc: user.imgSrc,
         }))
         .sort((a, b) => b.score - a.score);
 
@@ -33,16 +32,15 @@ const get = {
   usersCount: async (req, res) => {
     try {
       const users = await User.find({})
-        .select(
-          "-_id name handle tier initialCount currentCount initialStreak currentStreak maxStreak"
-        )
+        .select("-_id name handle tier count imgSrc")
         .lean();
 
       const result = users
         .map((user) => ({
           name: user.name,
           handle: user.handle,
-          count: user.currentCount - user.initialCount,
+          count: user.count,
+          imgSrc: user.imgSrc,
         }))
         .sort((a, b) => b.count - a.count);
 
@@ -60,9 +58,7 @@ const get = {
   usersStreak: async (req, res) => {
     try {
       const users = await User.find({})
-        .select(
-          "-_id name handle tier initialCount currentCount initialStreak currentStreak maxStreak"
-        )
+        .select("-_id name handle tier maxStreak imgSrc")
         .lean();
 
       const result = users
@@ -70,6 +66,7 @@ const get = {
           name: user.name,
           handle: user.handle,
           streak: user.maxStreak,
+          imgSrc: user.imgSrc,
         }))
         .sort((a, b) => b.streak - a.streak);
 
