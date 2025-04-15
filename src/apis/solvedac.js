@@ -11,6 +11,11 @@ const profile = async (handle) => {
 
     const profile = response.data;
 
+    if (profile.profileImageUrl === null) {
+      profile.profileImageUrl =
+        "https://static.solved.ac/misc/360x360/default_profile.png";
+    }
+
     return profile;
   } catch (error) {
     logger.error(`Failed to profile: ${error}`);
