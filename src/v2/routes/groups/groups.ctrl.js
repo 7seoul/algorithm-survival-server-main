@@ -47,7 +47,7 @@ const get = {
           select: "-_id initialStreak score count",
           populate: {
             path: "user",
-            select: "-_id name handle currentStreak imgSrc",
+            select: "-_id name handle currentStreak imgSrc tier",
           },
         })
         .populate("admin", "-_id handle name")
@@ -86,6 +86,7 @@ const get = {
         name: member.user.name,
         handle: member.user.handle,
         imgSrc: member.user.imgSrc,
+        tier: member.user.tier,
         maxStreak: member.user.currentStreak - member.initialStreak,
         score: member.score,
         count: member.count,
