@@ -51,7 +51,8 @@ const get = {
           },
         })
         .populate("admin", "-_id handle name")
-        .populate("applications", "-_id name handle");
+        .populate("applications", "-_id name handle")
+        .lean();
 
       if (!group) {
         return res
@@ -71,19 +72,17 @@ const get = {
         (await Group.countDocuments({ maxStreak: { $gt: groupMaxStreak } })) +
         1;
 
-      const groupObj = group.toObject();
-
       if (role !== "admin") {
-        delete groupObj.applications;
+        delete group.applications;
       }
 
-      groupObj.createdAt = moment(group.createdAt).tz("Asia/Seoul").format();
-      groupObj.updatedAt = moment(group.updatedAt).tz("Asia/Seoul").format();
-      groupObj.isMember = role !== "none";
-      groupObj.scoreRank = scoreRank;
-      groupObj.countRank = countRank;
-      groupObj.streakRank = streakRank;
-      groupObj.memberData = group.memberData.map((member) => ({
+      group.createdAt = moment(group.createdAt).tz("Asia/Seoul").format();
+      group.updatedAt = moment(group.updatedAt).tz("Asia/Seoul").format();
+      group.isMember = role !== "none";
+      group.scoreRank = scoreRank;
+      group.countRank = countRank;
+      group.streakRank = streakRank;
+      group.memberData = group.memberData.map((member) => ({
         name: member.user.name,
         handle: member.user.handle,
         imgSrc: member.user.imgSrc,
@@ -94,7 +93,7 @@ const get = {
 
       return res.status(200).json({
         success: true,
-        group: groupObj,
+        group,
       });
     } catch (error) {
       logger.error(error);

@@ -11,7 +11,9 @@ const get = {
       const user = await User.findOne(
         { handle },
         "-token -password -createdAt -__v"
-      ).populate("joinedGroupList", "groupName");
+      )
+        .populate("joinedGroupList", "groupName")
+        .lean();
 
       if (!user) {
         return res
@@ -79,7 +81,7 @@ const post = {
     try {
       const existingVerification = await UserVerification.findOne({
         handle: req.body.handle,
-      });
+      }).lean();
 
       if (existingVerification?.isVerified) {
         return res.status(409).json({
@@ -130,7 +132,7 @@ const post = {
     try {
       const existingVerification = await UserVerification.findOne({
         handle: req.body.handle,
-      });
+      }).lean();
 
       if (!existingVerification?.isVerified) {
         return res.status(200).json({
@@ -168,7 +170,7 @@ const post = {
     try {
       const userVerification = await UserVerification.findOne({
         handle: req.body.handle,
-      });
+      }).lean();
 
       if (!userVerification) {
         return res.status(409).json({
@@ -315,7 +317,8 @@ const post = {
 
       const userVerification = await UserVerification.findOne({
         handle: handle,
-      });
+      }).lean();
+
       if (!userVerification.verificationCode) {
         return res.status(200).json({
           success: false,
