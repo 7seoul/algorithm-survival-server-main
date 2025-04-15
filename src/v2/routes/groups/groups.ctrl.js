@@ -147,14 +147,14 @@ const post = {
   create: async (req, res) => {
     try {
       // 유저 추가 전 정보 업데이트
-      await userUpdateBySolvedac(req.user.handle);
+      const user = await userUpdateBySolvedac(req.user.handle);
 
       // 유저 정보 저장
       const memberData = new MemberData({
-        user: req.user._id,
-        initialStreak: req.user.currentStreak,
-        initialCount: req.user.currentCount,
-        initialScore: req.user.score,
+        user: user._id,
+        initialStreak: user.currentStreak,
+        initialCount: user.currentCount,
+        initial: user.current,
       });
 
       await memberData.save();
@@ -171,14 +171,14 @@ const post = {
         _id: groupId,
         groupName: req.body.groupName,
         description: req.body.description,
-        admin: req.user._id,
+        admin: user._id,
         memberData: [memberData._id],
       });
 
       await group.save();
 
       await User.findOneAndUpdate(
-        { handle: req.user.handle },
+        { handle: user.handle },
         { $push: { joinedGroupList: groupId } }
       );
 
@@ -335,7 +335,7 @@ const post = {
         user: user._id,
         initialStreak: user.currentStreak,
         initialCount: user.currentCount,
-        initialScore: user.score,
+        initial: user.current,
       });
       await memberData.save();
 

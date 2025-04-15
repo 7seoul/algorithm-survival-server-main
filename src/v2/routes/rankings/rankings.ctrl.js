@@ -30,7 +30,7 @@ const get = {
         .json({ success: false, message: "서버 오류 발생" });
     }
   },
-  userscount: async (req, res) => {
+  usersCount: async (req, res) => {
     try {
       const users = await User.find({})
         .select(
@@ -175,6 +175,7 @@ const get = {
     });
   },
 };
+
 module.exports = {
   get,
 };

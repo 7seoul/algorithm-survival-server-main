@@ -6,7 +6,7 @@ const { MemberData } = require("../models/Group/MemberData");
 const logger = require("../../logger");
 const timer = require("../utils/timer");
 
-const calculateTotalScore = (current, initial) => {
+const calculateScore = (current, initial) => {
   const pointValues = {
     bronze: 1,
     silver: 3,
@@ -36,7 +36,7 @@ const userUpdateCore = async (handle, profile) => {
     newStreak = profile.streak;
   }
 
-  const totalScore = calculateTotalScore(profile.current, initUser.initial);
+  const totalScore = calculateScore(profile.current, initUser.initial);
 
   const updateFields = {
     initialStreak: newStreak,
@@ -76,7 +76,7 @@ const userUpdateCore = async (handle, profile) => {
     });
 
     const newCount = profile.solvedCount - member.initialCount;
-    const newScore = totalScore - member.initialScore;
+    const newScore = calculateScore(profile.current, member.initial);
 
     // 유저 정보 업데이트
     const memberUpdateResult = await MemberData.updateOne(
