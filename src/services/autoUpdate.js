@@ -64,7 +64,7 @@ const autoUpdate = async () => {
 };
 
 const scheduleNext = () => {
-  const delay = 5000 + Math.floor(Math.random() * 5000);
+  const delay = 3000 + Math.floor(Math.random() * 3000);
   setTimeout(autoUpdate, delay);
 };
 
