@@ -115,6 +115,7 @@ const userSchema = mongoose.Schema(
 );
 
 userSchema.index({ score: -1 });
+userSchema.index({ count: -1 });
 userSchema.index({ maxStreak: -1 });
 
 // 비밀번호 해싱
