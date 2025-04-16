@@ -102,34 +102,17 @@ const profile = async (handle) => {
         ? parseInt(streakText.replace(/,/g, ""), 10)
         : undefined;
 
-      // solved by grade
-      const tiers = ["bronze", "silver", "gold", "platinum", "diamond", "ruby"];
+      // level
+      const current = new Array(31).fill(0);
 
-      const current = {
-        bronze: 0,
-        silver: 0,
-        gold: 0,
-        platinum: 0,
-        diamond: 0,
-        ruby: 0,
-      };
-
-      tiers.forEach((tier) => {
-        const tierCell = $(`table.css-a651il td.${tier}`).first();
-
-        if (tierCell.length) {
-          const scoreCell = tierCell.next();
-          if (scoreCell.length) {
-            const scoreText = scoreCell.find("b").text().trim();
-
-            const score = parseInt(scoreText.replace(/,/g, ""), 10);
-
-            if (!isNaN(score)) {
-              current[tier] = score;
-            }
-          }
-        }
+      $("table tbody tr").each((i, tr) => {
+        const $tds = $(tr).find("td");
+        const countText = $tds.eq(1).text().trim();
+        const count = parseInt(countText, 10);
+        current[i] = isNaN(count) ? 0 : count;
       });
+
+      console.log(current);
 
       const success =
         tier !== undefined &&

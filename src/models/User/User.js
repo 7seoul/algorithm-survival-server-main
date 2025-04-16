@@ -24,56 +24,10 @@ const userSchema = mongoose.Schema(
       },
     ],
     initial: {
-      bronze: {
-        type: Number,
-        default: 0,
-      },
-      silver: {
-        type: Number,
-        default: 0,
-      },
-      gold: {
-        type: Number,
-        default: 0,
-      },
-      platinum: {
-        type: Number,
-        default: 0,
-      },
-      diamond: {
-        type: Number,
-        default: 0,
-      },
-      ruby: {
-        type: Number,
-        default: 0,
-      },
+      type: [Number],
     },
     current: {
-      bronze: {
-        type: Number,
-        default: 0,
-      },
-      silver: {
-        type: Number,
-        default: 0,
-      },
-      gold: {
-        type: Number,
-        default: 0,
-      },
-      platinum: {
-        type: Number,
-        default: 0,
-      },
-      diamond: {
-        type: Number,
-        default: 0,
-      },
-      ruby: {
-        type: Number,
-        default: 0,
-      },
+      type: [Number],
     },
     maxStreak: {
       type: Number,
