@@ -446,6 +446,9 @@ const post = {
           memberData: member._id,
           todaySolvedMembers: user._id,
         },
+        $inc: {
+          size: -1,
+        },
       });
 
       // 멤버 데이터 삭제
