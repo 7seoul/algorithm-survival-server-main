@@ -5,25 +5,10 @@ const { Group } = require("../models/Group/Group");
 const { MemberData } = require("../models/Group/MemberData");
 const logger = require("../../logger");
 const timer = require("../utils/timer");
+const { conversionScore } = require("../utils/calculator");
 
-const calculateScore = (current, initial) => {
-  const pointValues = {
-    bronze: 1,
-    silver: 5,
-    gold: 15,
-    platinum: 45,
-    diamond: 100,
-    ruby: 1000,
-  };
-
-  let totalScore = 0;
-
-  for (const key in pointValues) {
-    const diff = (current[key] || 0) - (initial[key] || 0);
-    totalScore += diff * pointValues[key];
-  }
-
-  return totalScore;
+const calculateScore = (a, b) => {
+  return conversionScore(a) - conversionScore(b);
 };
 
 const userUpdateCore = async (handle, profile) => {

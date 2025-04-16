@@ -36,31 +36,20 @@ const problem = async (handle) => {
 
     const problems = response.data;
 
-    const current = {
-      bronze: 0,
-      silver: 0,
-      gold: 0,
-      platinum: 0,
-      diamond: 0,
-      ruby: 0,
-    };
+    const current = new Array(31).fill(0);
 
-    for (let i = 1; i < problems.length; i++) {
-      const solved = problems[i]?.solved ?? 0;
+    for (let i = 0; i < problems.length; i++) {
+      const solved = problems[i]?.solved;
 
-      if (1 <= i && i <= 5) {
-        current.bronze += solved;
-      } else if (6 <= i && i <= 10) {
-        current.silver += solved;
-      } else if (11 <= i && i <= 15) {
-        current.gold += solved;
-      } else if (16 <= i && i <= 20) {
-        current.platinum += solved;
-      } else if (21 <= i && i <= 25) {
-        current.diamond += solved;
-      } else if (26 <= i && i <= 30) {
-        current.ruby += solved;
+      if (typeof solved !== "number" || isNaN(solved)) {
+        throw new Error(
+          `[SOLVEDAC API ERROR] Invalid 'solved' value at index ${i}: ${JSON.stringify(
+            problems[i]
+          )}`
+        );
       }
+
+      current[i] = solved;
     }
 
     return current;

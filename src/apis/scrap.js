@@ -77,6 +77,9 @@ const profile = async (handle) => {
         logger.warn("Timeout occurred, proceeding with current page state...");
       }
 
+      // 버튼 클릭
+      await page.click("button.css-1u44z18");
+
       const html = await page.content();
       const $ = cheerio.load(html);
 
@@ -102,33 +105,16 @@ const profile = async (handle) => {
         ? parseInt(streakText.replace(/,/g, ""), 10)
         : undefined;
 
-      // solved by grade
-      const tiers = ["bronze", "silver", "gold", "platinum", "diamond", "ruby"];
+      // level
+      const current = new Array(31).fill(0);
 
-      const current = {
-        bronze: 0,
-        silver: 0,
-        gold: 0,
-        platinum: 0,
-        diamond: 0,
-        ruby: 0,
-      };
+      $("table tbody tr").each((i, tr) => {
+        if (i >= 31) return false;
 
-      tiers.forEach((tier) => {
-        const tierCell = $(`table.css-a651il td.${tier}`).first();
-
-        if (tierCell.length) {
-          const scoreCell = tierCell.next();
-          if (scoreCell.length) {
-            const scoreText = scoreCell.find("b").text().trim();
-
-            const score = parseInt(scoreText.replace(/,/g, ""), 10);
-
-            if (!isNaN(score)) {
-              current[tier] = score;
-            }
-          }
-        }
+        const $tds = $(tr).find("td");
+        const countText = $tds.eq(1).find("b").text().trim();
+        const count = parseInt(countText, 10);
+        current[i] = isNaN(count) ? 0 : count;
       });
 
       const success =
