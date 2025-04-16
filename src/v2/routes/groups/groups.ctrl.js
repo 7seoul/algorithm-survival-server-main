@@ -7,6 +7,8 @@ const { checkRole } = require("../../../utils/checkRole");
 const logger = require("../../../../logger");
 const moment = require("moment-timezone");
 
+const GROUP_LIMIT = 3;
+
 const get = {
   all: async (req, res) => {
     try {
@@ -108,6 +110,13 @@ const get = {
 const post = {
   create: async (req, res) => {
     try {
+      if (req.user.joinedGroupList.length >= GROUP_LIMIT) {
+        return res.status(200).json({
+          success: false,
+          message: `그룹은 최대 ${GROUP_LIMIT}개 까지 참가 가능합니다.`,
+        });
+      }
+
       // 유저 추가 전 정보 업데이트
       const user = await userUpdateBySolvedac(req.user.handle);
 
@@ -206,6 +215,13 @@ const post = {
   },
   apply: async (req, res) => {
     try {
+      if (req.user.joinedGroupList.length >= GROUP_LIMIT) {
+        return res.status(200).json({
+          success: false,
+          message: `그룹은 최대 ${GROUP_LIMIT}개 까지 참가 가능합니다.`,
+        });
+      }
+
       const { groupId } = req.params;
       const { success, role } = await checkRole(
         req.params.groupId,
@@ -251,6 +267,16 @@ const post = {
   accept: async (req, res) => {
     try {
       const { groupId, handle } = req.params;
+
+      const check = await User.findOne({ handle }).select("joinedGroupList");
+
+      if (check.joinedGroupList.length >= GROUP_LIMIT) {
+        return res.status(200).json({
+          success: false,
+          message: `해당 유저는 이미 ${GROUP_LIMIT}개의 그룹에 참가하였습니다.`,
+        });
+      }
+
       const { success, role } = await checkRole(groupId, req.user._id);
 
       if (!success) {
