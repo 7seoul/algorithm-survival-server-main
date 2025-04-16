@@ -10,6 +10,7 @@ router.get("/:groupId", ctrl.get.info); // 특정 그룹 정보 조회
 
 router.post("/", auth, ctrl.post.create); // 그룹 생성
 router.post("/:groupId", auth, ctrl.post.edit); // 그룹 정보 수정
+router.post("/:groupId/leave", auth, ctrl.post.leave); // 그룹 떠나기
 router.post("/:groupId/applications", auth, ctrl.post.apply); // 그룹 참가 신청
 router.post("/:groupId/applications/:handle/accept", auth, ctrl.post.accept); // 신청 승인
 router.post("/:groupId/applications/:handle", auth, ctrl.post.reject); // 신청 거절

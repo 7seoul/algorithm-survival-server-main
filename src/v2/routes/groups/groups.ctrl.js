@@ -376,6 +376,65 @@ const post = {
         .json({ success: false, message: "서버 오류 발생" });
     }
   },
+  leave: async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const { groupId } = req.params;
+      const { success, role } = await checkRole(groupId, userId);
+
+      if (!success) {
+        return res
+          .status(404)
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
+      }
+
+      if (role === "admin") {
+        return res.status(200).json({
+          success: false,
+          message: "관리자는 그룹을 떠날 수 없습니다.",
+        });
+      }
+
+      if (role !== "member") {
+        return res.status(200).json({
+          success: false,
+          message: "권한이 없습니다.",
+        });
+      }
+
+      const group = await Group.findById(groupId).select("memberData");
+
+      const member = await MemberData.findOne({
+        user: userId,
+        _id: { $in: group.memberData },
+      });
+
+      // 그룹에서 멤버 데이터, 유저 삭제
+      await Group.findByIdAndUpdate(groupId, {
+        $pull: {
+          memberData: member._id,
+          todaySolvedMembers: userId,
+        },
+      });
+
+      // 멤버 데이터 삭제
+      await MemberData.findByIdAndDelete(member._id);
+
+      // 유저에서 그룹 삭제
+      await User.findByIdAndUpdate(userId, {
+        $pull: { joinedGroupList: groupId },
+      });
+
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      logger.error(`${error}`);
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
+    }
+  },
 };
 
 module.exports = {
