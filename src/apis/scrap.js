@@ -77,6 +77,9 @@ const profile = async (handle) => {
         logger.warn("Timeout occurred, proceeding with current page state...");
       }
 
+      // 버튼 클릭
+      await page.click("button.css-1u44z18");
+
       const html = await page.content();
       const $ = cheerio.load(html);
 
@@ -106,13 +109,13 @@ const profile = async (handle) => {
       const current = new Array(31).fill(0);
 
       $("table tbody tr").each((i, tr) => {
+        if (i >= 31) return false;
+
         const $tds = $(tr).find("td");
-        const countText = $tds.eq(1).text().trim();
+        const countText = $tds.eq(1).find("b").text().trim();
         const count = parseInt(countText, 10);
         current[i] = isNaN(count) ? 0 : count;
       });
-
-      console.log(current);
 
       const success =
         tier !== undefined &&

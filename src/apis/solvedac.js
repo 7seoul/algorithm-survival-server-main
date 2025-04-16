@@ -39,10 +39,18 @@ const problem = async (handle) => {
     const current = new Array(31).fill(0);
 
     for (let i = 0; i < problems.length; i++) {
-      current[i] = problems[i]?.solved ?? 0;
-    }
+      const solved = problems[i]?.solved;
 
-    console.log(current);
+      if (typeof solved !== "number" || isNaN(solved)) {
+        throw new Error(
+          `[SOLVEDAC API ERROR] Invalid 'solved' value at index ${i}: ${JSON.stringify(
+            problems[i]
+          )}`
+        );
+      }
+
+      current[i] = solved;
+    }
 
     return current;
   } catch (error) {
