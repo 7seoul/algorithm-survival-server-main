@@ -18,7 +18,7 @@ const get = {
         groups,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -97,7 +97,7 @@ const get = {
         group,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -149,7 +149,7 @@ const post = {
         group,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -198,7 +198,7 @@ const post = {
         group,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -242,7 +242,7 @@ const post = {
         group: updatedGroup,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -325,7 +325,7 @@ const post = {
         group: updatedGroup,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -370,7 +370,7 @@ const post = {
         group,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });

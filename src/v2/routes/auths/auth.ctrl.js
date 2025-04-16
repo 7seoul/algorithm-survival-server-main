@@ -34,7 +34,7 @@ const get = {
 
       return res.status(200).json({ success: true, user });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -82,7 +82,7 @@ const post = {
         },
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -133,7 +133,7 @@ const post = {
         verificationCode: code,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -171,7 +171,7 @@ const post = {
         verificationCode: code,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -237,7 +237,7 @@ const post = {
           });
         }
       } catch (error) {
-        logger.error(error);
+        logger.error(`${error}`);
         return res.status(404).json({
           success: false,
           message: "solved.ac에 가입되지 않은 ID입니다.",
@@ -291,7 +291,7 @@ const post = {
         },
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -307,7 +307,7 @@ const post = {
         message: "로그아웃 성공",
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res.status(500).json({
         success: false,
         message: "서버 오류 발생",
@@ -363,7 +363,7 @@ const post = {
         message: "비밀번호 변경 완료",
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res.status(500).json({
         success: false,
         message: "서버 오류 발생",
