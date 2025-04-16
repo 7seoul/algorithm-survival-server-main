@@ -376,10 +376,11 @@ const post = {
         .json({ success: false, message: "서버 오류 발생" });
     }
   },
-  leave: async (req, res) => {
+  kick: async (req, res) => {
     try {
       const userId = req.user._id;
-      const { groupId } = req.params;
+      const userHandle = req.user.handle;
+      const { groupId, handle } = req.params;
       const { success, role } = await checkRole(groupId, userId);
 
       if (!success) {
@@ -388,24 +389,28 @@ const post = {
           .json({ success: false, message: "그룹을 찾을 수 없습니다." });
       }
 
-      if (role === "admin") {
-        return res.status(200).json({
-          success: false,
-          message: "관리자는 그룹을 떠날 수 없습니다.",
-        });
-      }
-
-      if (role !== "member") {
+      if (
+        (role !== "member" && role !== "admin") ||
+        (role === "member" && handle !== userHandle)
+      ) {
         return res.status(200).json({
           success: false,
           message: "권한이 없습니다.",
         });
       }
 
+      if (role === "admin" && handle === userHandle) {
+        return res.status(200).json({
+          success: false,
+          message: "관리자는 추방 할 수 없습니다.",
+        });
+      }
+
       const group = await Group.findById(groupId).select("memberData");
+      const user = await User.findOne({ handle }).select("_id");
 
       const member = await MemberData.findOne({
-        user: userId,
+        user: user._id,
         _id: { $in: group.memberData },
       });
 
@@ -413,7 +418,7 @@ const post = {
       await Group.findByIdAndUpdate(groupId, {
         $pull: {
           memberData: member._id,
-          todaySolvedMembers: userId,
+          todaySolvedMembers: user._id,
         },
       });
 
@@ -421,7 +426,7 @@ const post = {
       await MemberData.findByIdAndDelete(member._id);
 
       // 유저에서 그룹 삭제
-      await User.findByIdAndUpdate(userId, {
+      await User.findByIdAndUpdate(user._id, {
         $pull: { joinedGroupList: groupId },
       });
 
