@@ -103,44 +103,6 @@ const get = {
         .json({ success: false, message: "서버 오류 발생" });
     }
   },
-  applications: async (req, res) => {
-    try {
-      const { groupId } = req.params;
-      const { success, role } = await checkRole(groupId, req.user._id);
-
-      if (!success) {
-        return res
-          .status(404)
-          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
-      }
-
-      if (role !== "admin") {
-        return res.status(200).json({
-          success: false,
-          message: "권한이 없습니다.",
-        });
-      }
-
-      const data = await Group.findOne({ _id: groupId })
-        .select("-_id applications")
-        .populate(
-          "applications",
-          "-_id name handle currentCount currentStreak"
-        );
-
-      const applications = data.applications;
-
-      return res.status(200).json({
-        success: true,
-        applications,
-      });
-    } catch (error) {
-      logger.error(error);
-      return res
-        .status(500)
-        .json({ success: false, message: "서버 오류 발생" });
-    }
-  },
 };
 
 const post = {
