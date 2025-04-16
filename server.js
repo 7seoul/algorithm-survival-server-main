@@ -21,9 +21,10 @@ mongoose
   .then(async () => {
     logger.info("Connected to MongoDB");
 
-    // 유저 정보 자동 업데이트
-    autoUpdate.init();
-    // 06시 그룹 초기화
-    initGroupResetJob();
+    await migration.migrateScore();
+    // // 유저 정보 자동 업데이트
+    // autoUpdate.init();
+    // // 06시 그룹 초기화
+    // initGroupResetJob();
   })
   .catch((error) => logger.error(`MongoDB error: ${error}`));

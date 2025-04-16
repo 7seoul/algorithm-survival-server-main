@@ -2,7 +2,35 @@ const { Group } = require("./src/models/Group/Group");
 const { MemberData } = require("./src/models/Group/MemberData");
 const { User } = require("./src/models/User/User");
 const { UserVerification } = require("./src/models/User/UserVerification");
+const solved = require("./src/apis/solvedac");
 const logger = require("./logger");
+
+const migrateScore = async () => {
+  const users = await User.find({});
+
+  for (const user of users) {
+    const current = await solved.problem(user.handle);
+
+    await MemberData.updateOne(
+      { user: user._id },
+      {
+        $set: {
+          initial: current,
+        },
+      }
+    );
+
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          initial: current,
+          current: current,
+        },
+      }
+    );
+  }
+};
 
 const migrateGroups = async () => {
   const result = await Group.updateMany(
@@ -89,6 +117,7 @@ const migrateUserVerifications = async () => {
 };
 
 module.exports = {
+  migrateScore,
   migrateGroups,
   migrateMemberDatas,
   migrateUsers,
