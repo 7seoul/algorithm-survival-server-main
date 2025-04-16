@@ -10,10 +10,10 @@ const calculateScore = (current, initial) => {
   const pointValues = {
     bronze: 1,
     silver: 5,
-    gold: 10,
-    platinum: 20,
-    diamond: 50,
-    ruby: 100,
+    gold: 15,
+    platinum: 45,
+    diamond: 100,
+    ruby: 1000,
   };
 
   let totalScore = 0;

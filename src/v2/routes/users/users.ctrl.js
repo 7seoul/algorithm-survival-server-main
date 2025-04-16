@@ -35,7 +35,7 @@ const get = {
         user,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -49,7 +49,7 @@ const get = {
         users,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -94,7 +94,7 @@ const get = {
         user: userObj,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -146,7 +146,7 @@ const post = {
         user: userObj,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });

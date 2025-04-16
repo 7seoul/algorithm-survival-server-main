@@ -7,6 +7,8 @@ const { checkRole } = require("../../../utils/checkRole");
 const logger = require("../../../../logger");
 const moment = require("moment-timezone");
 
+const GROUP_LIMIT = 3;
+
 const get = {
   all: async (req, res) => {
     try {
@@ -18,7 +20,7 @@ const get = {
         groups,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -97,45 +99,7 @@ const get = {
         group,
       });
     } catch (error) {
-      logger.error(error);
-      return res
-        .status(500)
-        .json({ success: false, message: "서버 오류 발생" });
-    }
-  },
-  applications: async (req, res) => {
-    try {
-      const { groupId } = req.params;
-      const { success, role } = await checkRole(groupId, req.user._id);
-
-      if (!success) {
-        return res
-          .status(404)
-          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
-      }
-
-      if (role !== "admin") {
-        return res.status(200).json({
-          success: false,
-          message: "권한이 없습니다.",
-        });
-      }
-
-      const data = await Group.findOne({ _id: groupId })
-        .select("-_id applications")
-        .populate(
-          "applications",
-          "-_id name handle currentCount currentStreak"
-        );
-
-      const applications = data.applications;
-
-      return res.status(200).json({
-        success: true,
-        applications,
-      });
-    } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -146,6 +110,13 @@ const get = {
 const post = {
   create: async (req, res) => {
     try {
+      if (req.user.joinedGroupList.length >= GROUP_LIMIT) {
+        return res.status(200).json({
+          success: false,
+          message: `그룹은 최대 ${GROUP_LIMIT}개 까지 참가 가능합니다.`,
+        });
+      }
+
       // 유저 추가 전 정보 업데이트
       const user = await userUpdateBySolvedac(req.user.handle);
 
@@ -187,7 +158,7 @@ const post = {
         group,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -236,7 +207,7 @@ const post = {
         group,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -244,6 +215,13 @@ const post = {
   },
   apply: async (req, res) => {
     try {
+      if (req.user.joinedGroupList.length >= GROUP_LIMIT) {
+        return res.status(200).json({
+          success: false,
+          message: `그룹은 최대 ${GROUP_LIMIT}개 까지 참가 가능합니다.`,
+        });
+      }
+
       const { groupId } = req.params;
       const { success, role } = await checkRole(
         req.params.groupId,
@@ -280,7 +258,7 @@ const post = {
         group: updatedGroup,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -289,6 +267,16 @@ const post = {
   accept: async (req, res) => {
     try {
       const { groupId, handle } = req.params;
+
+      const check = await User.findOne({ handle }).select("joinedGroupList");
+
+      if (check.joinedGroupList.length >= GROUP_LIMIT) {
+        return res.status(200).json({
+          success: false,
+          message: `해당 유저는 이미 ${GROUP_LIMIT}개의 그룹에 참가하였습니다.`,
+        });
+      }
+
       const { success, role } = await checkRole(groupId, req.user._id);
 
       if (!success) {
@@ -363,7 +351,7 @@ const post = {
         group: updatedGroup,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
@@ -408,7 +396,124 @@ const post = {
         group,
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(`${error}`);
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
+    }
+  },
+  kick: async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const userHandle = req.user.handle;
+      const { groupId, handle } = req.params;
+      const { success, role } = await checkRole(groupId, userId);
+
+      if (!success) {
+        return res
+          .status(404)
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
+      }
+
+      if (
+        (role !== "member" && role !== "admin") ||
+        (role === "member" && handle !== userHandle)
+      ) {
+        return res.status(200).json({
+          success: false,
+          message: "권한이 없습니다.",
+        });
+      }
+
+      if (role === "admin" && handle === userHandle) {
+        return res.status(200).json({
+          success: false,
+          message: "관리자는 추방 할 수 없습니다.",
+        });
+      }
+
+      const group = await Group.findById(groupId).select("memberData");
+      const user = await User.findOne({ handle }).select("_id");
+
+      const member = await MemberData.findOne({
+        user: user._id,
+        _id: { $in: group.memberData },
+      });
+
+      // 그룹에서 멤버 데이터, 유저 삭제
+      await Group.findByIdAndUpdate(groupId, {
+        $pull: {
+          memberData: member._id,
+          todaySolvedMembers: user._id,
+        },
+        $inc: {
+          size: -1,
+        },
+      });
+
+      // 멤버 데이터 삭제
+      await MemberData.findByIdAndDelete(member._id);
+
+      // 유저에서 그룹 삭제
+      await User.findByIdAndUpdate(user._id, {
+        $pull: { joinedGroupList: groupId },
+      });
+
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      logger.error(`${error}`);
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
+    }
+  },
+  delete: async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const { groupId } = req.params;
+      const { success, role } = await checkRole(groupId, userId);
+
+      if (!success) {
+        return res
+          .status(404)
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
+      }
+
+      if (role !== "admin") {
+        return res.status(200).json({
+          success: false,
+          message: "권한이 없습니다.",
+        });
+      }
+
+      const group = await Group.findById(groupId).populate({
+        path: "memberData",
+        select: "_id",
+        populate: {
+          path: "user",
+          select: "_id",
+        },
+      });
+
+      for (let member of group.memberData) {
+        // 유저에서 그룹 삭제
+        await User.findByIdAndUpdate(member.user._id, {
+          $pull: { joinedGroupList: groupId },
+        });
+
+        // 멤버 데이터 삭제
+        await MemberData.findByIdAndDelete(member._id);
+      }
+
+      await Group.deleteOne({ _id: groupId });
+
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      logger.error(`${error}`);
       return res
         .status(500)
         .json({ success: false, message: "서버 오류 발생" });
