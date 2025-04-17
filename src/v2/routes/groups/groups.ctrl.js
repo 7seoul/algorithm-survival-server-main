@@ -7,7 +7,8 @@ const { checkRole } = require("../../../utils/checkRole");
 const logger = require("../../../../logger");
 const moment = require("moment-timezone");
 
-const GROUP_LIMIT = 3;
+const GROUP_LIMIT = 5;
+const MEMBER_LIMIT = 30;
 
 const get = {
   all: async (req, res) => {
@@ -49,7 +50,7 @@ const get = {
           select: "-_id initialStreak score count",
           populate: {
             path: "user",
-            select: "-_id name handle currentStreak imgSrc tier",
+            select: "name handle currentStreak imgSrc tier",
           },
         })
         .populate("admin", "-_id handle name")
@@ -95,7 +96,7 @@ const get = {
         count: member.count,
         todaySolved: group.todaySolvedMembers.some(
           (solvedMember) =>
-            solvedMember.user.toString() === member.user._id.toString()
+            solvedMember._id.toString() === member.user._id.toString()
         ),
       }));
 
@@ -228,6 +229,24 @@ const post = {
       }
 
       const { groupId } = req.params;
+
+      // 그룹 가져오기
+      const group = await Group.findById(groupId).lean();
+
+      if (!group) {
+        return res
+          .status(404)
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
+      }
+
+      // 그룹 정원 초과
+      if (group.size >= MEMBER_LIMIT) {
+        return res.status(200).json({
+          success: false,
+          message: `멤버는 ${MEMBER_LIMIT}명을 초과할 수 없습니다.`,
+        });
+      }
+
       const { success, role } = await checkRole(
         req.params.groupId,
         req.user._id
@@ -273,7 +292,9 @@ const post = {
     try {
       const { groupId, handle } = req.params;
 
-      const check = await User.findOne({ handle }).select("joinedGroupList");
+      const check = await User.findOne({ handle })
+        .select("joinedGroupList")
+        .lean();
 
       if (check.joinedGroupList.length >= GROUP_LIMIT) {
         return res.status(200).json({
@@ -306,17 +327,27 @@ const post = {
       }
 
       // 그룹 가져오기
-      const group = await Group.findById(groupId);
+      const group = await Group.findById(groupId).lean();
+
       if (!group) {
         return res
           .status(404)
           .json({ success: false, message: "그룹을 찾을 수 없습니다." });
       }
 
+      // 그룹 정원 초과
+      if (group.size >= MEMBER_LIMIT) {
+        return res.status(200).json({
+          success: false,
+          message: `멤버는 ${MEMBER_LIMIT}명을 초과할 수 없습니다.`,
+        });
+      }
+
       // 신청 목록에 있는지 확인
       const isApplied = await group.applications.some(
         (app) => app.toString() === user._id.toString()
       );
+
       if (!isApplied) {
         return res
           .status(400)
