@@ -82,7 +82,6 @@ const get = {
       group.createdAt = moment(group.createdAt).tz("Asia/Seoul").format();
       group.updatedAt = moment(group.updatedAt).tz("Asia/Seoul").format();
       group.isMember = role !== "none";
-      group.userRole = role;
       group.scoreRank = scoreRank;
       group.countRank = countRank;
       group.streakRank = streakRank;
@@ -104,6 +103,7 @@ const get = {
       return res.status(200).json({
         success: true,
         group,
+        userRole: role,
       });
     } catch (error) {
       logger.error(`${error}`);
