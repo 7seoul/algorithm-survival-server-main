@@ -7,10 +7,6 @@ const logger = require("../../logger");
 const timer = require("../utils/timer");
 const { conversionScore } = require("../utils/calculator");
 
-const calculateScore = (a, b) => {
-  return conversionScore(a) - conversionScore(b);
-};
-
 const userUpdateCore = async (handle, profile) => {
   const initUser = await User.findOne({ handle: handle });
 
@@ -21,7 +17,9 @@ const userUpdateCore = async (handle, profile) => {
     newStreak = profile.streak;
   }
 
-  const totalScore = calculateScore(profile.current, initUser.initial);
+  const scrapScore = conversionScore(profile.current);
+  const initScore = conversionScore(initUser.initial);
+  const totalScore = scrapScore - initScore;
 
   const updateFields = {
     initialStreak: newStreak,
@@ -61,7 +59,8 @@ const userUpdateCore = async (handle, profile) => {
     });
 
     const newCount = profile.solvedCount - member.initialCount;
-    const newScore = calculateScore(profile.current, member.initial);
+    const memberScore = conversionScore(member.initial);
+    const newScore = scrapScore - memberScore;
 
     // 유저 정보 업데이트
     const memberUpdateResult = await MemberData.updateOne(
