@@ -84,6 +84,7 @@ const get = {
       group.scoreRank = scoreRank;
       group.countRank = countRank;
       group.streakRank = streakRank;
+
       group.memberData = group.memberData.map((member) => ({
         name: member.user.name,
         handle: member.user.handle,
@@ -92,6 +93,10 @@ const get = {
         maxStreak: member.user.currentStreak - member.initialStreak,
         score: member.score,
         count: member.count,
+        todaySolved: group.todaySolvedMembers.some(
+          (solvedMember) =>
+            solvedMember.user.toString() === member.user._id.toString()
+        ),
       }));
 
       return res.status(200).json({
