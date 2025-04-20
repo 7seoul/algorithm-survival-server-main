@@ -9,7 +9,7 @@ const get = {
     try {
       const handle = req.params.handle;
       let user = await User.findOne({ handle })
-        .select("-password -initial -current -initialCount -currentCount -__v")
+        .select("-password -initialCount -currentCount -__v")
         .populate(
           "joinedGroupList",
           "groupName _id description score maxStreak size"
@@ -24,10 +24,15 @@ const get = {
 
       user = await userRank(user);
 
+      for (let i = 0; i < 31; ++i) {
+        user.current[i] -= user.initial[i];
+      }
+
       user.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
       user.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
       user.currentStreak = user.currentStreak - user.initialStreak;
 
+      delete user.initial;
       delete user.initialStreak;
 
       return res.status(200).json({
