@@ -5,7 +5,7 @@ const { Counter } = require("../../../models/Counter/Counter");
 const { userUpdateBySolvedac } = require("../../../services/userUpdate");
 const { checkRole } = require("../../../utils/checkRole");
 const logger = require("../../../../logger");
-const moment = require("moment-timezone");
+const { formatDate } = require("../../../utils/formatDate");
 
 const GROUP_LIMIT = 5;
 const MEMBER_LIMIT = 30;
@@ -79,8 +79,8 @@ const get = {
         delete group.applications;
       }
 
-      group.createdAt = moment(group.createdAt).tz("Asia/Seoul").format();
-      group.updatedAt = moment(group.updatedAt).tz("Asia/Seoul").format();
+      group.createdAt = formatDate(group.createdAt);
+      group.updatedAt = formatDate(group.updatedAt);
       group.isMember = role !== "none";
       group.scoreRank = scoreRank;
       group.countRank = countRank;

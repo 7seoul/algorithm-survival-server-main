@@ -1,8 +1,8 @@
 const { User } = require("../../../models/User/User");
 const { userUpdateByScrap } = require("../../../services/userUpdate");
 const logger = require("../../../../logger");
-const moment = require("moment-timezone");
 const { userRank } = require("../../../utils/checkRank");
+const { formatDate } = require("../../../utils/formatDate");
 
 const get = {
   info: async (req, res) => {
@@ -28,8 +28,8 @@ const get = {
         user.current[i] -= user.initial[i];
       }
 
-      user.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
-      user.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
+      user.createdAt = formatDate(user.createdAt);
+      user.updatedAt = formatDate(user.updatedAt);
       user.currentStreak = user.currentStreak - user.initialStreak;
 
       delete user.initial;
@@ -91,8 +91,8 @@ const get = {
       userObj.scoreRank = scoreRank;
       userObj.countRank = countRank;
       userObj.streakRank = streakRank;
-      userObj.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
-      userObj.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
+      userObj.createdAt = formatDate(user.createdAt);
+      userObj.updatedAt = formatDate(user.updatedAt);
 
       return res.status(200).json({
         success: true,
@@ -143,8 +143,8 @@ const post = {
       userObj.scoreRank = scoreRank;
       userObj.countRank = countRank;
       userObj.streakRank = streakRank;
-      userObj.createdAt = moment(user.createdAt).tz("Asia/Seoul").format();
-      userObj.updatedAt = moment(user.updatedAt).tz("Asia/Seoul").format();
+      userObj.createdAt = formatDate(user.createdAt);
+      userObj.updatedAt = formatDate(user.updatedAt);
 
       return res.status(200).json({
         success: true,
