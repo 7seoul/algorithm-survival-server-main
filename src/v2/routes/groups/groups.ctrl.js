@@ -6,6 +6,7 @@ const { userUpdateBySolvedac } = require("../../../services/userUpdate");
 const { checkRole } = require("../../../utils/checkRole");
 const logger = require("../../../../logger");
 const { formatDate } = require("../../../utils/formatDate");
+const { groupRank } = require("../../../utils/checkRank");
 
 const GROUP_LIMIT = 5;
 const MEMBER_LIMIT = 30;
@@ -44,7 +45,7 @@ const get = {
 
       const { role } = await checkRole(groupId, user._id);
 
-      const group = await Group.findOne({ _id: groupId }, "-__v -members")
+      let group = await Group.findOne({ _id: groupId }, "-__v -members")
         .populate({
           path: "memberData",
           select: "-_id initialStreak score count",
@@ -63,17 +64,7 @@ const get = {
           .json({ success: false, message: "그룹을 찾을 수 없습니다." });
       }
 
-      const groupScore = group.score;
-      const groupCount = group.count;
-      const groupMaxStreak = group.maxStreak;
-
-      const scoreRank =
-        (await Group.countDocuments({ score: { $gt: groupScore } })) + 1;
-      const countRank =
-        (await Group.countDocuments({ count: { $gt: groupCount } })) + 1;
-      const streakRank =
-        (await Group.countDocuments({ maxStreak: { $gt: groupMaxStreak } })) +
-        1;
+      group = await groupRank(group);
 
       if (role !== "admin") {
         delete group.applications;
@@ -82,9 +73,6 @@ const get = {
       group.createdAt = formatDate(group.createdAt);
       group.updatedAt = formatDate(group.updatedAt);
       group.isMember = role !== "none";
-      group.scoreRank = scoreRank;
-      group.countRank = countRank;
-      group.streakRank = streakRank;
 
       group.memberData = group.memberData.map((member) => ({
         name: member.user.name,
