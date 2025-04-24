@@ -18,6 +18,15 @@ const loadUsersFromDB = async () => {
 };
 
 const autoUpdate = async () => {
+  const now = new Date();
+  const kstHour = (now.getUTCHours() + 9) % 24;
+
+  if (kstHour >= 6) {
+    logger.info("**임시** 06시 종료.");
+    isRunning = false;
+    return;
+  }
+
   if (userQueue.length === 0) {
     logger.info("[AUTO] No users to update.");
     scheduleNext();
