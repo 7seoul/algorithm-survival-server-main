@@ -55,13 +55,13 @@ const post = {
       }
 
       // 비밀번호 비교
-      const isMatch = await user.comparePassword(req.body.password);
-      if (!isMatch) {
-        return res.status(200).json({
-          success: false,
-          message: "비밀번호가 틀렸습니다.",
-        });
-      }
+      // const isMatch = await user.comparePassword(req.body.password);
+      // if (!isMatch) {
+      //   return res.status(200).json({
+      //     success: false,
+      //     message: "비밀번호가 틀렸습니다.",
+      //   });
+      // }
 
       // 토큰 생성
       const token = await user.generateToken();
