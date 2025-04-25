@@ -543,7 +543,6 @@ const post = {
       const group = await Group.findByIdAndUpdate(groupId, {
         $set: {
           endedAt: curTime,
-          size: 0,
         },
       }).populate({
         path: "memberData",
