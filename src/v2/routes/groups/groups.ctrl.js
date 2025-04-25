@@ -519,6 +519,61 @@ const post = {
         .json({ success: false, message: "서버 오류 발생" });
     }
   },
+  end: async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const { groupId } = req.params;
+      const { success, role } = await checkRole(groupId, userId);
+
+      if (!success) {
+        return res
+          .status(404)
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
+      }
+
+      if (role !== "admin") {
+        return res.status(200).json({
+          success: false,
+          message: "권한이 없습니다.",
+        });
+      }
+
+      const curTime = moment(new Date()).tz("Asia/Seoul").format();
+
+      const group = await Group.findByIdAndUpdate(groupId, {
+        $set: {
+          endedAt: curTime,
+          size: 0,
+        },
+      }).populate({
+        path: "memberData",
+        select: "_id",
+        populate: {
+          path: "user",
+          select: "_id",
+        },
+      });
+
+      for (let member of group.memberData) {
+        // 유저에서 그룹 삭제
+        await User.findByIdAndUpdate(member.user._id, {
+          $pull: { joinedGroupList: groupId },
+        });
+
+        // 멤버 데이터 삭제
+        await MemberData.findByIdAndDelete(member._id);
+      }
+
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      logger.error(`${error}`);
+      return res
+        .status(500)
+        .json({ success: false, message: "서버 오류 발생" });
+    }
+  },
 };
 
 module.exports = {

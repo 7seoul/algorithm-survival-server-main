@@ -15,5 +15,6 @@ router.post("/:groupId/kick/:handle", auth, ctrl.post.kick); // 추방하기
 router.post("/:groupId/applications", auth, ctrl.post.apply); // 그룹 참가 신청
 router.post("/:groupId/applications/:handle/accept", auth, ctrl.post.accept); // 신청 승인
 router.post("/:groupId/applications/:handle", auth, ctrl.post.reject); // 신청 거절
+router.post("/:groupId/end", auth, ctrl.post.end); // 그룹 활동 종료
 
 module.exports = router;
