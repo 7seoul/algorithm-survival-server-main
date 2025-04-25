@@ -558,9 +558,6 @@ const post = {
         await User.findByIdAndUpdate(member.user._id, {
           $pull: { joinedGroupList: groupId },
         });
-
-        // 멤버 데이터 삭제
-        await MemberData.findByIdAndDelete(member._id);
       }
 
       return res.status(200).json({
