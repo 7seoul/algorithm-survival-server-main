@@ -5,6 +5,39 @@ const { UserVerification } = require("./src/models/User/UserVerification");
 const solved = require("./src/apis/solvedac");
 const logger = require("./logger");
 
+const restoreMember = async () => {
+  const users = await User.find({});
+  const members = await MemberData.find({});
+
+  for (const user of users) {
+    const isMatched = await members.some((member) =>
+      member.user.equals(user._id)
+    );
+
+    if (isMatched) {
+      console.log(`SKIP : ${user.name}`);
+      continue;
+    }
+    console.log(`NEW : ${user.name}`);
+    const memberData = new MemberData({
+      user: user._id,
+      initialStreak: user.initialStreak,
+      initialCount: user.initialCount,
+      initial: user.initial,
+      score: user.score,
+      count: user.count,
+    });
+    await memberData.save();
+
+    // 그룹 업데이트
+    await Group.findByIdAndUpdate(1, {
+      $addToSet: {
+        memberData: memberData._id,
+      },
+    });
+  }
+};
+
 const migrateScore = async () => {
   const users = await User.find({});
 
@@ -117,6 +150,7 @@ const migrateUserVerifications = async () => {
 };
 
 module.exports = {
+  restoreMember,
   migrateScore,
   migrateGroups,
   migrateMemberDatas,

@@ -57,6 +57,10 @@ const groupSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    isEnd: {
+      type: Boolean,
+      default: 0,
+    },
     endedAt: {
       type: Date,
     },
