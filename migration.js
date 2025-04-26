@@ -15,9 +15,10 @@ const restoreMember = async () => {
     );
 
     if (isMatched) {
+      console.log(`SKIP : ${user.name}`);
       continue;
     }
-
+    console.log(`NEW : ${user.name}`);
     const memberData = new MemberData({
       user: user._id,
       initialStreak: user.initialStreak,
