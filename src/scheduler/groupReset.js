@@ -9,7 +9,7 @@ const initGroupResetJob = async () => {
     async () => {
       try {
         await Group.updateMany(
-          {},
+          { isEnd: false },
           {
             $set: {
               todaySolvedMembers: [],
