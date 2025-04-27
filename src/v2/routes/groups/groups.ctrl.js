@@ -281,6 +281,21 @@ const post = {
     try {
       const { groupId, handle } = req.params;
 
+      // 그룹 가져오기
+      const group = await Group.findById(groupId);
+
+      if (!group) {
+        return res
+          .status(404)
+          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
+      }
+
+      if (group.isEnd) {
+        return res
+          .status(200)
+          .json({ success: false, message: "활동을 종료한 그룹입니다." });
+      }
+
       const check = await User.findOne({ handle })
         .select("joinedGroupList")
         .lean();
@@ -313,15 +328,6 @@ const post = {
         return res
           .status(404)
           .json({ success: false, message: "유저를 찾을 수 없습니다." });
-      }
-
-      // 그룹 가져오기
-      const group = await Group.findById(groupId).lean();
-
-      if (!group) {
-        return res
-          .status(404)
-          .json({ success: false, message: "그룹을 찾을 수 없습니다." });
       }
 
       // 그룹 정원 초과
