@@ -1,8 +1,8 @@
 const { User } = require("../../../models/User/User");
 const { userUpdateByScrap } = require("../../../services/userUpdate");
-const logger = require("../../../../logger");
 const { userRank } = require("../../../utils/checkRank");
 const { formatDate } = require("../../../utils/formatDate");
+const logger = require("../../../../logger");
 
 const get = {
   info: async (req, res) => {

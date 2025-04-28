@@ -1,10 +1,10 @@
 const { User } = require("../../../models/User/User");
 const { UserVerification } = require("../../../models/User/UserVerification");
+const { userRank } = require("../../../utils/checkRank");
+const { formatDate } = require("../../../utils/formatDate");
 const solvedac = require("../../../apis/solvedac");
 const crypto = require("crypto");
 const logger = require("../../../../logger");
-const { userRank } = require("../../../utils/checkRank");
-const { formatDate } = require("../../../utils/formatDate");
 
 const get = {
   me: async (req, res) => {

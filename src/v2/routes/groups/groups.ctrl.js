@@ -4,9 +4,9 @@ const { MemberData } = require("../../../models/Group/MemberData");
 const { Counter } = require("../../../models/Counter/Counter");
 const { userUpdateBySolvedac } = require("../../../services/userUpdate");
 const { checkRole } = require("../../../utils/checkRole");
-const logger = require("../../../../logger");
 const { formatDate } = require("../../../utils/formatDate");
 const { groupRank } = require("../../../utils/checkRank");
+const logger = require("../../../../logger");
 
 const GROUP_LIMIT = 5;
 const MEMBER_LIMIT = 30;

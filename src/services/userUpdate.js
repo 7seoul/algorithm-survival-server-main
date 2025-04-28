@@ -1,11 +1,11 @@
-const scrap = require("../apis/scrap");
-const solvedac = require("../apis/solvedac");
 const { User } = require("../models/User/User");
 const { Group } = require("../models/Group/Group");
 const { MemberData } = require("../models/Group/MemberData");
+const { conversionScore } = require("../utils/calculator");
+const scrap = require("../apis/scrap");
+const solvedac = require("../apis/solvedac");
 const logger = require("../../logger");
 const timer = require("../utils/timer");
-const { conversionScore } = require("../utils/calculator");
 
 const userUpdateCore = async (handle, profile) => {
   const initUser = await User.findOne({ handle: handle });

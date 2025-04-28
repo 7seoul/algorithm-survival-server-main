@@ -1,5 +1,5 @@
-const logger = require("../../../../logger");
 const scrap = require("../../../apis/scrap");
+const logger = require("../../../../logger");
 
 const get = {
   scrap: async (req, res) => {
