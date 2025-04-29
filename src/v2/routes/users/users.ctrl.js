@@ -62,7 +62,9 @@ const get = {
   },
   updateInfo: async (req, res) => {
     try {
+      const startTime = Date.now();
       const user = await userUpdateByScrap(req.params.handle);
+      const elapsedTime = Date.now() - startTime;
 
       if (!user) {
         return res
@@ -97,6 +99,7 @@ const get = {
       return res.status(200).json({
         success: true,
         user: userObj,
+        time: `${elapsedTime}ms`,
       });
     } catch (error) {
       logger.error(`${error}`);
